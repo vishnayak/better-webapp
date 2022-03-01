@@ -19,6 +19,12 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
+<<<<<<< HEAD
+=======
+    // "noImplicitAny": true,
+    // "noImplicitThis": true,
+    // "strictNullChecks": true,
+>>>>>>> 51bcccd (Add paginated search results component, Make config changes to support directory aliases, add material icons library)
     "jsx": "react-jsx",
     "rootDir": "src",
     "outDir": "build",

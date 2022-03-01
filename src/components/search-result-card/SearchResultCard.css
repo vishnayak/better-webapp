@@ -1,0 +1,23 @@
+.search-result-card-content {
+    margin: 12px;
+    transition: height 0.5s;
+}
+
+.search-result-card-content--compact {
+    max-height: 40px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.search-result-card {
+    margin: 8px;
+}
+
+.card-actions {
+    display: flex;
+    justify-content: space-between;
+}
+
+.up-arrow {
+    transform: rotate(180deg);
+}

@@ -1,25 +1,21 @@
 import React from 'react';
-import { Pagination } from '@mui/material';
 import './App.css';
+import { Result, SearchResults } from '@components/search-results/SearchResults';
+
+import hits from '@assets/HITL.IR-T1-r1.REQUESTHITS.events.json';
 
 function App() {
   return (
-    <div className="App">
+    <>
       <header className="App-header">
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+          <p>
+            Search Results
+          </p>
       </header>
-      <Pagination count={3} />
-    </div>
+      <div className="App">
+        <SearchResults results={hits.slice(0, 100) as Result[]} />
+      </div>
+    </>
   );
 }
 
