@@ -25,7 +25,7 @@ It correctly bundles React in production mode and optimizes the build for the be
 
 ## Directory Structure
 
-The code has been broadly divided into the `src`, `test` and `assets` folders. The `src` folders consists of react code and application logic, the `test` folders consists of tests for the different modules of the `src` fodler, and the `assets` folder consists of static assets such as images and documents.
+The code has been broadly divided into the `src`, and `assets` folders. The `src` folder consists of react code and application logic, and the `assets` folder consists of static assets such as images and documents.
 
 The entry-point for the React application lies in the `src\index.js` file.
 
