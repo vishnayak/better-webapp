@@ -37,11 +37,4 @@ export const translateSentences = async (sentences: Sentence[]): Promise<string>
                 return "";
             })
         }))) as string[]).join('\n');
-
-    // fetch('http://localhost:8088/api/login', body, {
-    //     mode: 'no-cors',
-    //     method: 'POST',
-    //     url: `http://localhost:8088`,
-    //     credentials: 'include'
-    // })
 }
