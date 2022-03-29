@@ -1,0 +1,16 @@
+.search-page {
+    max-width: 75%;
+    margin: auto;
+    padding-top: 1rem;
+}
+
+.fallback-text {
+    text-align: center;
+    margin: 16px auto;
+}
+
+.query-detail {
+    display: flex;
+    justify-content: space-between;
+    margin: 8px 0;
+}

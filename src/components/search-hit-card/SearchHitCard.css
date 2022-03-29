@@ -1,15 +1,15 @@
-.search-result-card-content {
+.search-hit-card-content {
     margin: 12px;
     transition: height 0.5s;
 }
 
-.search-result-card-content--compact {
+.search-hit-card-content--compact {
     max-height: 40px;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.search-result-card {
+.search-hit-card {
     margin: 8px;
 }
 
