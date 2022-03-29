@@ -35,6 +35,6 @@ export const translateSentences = async (sentences: Sentence[]): Promise<string>
             return result.then(res => res.translatedText).catch(res => { 
                 console.error("Error during translation of " + sentence.text); 
                 return "";
-            })
+            });
         }))) as string[]).join('\n');
 }

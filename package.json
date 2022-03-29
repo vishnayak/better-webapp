@@ -69,7 +69,7 @@
   },
   "scripts": {
     "start": "node scripts/start.js",
-    "build": "tsc",
+    "build": "tsc && node scripts/build.js",
     "test": "node scripts/test.js"
   },
   "eslintConfig": {

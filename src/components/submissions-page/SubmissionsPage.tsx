@@ -78,8 +78,8 @@ export const SubmissionsPage: React.FC<{}> = () => {
                 rows={submissions}
                 columns={columns}
                 pageSize={10}
-                rowsPerPageOptions={[5]}
-                autoHeight
+                rowsPerPageOptions={[10, 20, 50]}
+                // autoHeight
                 initialState={{
                     sorting: {
                         sortModel: [{ field: 'when', sort: 'desc' }],
