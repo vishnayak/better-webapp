@@ -1,7 +1,9 @@
 import React from 'react';
 import './SubmissionsPage.css';
+import HourglassTopIcon from '@mui/icons-material/HourglassTop';
+import CheckIcon from '@mui/icons-material/Check';
 import { DataGrid, GridColDef, GridToolbarContainer, GridToolbarExport } from '@mui/x-data-grid';
-import { getAllSubmissions, Submission } from '@services/query-service';
+import { getAllSubmissions, Submission, SubmissionStatus } from '@services/query-service';
 import { Button } from '@mui/material';
 import { Link } from 'react-router-dom';
 
@@ -26,14 +28,21 @@ const columns: GridColDef[] = [
     {
         field: 'status',
         headerName: 'Execution Status',
-        description: 'SUBMITTED: Not yet executed; COMPLETE: Executed',
+        description: 'SUBMITTED: Not yet executed; COMPLETED: Executed',
+        renderCell: (params) => {
+            const status = (params.row as Submission).status;
+            return <>{status} &nbsp;
+                {status === SubmissionStatus.SUBMITTED && <HourglassTopIcon />}
+                {status === SubmissionStatus.COMPLETED && <CheckIcon />}
+            </>;
+        },
         width: 150,
     },
     {
         field: 'actions',
         headerName: 'Actions',
         renderCell: (params) => {
-            if((params.row as Submission).status !== 'SUBMITTED') {
+            if((params.row as Submission).status !== SubmissionStatus.COMPLETED) {
                 return '';
             }
             return <Link className={'link-text'} to={`/hits/${(params.row as Submission).id}`}>
@@ -77,7 +86,6 @@ export const SubmissionsPage: React.FC<{}> = () => {
             <DataGrid
                 rows={submissions}
                 columns={columns}
-                pageSize={10}
                 rowsPerPageOptions={[10, 20, 50]}
                 initialState={{
                     sorting: {
@@ -87,6 +95,7 @@ export const SubmissionsPage: React.FC<{}> = () => {
                 components={{
                     Toolbar: CustomToolbar
                 }}
+                disableSelectionOnClick
             />
         : <div className='fallback-text'>Loading...</div>
     }</div>;

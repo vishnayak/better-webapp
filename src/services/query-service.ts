@@ -17,13 +17,13 @@ export interface Submission {
     id: string;
     taskId: string;
     requestId: string | null; // TODO: Remove null
-    status: string; 
-    progressMessage: string;
-    errorMessage: string;
-    who: string | null;
+    status: SubmissionStatus;
     when: Date;
-    annotatedNounPhrases?: string[];
-    annotatedSentences?: string[];
+}
+
+export enum SubmissionStatus {
+    SUBMITTED = 'SUBMITTED',
+    COMPLETED = 'COMPLETED'
 }
 
 export const BAD_SUBMISSION = 'BAD_SUBMISSION';
