@@ -32,8 +32,8 @@ const columns: GridColDef[] = [
         renderCell: (params) => {
             const status = (params.row as Submission).status;
             return <>{status} &nbsp;
-                {status === SubmissionStatus.SUBMITTED && <HourglassTopIcon />}
-                {status === SubmissionStatus.COMPLETED && <CheckIcon />}
+                {status === SubmissionStatus.SUBMITTED && <HourglassTopIcon color={'disabled'} />}
+                {status === SubmissionStatus.COMPLETED && <CheckIcon color={'success'} />}
             </>;
         },
         width: 150,
