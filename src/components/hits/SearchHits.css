@@ -1,0 +1,10 @@
+.search-hits-pagination {
+    display: flex;
+    justify-content: center;
+    margin: 16px 0;
+}
+
+.pagination-text {
+    font-size: 14px;
+    padding: 8px;
+}

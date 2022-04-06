@@ -1,25 +1,26 @@
 import React from 'react';
-import { Pagination } from '@mui/material';
+import { Routes, Route, Navigate, Link } from "react-router-dom";
+import { SearchPage } from '@components/search-page/SearchPage';
 import './App.css';
+import { SubmissionsPage } from '@components/submissions-page/SubmissionsPage';
 
-function App() {
+export const App: React.FC<{}> = () => {
   return (
-    <div className="App">
+    <>
       <header className="App-header">
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+          <Link to={'/'} className={'header-text'}>UMass BETTER</Link>
       </header>
-      <Pagination count={3} />
-    </div>
+      <div className='body'>
+        <Routes>
+          <Route path="/hits/:submissionId" element={<SearchPage />} />
+          <Route path="/" element={<SubmissionsPage />} />
+          <Route
+            path="*"
+            element={<Navigate to="/" replace />}
+          />
+        </Routes>
+      </div>
+    </>
   );
 }
 

@@ -1,0 +1,14 @@
+.submissions-page {
+    max-width: 75%;
+    margin: auto;
+    padding-top: 1rem;
+    height: calc(100vh - 200px);
+}
+
+.fallback-text {
+    text-align: center;
+}
+
+.link-text {
+    text-decoration: none;
+}
