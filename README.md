@@ -40,13 +40,3 @@ Custom React hooks are present in the path `src\hooks`. Use these to abstract ou
 ### Services
 
 The path `src\services` consists of services to be used by the React components. These files abstract away underlying data sources (Eg: REST APIs) and expose domain-specific JS methods for use by components/hooks.
-
-### Vishwesh ToDos
-
-- [ ] Cache translations
-- [x] Translate and show a line at a time
-- [x] Submissions management page
-- [ ] Task creation page
-- [x] Header and page-linking 
-- [ ] truncate submissions db, status OK value in /submissions api, data type of annotatedX, hits totalCount value
-- [ ] actions on submissions? re-execute feature? archive/delete feature?
