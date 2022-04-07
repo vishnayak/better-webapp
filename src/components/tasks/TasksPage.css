@@ -1,0 +1,51 @@
+.tasks-page {
+    max-width: 100%;
+    margin: auto;
+    padding-top: 1rem;
+    height: calc(100vh - 200px);
+}
+
+.fallback-text {
+    text-align: center;
+}
+
+.link-text {
+    text-decoration: none;
+}
+
+/* 
+.MuiDataGrid-row,
+.MuiDataGrid-root .MuiDataGrid-cell,
+.rendering-zone {
+    max-height: none !important;
+}
+
+.MuiDataGrid-root .MuiDataGrid-window {  
+    position: relative !important;
+}
+
+.MuiDataGrid-root .MuiDataGrid-viewport {
+    max-height: none !important;  
+}
+
+.MuiDataGrid-root {
+    height: auto !important;
+} */
+
+.MuiDataGrid-viewport,
+.MuiDataGrid-row,
+.MuiDataGrid-renderingZone {
+    max-height: fit-content !important;
+}
+
+.MuiDataGrid-cell {
+    max-height: fit-content !important;
+    overflow: auto;
+    max-height: inherit;
+    white-space: initial !important;
+    line-height: 16px !important;
+    display: flex !important;
+    align-items: center;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+}
