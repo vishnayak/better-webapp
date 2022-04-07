@@ -14,8 +14,8 @@ export const App: React.FC<{}> = () => {
       <div className='body'>
         <Routes>
           <Route path="/hits/:submissionId" element={<SearchPage />} />
-          <Route path="/tasks" element={<TasksPage />} />
-          <Route path="/" element={<SubmissionsPage />} />
+          <Route path="/" element={<TasksPage />} />
+          <Route path="/submissions" element={<SubmissionsPage />} />
           <Route
             path="*"
             element={<Navigate to="/" replace />}
