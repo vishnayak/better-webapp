@@ -28,7 +28,8 @@ export const FormDialog: React.FC<TaskDocProps> = ({ taskDoc }) => {
         setOpen(false);
     };
     return (
-        <div>
+        <React.Fragment>
+            {/* <div> */}
             <Button variant="contained" onClick={handleClickOpen}>
                 Document
             </Button>
@@ -43,6 +44,7 @@ export const FormDialog: React.FC<TaskDocProps> = ({ taskDoc }) => {
                     <Button onClick={handleClose}>Cancel</Button>
                 </DialogActions>
             </Dialog>
-        </div>
+            {/* </div> */}
+        </React.Fragment>
     );
 }

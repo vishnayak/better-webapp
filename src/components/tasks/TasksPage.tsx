@@ -1,14 +1,13 @@
 import React from 'react';
 import { getAllTasks, Tasks } from '@services/task-service';
 import { DataGrid, GridColDef, GridToolbarContainer, GridToolbarExport } from '@mui/x-data-grid';
-import TableCell from '@mui/material/TableCell';
-import TableRow from '@mui/material/TableRow';
 import './TasksPage.css';
 import { FormDialog } from '@components/formDialog/FormDialog';
 import { Button } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { Submission } from '@services/query-service';
-
+import TableContainer from '@mui/material/TableContainer';
+import Paper from '@mui/material/Paper';
 
 const columns: GridColDef[] = [
   {
@@ -40,11 +39,12 @@ const columns: GridColDef[] = [
       return (
 
         sub.taskExampleDocs.map(taskExampleDoc => (
-          <TableRow >
-            <TableCell style={{ width: 50 }}>
-              <FormDialog taskDoc={taskExampleDoc} />
-            </TableCell>
-          </TableRow>
+          // <TableRow >
+          //   <TableCell style={{ width: 50 }}>
+          <FormDialog taskDoc={taskExampleDoc} />
+
+          //   </TableCell>
+          // </TableRow>
         ))
       );
     },
@@ -94,26 +94,30 @@ export const TasksPage: React.FC<{}> = () => {
       setIsLoading(false);
     });
   }, []);
-  return <div className='tasks-page'>
-    <h1>Tasks Dashboard</h1>
-    {
-      !isLoading ? isError ? <div className='fallback-text'>Something went wrong, please try reloading the page.</div> :
-        <DataGrid
-          rows={tasks}
-          columns={columns}
-          getRowId={(row) => row.taskNum}
-          rowsPerPageOptions={[10, 20, 50]}
-          rowHeight={20}
-          initialState={{
-            sorting: {
-              sortModel: [{ field: 'when', sort: 'desc' }],
-            },
-          }}
-          components={{
-            Toolbar: CustomToolbar
-          }}
-          disableSelectionOnClick
-        />
-        : <div className='fallback-text'>Loading...</div>
-    }</div>;
+  
+  return (<TableContainer component={Paper}>
+    <div className='tasks-page'>
+      <h1>Tasks Dashboard</h1>
+      {
+        !isLoading ? isError ? <div className='fallback-text'>Something went wrong, please try reloading the page.</div> :
+          <DataGrid
+            rows={tasks}
+            columns={columns}
+            getRowId={(row) => row.taskNum}
+            rowsPerPageOptions={[10, 20, 50]}
+            rowHeight={20}
+            initialState={{
+              sorting: {
+                sortModel: [{ field: 'when', sort: 'desc' }],
+              },
+            }}
+            components={{
+              Toolbar: CustomToolbar
+            }}
+            disableSelectionOnClick
+          />
+          : <div className='fallback-text'>Loading...</div>
+      }</div>
+
+  </TableContainer>);
 };
