@@ -3,6 +3,7 @@ import { Routes, Route, Navigate, Link } from "react-router-dom";
 import { SearchPage } from '@components/search-page/SearchPage';
 import './App.css';
 import { SubmissionsPage } from '@components/submissions-page/SubmissionsPage';
+import { TasksPage } from '@components/tasks/TasksPage';
 
 export const App: React.FC<{}> = () => {
   return (
@@ -13,7 +14,8 @@ export const App: React.FC<{}> = () => {
       <div className='body'>
         <Routes>
           <Route path="/hits/:submissionId" element={<SearchPage />} />
-          <Route path="/" element={<SubmissionsPage />} />
+          <Route path="/" element={<TasksPage />} />
+          <Route path="/submissions" element={<SubmissionsPage />} />
           <Route
             path="*"
             element={<Navigate to="/" replace />}
