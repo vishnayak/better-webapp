@@ -18,11 +18,11 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 
 
-interface TaskProps {
+interface RequestProps {
     task: Tasks;
 }
 
-export const Request: React.FC<TaskProps> = ({ task }) => {
+export const Request: React.FC<RequestProps> = ({ task }) => {
     const [open, setOpen] = React.useState(false);
 
     return (

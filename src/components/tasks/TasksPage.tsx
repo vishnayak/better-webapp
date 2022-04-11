@@ -1,26 +1,15 @@
 import React from 'react';
 import { getAllTasks, Tasks } from '@services/task-service';
-import { DataGrid, GridColDef, GridToolbarContainer, GridToolbarExport } from '@mui/x-data-grid';
 import './TasksPage.css';
-import { FormDialog } from '@components/formDialog/FormDialog';
-import {Request} from '@components/request/Request'
+import { Request } from '@components/request/Request'
 import { Button } from '@mui/material';
-import { Link } from 'react-router-dom';
-import { Submission } from '@services/query-service';
 import TableContainer from '@mui/material/TableContainer';
 import Paper from '@mui/material/Paper';
-import Box from '@mui/material/Box';
-import { Fragment } from "react";
-import Collapse from '@mui/material/Collapse';
-import IconButton from '@mui/material/IconButton';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import TextareaAutosize from '@mui/material/TextareaAutosize';
 import { Grid } from '@mui/material';
 
 
@@ -68,7 +57,7 @@ export const TasksPage: React.FC<{}> = () => {
               <TableBody>
                 {tasks.map((task) => (
                   // <Row key={task.taskNum} row={task} />
-                  <Request task={task} />
+                  <Request key = {task.taskNum} task={task} />
                 ))}
               </TableBody>
             </Table>
@@ -93,6 +82,10 @@ export const TasksPage: React.FC<{}> = () => {
             </Grid>
             <hr />
           </div>)}
+          {/* <div>
+            {open && <Phrases data={data} />}
+            <hr />
+          </div> */}
 
         </TableContainer>
       }</div>
