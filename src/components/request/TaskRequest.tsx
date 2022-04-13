@@ -1,16 +1,12 @@
 import React from 'react';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import TextareaAutosize from '@mui/material/TextareaAutosize';
 import Box from '@mui/material/Box';
 import { Fragment } from "react";
 import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
-import { Link } from 'react-router-dom';
-import { Submission } from '@services/query-service';
 import { FormDialog } from '@components/formDialog/FormDialog';
-import { DataGrid, GridColDef, GridToolbarContainer, GridToolbarExport } from '@mui/x-data-grid';
-import { getAllTasks, Tasks } from '@services/task-service';
+import {Tasks } from '@services/task-service';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -79,10 +75,8 @@ export const Request: React.FC<RequestProps> = ({ task }) => {
                                             {historyRow.exampleDocs.map(detail => (
                                                 <TableRow >
                                                     <TableCell style={{ width: 150 }}>
-                                                        
                                                         <FormDialog taskDoc={detail} />
                                                     </TableCell>
-
                                                 </TableRow>
                                             ))}
                                         </Fragment>
