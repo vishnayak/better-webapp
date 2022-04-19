@@ -20,7 +20,17 @@ export interface Tasks {
     requests: Request[];
 }
 
+export interface Annotation{
+    sentences: string;
+    judgment: string;
+}
+
 export const getAllTasks = async (): Promise<Tasks[]> => {
     const request = new Request(`${BASE_URL}tasks`);
+    return (await fetch(request)).json();  
+};
+
+export const getPhrasesForAnnotation = async (id: string): Promise<String> => {
+    const request = new Request(`${BASE_URL}tasks/${id}/phrases-for-annotation`);
     return (await fetch(request)).json();
 };
