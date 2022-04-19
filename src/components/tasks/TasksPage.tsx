@@ -1,7 +1,7 @@
 import React from 'react';
 import { getAllTasks, Tasks } from '@services/task-service';
 import './TasksPage.css';
-import {Phrases} from '@components/phrase/Phrases';
+import { Phrases } from '@components/phrase/Phrases';
 import { Request } from '@components/request/TaskRequest'
 import { Button } from '@mui/material';
 import TableContainer from '@mui/material/TableContainer';
@@ -62,7 +62,7 @@ export const TasksPage: React.FC<{}> = () => {
               </TableHead>
               <TableBody>
                 {tasks.map((task) => (
-                  <Request key = {task.taskNum} task={task} />
+                  <Request key={task.taskNum} task={task} />
                 ))}
               </TableBody>
             </Table>

@@ -6,7 +6,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import React from 'react';
 
-interface TaskDocProps {
+interface FormDialogProps {
     taskDoc: ExampleDocs;
 }
 
@@ -17,7 +17,7 @@ interface ExampleDocs {
     sentences: [];
 }
 
-export const FormDialog: React.FC<TaskDocProps> = ({ taskDoc }) => {
+export const FormDialog: React.FC<FormDialogProps> = ({ taskDoc }) => {
     const [open, setOpen] = React.useState(false);
 
     const handleClickOpen = () => {

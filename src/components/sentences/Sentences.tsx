@@ -10,6 +10,8 @@ import TableRow from '@mui/material/TableRow';
 import { Grid } from '@mui/material';
 import { Tasks } from '@services/task-service';
 import { PhraseRequest } from '@components/request/PhraseRequest'
+import { Request } from '@components/request/TaskRequest'
+
 
 
 
@@ -29,12 +31,12 @@ export const Sentences: React.FC<SentencesProps> = ({ tasks }) => {
                         <TableCell><b>Task Title</b></TableCell>
                         <TableCell ><b>Task Statement</b></TableCell>
                         <TableCell><b>Task Narrative</b></TableCell>
-                        <TableCell />
+                        <TableCell><b>Task Docs</b></TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {tasks.map((task) => (
-                        <PhraseRequest key={task.taskNum} task={task} />
+                        <Request key={task.taskNum} task={task} />
                     ))}
                 </TableBody>
             </Table>

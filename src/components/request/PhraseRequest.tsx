@@ -23,7 +23,6 @@ interface PhraseRequestProps {
 export const PhraseRequest: React.FC<PhraseRequestProps> = ({ task }) => {
     const [open, setOpen] = React.useState(false);
 
-
     return (
         <React.Fragment>
             <Fragment>
