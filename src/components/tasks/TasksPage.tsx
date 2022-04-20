@@ -1,7 +1,8 @@
 import React from 'react';
 import { getAllTasks, Tasks } from '@services/task-service';
 import './TasksPage.css';
-import { Request } from '@components/request/Request'
+import { Phrases } from '@components/phrase/Phrases';
+import { Request } from '@components/request/TaskRequest'
 import { Button } from '@mui/material';
 import TableContainer from '@mui/material/TableContainer';
 import Paper from '@mui/material/Paper';
@@ -11,10 +12,12 @@ import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { Grid } from '@mui/material';
+import { Sentences } from '@components/sentences/Sentences';
 
 
 export const TasksPage: React.FC<{}> = () => {
   const [open, setOpen] = React.useState(false);
+  const [openSentences, setOpenSentences] = React.useState(false);
   const [tasks, setTasks] = React.useState<Tasks[]>([]);
 
   const [openCreateNewTask, setOpenCreateNewTask] = React.useState(false);
@@ -33,6 +36,9 @@ export const TasksPage: React.FC<{}> = () => {
   const activateBill = () => {
     setOpen(true);
   };
+  const activateSentencesAnnotation = () => {
+    setOpenSentences(true);
+  };
   const activateCreateNewTask = () => {
     setOpenCreateNewTask(true);
   };
@@ -42,7 +48,7 @@ export const TasksPage: React.FC<{}> = () => {
       <h1>Tasks Dashboard</h1>
       {
         <TableContainer component={Paper}>
-          {!open && !openCreateNewTask && (<div>
+          {!open && !openCreateNewTask && !openSentences && (<div>
             <Table aria-label="collapsible table ">
               <TableHead>
                 <TableRow>
@@ -56,8 +62,7 @@ export const TasksPage: React.FC<{}> = () => {
               </TableHead>
               <TableBody>
                 {tasks.map((task) => (
-                  // <Row key={task.taskNum} row={task} />
-                  <Request key = {task.taskNum} task={task} />
+                  <Request key={task.taskNum} task={task} />
                 ))}
               </TableBody>
             </Table>
@@ -69,7 +74,7 @@ export const TasksPage: React.FC<{}> = () => {
                 </Button>
               </Grid>
               <Grid item xs={3} >
-                <Button href="/sentences" variant="contained">
+                <Button onClick={activateSentencesAnnotation} variant="contained">
                   Annotate Sentences
                 </Button>
               </Grid>
@@ -82,10 +87,14 @@ export const TasksPage: React.FC<{}> = () => {
             </Grid>
             <hr />
           </div>)}
-          {/* <div>
-            {open && <Phrases data={data} />}
+          <div>
+            {open && <Phrases tasks={tasks} />}
             <hr />
-          </div> */}
+          </div>
+          <div>
+            {openSentences && <Sentences tasks={tasks} />}
+            <hr />
+          </div>
 
         </TableContainer>
       }</div>
