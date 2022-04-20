@@ -21,31 +21,34 @@ export const Phrases: React.FC<PhrasesProps> = ({ tasks }) => {
     const [open, setOpen] = React.useState(false);
 
     return (
-        <TableContainer component={Paper}>
-            <Table aria-label="collapsible table">
-                <TableHead>
-                    <TableRow>
-                        <TableCell><b>Task Num</b></TableCell>
-                        <TableCell><b>Task Title</b></TableCell>
-                        <TableCell ><b>Task Statement</b></TableCell>
-                        <TableCell><b>Task Narrative</b></TableCell>
-                        <TableCell />
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {tasks.map((task) => (
-                        <PhraseRequest key={task.taskNum} task={task} />
-                    ))}
-                </TableBody>
-            </Table>
-            <Grid container>
-                <Grid item xs={11} />
-                <Grid item xs={1} >
-                    <Button href="/" variant="contained">
-                        Back
-                    </Button>
+        <div>
+            <h1>Phrases Dashboard</h1>
+            <TableContainer component={Paper}>
+                <Table aria-label="collapsible table">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell><b>Task Num</b></TableCell>
+                            <TableCell><b>Task Title</b></TableCell>
+                            <TableCell ><b>Task Statement</b></TableCell>
+                            <TableCell><b>Task Narrative</b></TableCell>
+                            <TableCell />
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {tasks.map((task) => (
+                            <PhraseRequest key={task.taskNum} task={task} />
+                        ))}
+                    </TableBody>
+                </Table>
+                <Grid container>
+                    <Grid item xs={11} />
+                    <Grid item xs={1} >
+                        <Button href="/" variant="contained">
+                            Back
+                        </Button>
+                    </Grid>
                 </Grid>
-            </Grid>
-        </TableContainer>
+            </TableContainer>
+        </div>
     );
 }

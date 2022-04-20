@@ -2,6 +2,7 @@ const BASE_URL = 'https://cessnock.cs.umass.edu:9300/'
 export interface ExampleDoc {
     docid: string;
     doctext: string;
+    docNumber: number;
     highlight: string;
     sentences:[];
 }
