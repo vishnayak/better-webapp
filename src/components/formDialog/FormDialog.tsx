@@ -12,7 +12,7 @@ interface FormDialogProps {
 
 interface ExampleDocs {
     docid: string;
-    doctext: string;
+    docText: string;
     docNumber: number;
     highlight: string;
     sentences: [];
@@ -35,10 +35,10 @@ export const FormDialog: React.FC<FormDialogProps> = ({ taskDoc }) => {
                 Doc - {taskDoc.docNumber}
             </Button>
             <Dialog open={open} onClose={handleClose} fullWidth maxWidth="lg">
-                <DialogTitle>{taskDoc.docid}</DialogTitle>
+                <DialogTitle>Doc - {taskDoc.docNumber}</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        {taskDoc.doctext}
+                        {taskDoc.docText}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
