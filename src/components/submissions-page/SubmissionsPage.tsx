@@ -121,13 +121,13 @@ export const SubmissionsPage: React.FC<{}> = () => {
             <>
                 <div className={`submissions-page-creation ${isCreatingQuery ? 'submissions-page-creation-bordered' : ''}`}>
                     <div className='submissions-page-creation-title'>
-                        <h2>{isCreatingQuery ? 'Create New Task' : ''}</h2>
+                        <h2>{isCreatingQuery ? 'Create and Run New Query' : ''}</h2>
                         <Button 
                             onClick={handleTaskCreationClick} 
                             variant={isCreatingQuery ? 'outlined' : 'contained'} 
                             classes={{root: 'submissions-page-creation-button'}}
                         >
-                            {isCreatingQuery ? 'Cancel' : <><AddIcon /> Create New Task</>}
+                            {isCreatingQuery ? 'Cancel' : <><AddIcon /> Create a Query</>}
                         </Button>
                     </div>
                     {isCreatingQuery && <QueryCreation onCreate={handleCreate} />}
