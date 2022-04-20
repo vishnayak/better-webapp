@@ -45,10 +45,11 @@ export const TasksPage: React.FC<{}> = () => {
 
   return (<TableContainer component={Paper}>
     <div className='tasks-page'>
-      <h1>Tasks Dashboard</h1>
+
       {
         <TableContainer component={Paper}>
           {!open && !openCreateNewTask && !openSentences && (<div>
+            <h1>Tasks Dashboard</h1>
             <Table aria-label="collapsible table ">
               <TableHead>
                 <TableRow>

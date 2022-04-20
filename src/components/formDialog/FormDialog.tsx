@@ -13,6 +13,7 @@ interface FormDialogProps {
 interface ExampleDocs {
     docid: string;
     doctext: string;
+    docNumber: number;
     highlight: string;
     sentences: [];
 }
@@ -31,7 +32,7 @@ export const FormDialog: React.FC<FormDialogProps> = ({ taskDoc }) => {
         <React.Fragment>
             {/* <div> */}
             <Button variant="contained" onClick={handleClickOpen}>
-                Document
+                Doc - {taskDoc.docNumber}
             </Button>
             <Dialog open={open} onClose={handleClose} fullWidth maxWidth="lg">
                 <DialogTitle>{taskDoc.docid}</DialogTitle>
