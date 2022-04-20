@@ -20,7 +20,7 @@ export const SearchPage: React.FC<{}> = () => {
             getSubmissionById(submissionId).then(res => { 
                 setSubmission(res); setIsIdValid(true);
                 // TODO: check for OK status beore proceeding here
-                getPaginatedHits(submissionId, 0, 100).then(res => { 
+                getPaginatedHits(submissionId, 0, 1000).then(res => { 
                     setSearchHits(res.hits); setHitsLoading(false); 
                 }).catch(e => {
                    setHitsLoading(false); 
