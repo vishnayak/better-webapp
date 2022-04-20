@@ -26,6 +26,17 @@ export enum SubmissionStatus {
     COMPLETED = 'COMPLETED'
 }
 
+export interface QueryHitsResponse {
+    hits: SearchHit[];
+    requestId: string;
+    requestText: string;
+    taskNarr: string;
+    taskNum: string;
+    taskStmt: string;
+    taskTitle: string;
+    totalNumHits: number;
+}
+
 export const BAD_SUBMISSION = 'BAD_SUBMISSION';
 
 export const submitQuery = async (query: QuerySubmissionRequest): Promise<QuerySubmissionResponse> => {
@@ -52,7 +63,7 @@ export const getSubmissionStatusById = async (id: string): Promise<boolean> => {
     return (await fetch(request)).json();
 }
 
-export const getPaginatedHits = async (id: string, start: number, size: number): Promise<SearchHit[]> => {
+export const getPaginatedHits = async (id: string, start: number, size: number): Promise<QueryHitsResponse> => {
     const request = new Request(`${BASE_URL}submissions/${id}/hits?` + new URLSearchParams({
             start: start.toString(),
             numberHits: size.toString(),
@@ -72,4 +83,18 @@ export const getPaginatedHits = async (id: string, start: number, size: number):
 export const getAllSubmissions = async (): Promise<Submission[]> => {
     const request = new Request(`${BASE_URL}submissions`);
     return (await fetch(request)).json();
+};
+
+export const deleteSubmission = async (submissionId: string): Promise<boolean> => {
+    const request = new Request(`${BASE_URL}submissions/${submissionId}`, 
+        {
+            method: 'DELETE',
+        });
+    try {
+        await fetch(request);
+        return true;
+    } catch(e) {
+        console.log(e);
+        return false;
+    }
 };

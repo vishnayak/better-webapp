@@ -21,7 +21,7 @@ export const SearchPage: React.FC<{}> = () => {
                 setSubmission(res); setIsIdValid(true);
                 // TODO: check for OK status beore proceeding here
                 getPaginatedHits(submissionId, 0, 100).then(res => { 
-                    setSearchHits(res); setHitsLoading(false); 
+                    setSearchHits(res.hits); setHitsLoading(false); 
                 }).catch(e => {
                    setHitsLoading(false); 
                    console.error(e); // we won't be calling the api if id isn't executed yet
