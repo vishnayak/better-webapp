@@ -65,15 +65,15 @@ export const SearchHitCard: React.FC<SearchHitCardProps> = ({ searchHit }) => {
             </Typography>
         </CardContent>
         <CardActions classes={{ root: 'card-actions' }}>
-            <Button size="small" disabled={translateButtonLabel === TRANSLATING} onClick={translate}>{translateButtonLabel}</Button>
-            {translateButtonLabel === TRANSLATING && <Box sx={{ width: '50%' }}>
-                <LinearProgress />
-            </Box>}
             <IconButton onClick={() => setExpanded(!expanded)} aria-label="expand">
                 {expanded ? 
                 <KeyboardArrowDownIcon fontSize={'large'} classes={{root: 'up-arrow'}} /> : 
                 <KeyboardArrowDownIcon fontSize={'large'} />}
             </IconButton>
+            {translateButtonLabel === TRANSLATING && <Box sx={{ width: '50%' }}>
+                <LinearProgress />
+            </Box>}
+            {/* <Button size="small" disabled={translateButtonLabel === TRANSLATING} onClick={translate}>{translateButtonLabel}</Button> */}
         </CardActions>
     </Card>;
 }
