@@ -5,10 +5,33 @@
     height: calc(100vh - 200px);
 }
 
+.submissions-page-creation {
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.submissions-page-creation-bordered {
+    border: 1px solid;
+    border-color: rgb(207, 207,207);
+    border-radius: 4px;
+}
+
+.submissions-page-creation-title {
+    display: flex;
+    justify-content: space-between;
+}
+
+.submissions-page-creation-button {
+    margin: 16px 0 !important;
+}
+
 .fallback-text {
     text-align: center;
 }
 
 .link-text {
     text-decoration: none;
+    margin: 0 8px;
 }

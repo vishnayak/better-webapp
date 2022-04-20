@@ -1,0 +1,13 @@
+.query-creation-container {
+    margin: 16px;
+}
+
+.query-creation-fields {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.query-creation-create-button {
+    height: 36px;
+}
