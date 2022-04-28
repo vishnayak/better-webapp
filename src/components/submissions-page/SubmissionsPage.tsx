@@ -5,11 +5,11 @@ import CheckIcon from '@mui/icons-material/Check';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import { DataGrid, GridColDef, GridToolbarContainer, GridToolbarExport } from '@mui/x-data-grid';
-import { deleteSubmission, getAllSubmissions, Submission, SubmissionStatus } from '@services/query-service';
+import { deleteSubmission, getAllSubmissions, Submission, SubmissionStatus } from '@services/submission-service';
 import { Button, IconButton } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { ConfirmationDialog } from '@components/confirmation-dialog/ConfirmationDialog';
-import { QueryCreation } from '@components/query-creation/QueryCreation';
+import { SubmissionCreation } from '@components/submission-creation/SubmissionCreation';
 
 const columns: GridColDef[] = [
     {
@@ -56,7 +56,7 @@ export const SubmissionsPage: React.FC<{}> = () => {
     const [isLoading, setIsLoading] = React.useState(true);
     const [isError, setIsError] = React.useState(false);
     const [submissions, setSubmissions] = React.useState<Submission[]>([]);
-    const [isCreatingQuery, setIsCreatingQuery] = React.useState<boolean>(false);
+    const [isCreatingSubmission, setIsCreatingSubmission] = React.useState<boolean>(false);
     const [deletingSubmissionId, setDeletingSubmissionId] = React.useState<string | undefined>(undefined);
     const fetchSubmissions = () => {
         getAllSubmissions().then(res => {
@@ -106,12 +106,12 @@ export const SubmissionsPage: React.FC<{}> = () => {
     };
 
     const handleCreate = () => {
-        setIsCreatingQuery(false);
+        setIsCreatingSubmission(false);
         fetchSubmissions();
     };
 
     const handleTaskCreationClick = () => {
-        setIsCreatingQuery(isCreatingQuery => !isCreatingQuery);
+        setIsCreatingSubmission(isCreatingSubmission => !isCreatingSubmission);
     }
 
     return <div className='submissions-page'>
@@ -119,18 +119,18 @@ export const SubmissionsPage: React.FC<{}> = () => {
         {
         !isLoading ? isError ? <div className='fallback-text'>Something went wrong, please try reloading the page.</div> :
             <>
-                <div className={`submissions-page-creation ${isCreatingQuery ? 'submissions-page-creation-bordered' : ''}`}>
+                <div className={`submissions-page-creation ${isCreatingSubmission ? 'submissions-page-creation-bordered' : ''}`}>
                     <div className='submissions-page-creation-title'>
-                        <h2>{isCreatingQuery ? 'Create and Run New Submission' : ''}</h2>
+                        <h2>{isCreatingSubmission ? 'Create and Run New Submission' : ''}</h2>
                         <Button 
                             onClick={handleTaskCreationClick} 
-                            variant={isCreatingQuery ? 'outlined' : 'contained'} 
+                            variant={isCreatingSubmission ? 'outlined' : 'contained'} 
                             classes={{root: 'submissions-page-creation-button'}}
                         >
-                            {isCreatingQuery ? 'Cancel' : <><AddIcon /> Create a Submission</>}
+                            {isCreatingSubmission ? 'Cancel' : <><AddIcon /> Create a Submission</>}
                         </Button>
                     </div>
-                    {isCreatingQuery && <QueryCreation onCreate={handleCreate} />}
+                    {isCreatingSubmission && <SubmissionCreation onCreate={handleCreate} />}
                 </div>
                 <DataGrid
                     rows={submissions}

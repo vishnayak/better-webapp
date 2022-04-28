@@ -4,12 +4,12 @@ const BASE_URL = 'https://cessnock.cs.umass.edu:9300/'
 
 // const BASE_URL = 'http://localhost:5000/'
 
-export interface QuerySubmissionRequest {
+export interface SubmissionCreationRequest {
     taskNum: string;
     reqNum: string;
 }
 
-export interface QuerySubmissionResponse {
+export interface SubmissionCreationResponse {
     id: string;
 }
 
@@ -30,7 +30,7 @@ export enum SubmissionStatus {
     COMPLETED = 'COMPLETED'
 }
 
-export interface QueryHitsResponse {
+export interface SubmissionHitsResponse {
     hits: SearchHit[];
     reqNum: string;
     reqText: string;
@@ -43,11 +43,11 @@ export interface QueryHitsResponse {
 
 export const BAD_SUBMISSION = 'BAD_SUBMISSION';
 
-export const submitQuery = async (query: QuerySubmissionRequest): Promise<QuerySubmissionResponse> => {
+export const submitSubmission = async (submission: SubmissionCreationRequest): Promise<SubmissionCreationResponse> => {
     const request = new Request(`${BASE_URL}submissions`, 
         {
             method: 'POST', 
-            body: JSON.stringify(query), 
+            body: JSON.stringify(submission), 
             headers: {'Content-Type': 'application/json'}
         });
     return (await fetch(request)).json();
@@ -67,7 +67,7 @@ export const getSubmissionStatusById = async (id: string): Promise<boolean> => {
     return (await fetch(request)).json();
 }
 
-export const getPaginatedHits = async (id: string, start: number, size: number): Promise<QueryHitsResponse> => {
+export const getPaginatedHits = async (id: string, start: number, size: number): Promise<SubmissionHitsResponse> => {
     const request = new Request(`${BASE_URL}submissions/${id}/hits?` + new URLSearchParams({
             start: start.toString(),
             numberHits: size.toString(),
