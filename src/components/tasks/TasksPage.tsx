@@ -55,10 +55,10 @@ export const TasksPage: React.FC<{}> = () => {
                 <TableRow>
                   <TableCell />
                   {/* <TableCell><b>Task Num</b></TableCell> */}
-                  <TableCell align="left"><b>Task Title</b></TableCell>
-                  <TableCell align="left"><b>Task Statement</b></TableCell>
-                  <TableCell align="left"><b>Task Narrative</b></TableCell>
-                  <TableCell align="left"><b>Task Docs</b></TableCell>
+                  <TableCell align="center"><b>Task Title</b></TableCell>
+                  <TableCell align="center"><b>Task Statement</b></TableCell>
+                  <TableCell align="center"><b>Task Narrative</b></TableCell>
+                  <TableCell align="center"><b>Task Docs</b></TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>

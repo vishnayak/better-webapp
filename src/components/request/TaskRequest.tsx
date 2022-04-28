@@ -38,9 +38,9 @@ export const Request: React.FC<RequestProps> = ({ task }) => {
                     {/* <TableCell component="th" scope="row" rowSpan={task.taskExampleDocs.length + 1}>
                         {task.taskNum}
                     </TableCell> */}
-                    <TableCell align="right" rowSpan={task.taskExampleDocs.length + 1}>{task.taskTitle}</TableCell>
-                    <TableCell align="right" rowSpan={task.taskExampleDocs.length + 1}>{task.taskStmt}</TableCell>
-                    <TableCell align="right" rowSpan={task.taskExampleDocs.length + 1}>{task.taskNarr}</TableCell>
+                    <TableCell align="left" rowSpan={task.taskExampleDocs.length + 1}>{task.taskTitle}</TableCell>
+                    <TableCell align="left" rowSpan={task.taskExampleDocs.length + 1}>{task.taskStmt}</TableCell>
+                    <TableCell align="left" rowSpan={task.taskExampleDocs.length + 1}>{task.taskNarr}</TableCell>
                 </TableRow>
                 {task.taskExampleDocs.map(detail => (
                     <TableRow >
