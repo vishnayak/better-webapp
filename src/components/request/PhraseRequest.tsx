@@ -10,14 +10,14 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import Paper from '@mui/material/Paper';
 import TableRow from '@mui/material/TableRow';
-import {Tasks} from '@services/task-service';
+import {Task} from '@services/task-service';
 import TableHead from '@mui/material/TableHead';
 import {AnnotatePage} from '@components/phrase/AnnotatePage'
 
 
 
 interface PhraseRequestProps {
-    task: Tasks;
+    task: Task;
 }
 
 export const PhraseRequest: React.FC<PhraseRequestProps> = ({ task }) => {

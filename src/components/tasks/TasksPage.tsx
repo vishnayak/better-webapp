@@ -1,5 +1,5 @@
 import React from 'react';
-import { getAllTasks, Tasks } from '@services/task-service';
+import { getAllTasks, Task } from '@services/task-service';
 import './TasksPage.css';
 import { Phrases } from '@components/phrase/Phrases';
 import { Request } from '@components/request/TaskRequest'
@@ -13,12 +13,13 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { Grid } from '@mui/material';
 import { Sentences } from '@components/sentences/Sentences';
+import { TaskCreationWizard } from '@components/task-creation-wizard/TaskCreationWizard';
 
 
 export const TasksPage: React.FC<{}> = () => {
   const [open, setOpen] = React.useState(false);
   const [openSentences, setOpenSentences] = React.useState(false);
-  const [tasks, setTasks] = React.useState<Tasks[]>([]);
+  const [tasks, setTasks] = React.useState<Task[]>([]);
 
   const [openCreateNewTask, setOpenCreateNewTask] = React.useState(false);
 
@@ -45,6 +46,7 @@ export const TasksPage: React.FC<{}> = () => {
 
   return (<TableContainer component={Paper}>
     <div className='tasks-page'>
+      <TaskCreationWizard onCreate={() => {}} isOpen={true} onClose={() => setOpenCreateNewTask(false)}/>
 
       {
         <TableContainer component={Paper}>

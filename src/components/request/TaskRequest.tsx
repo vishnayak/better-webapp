@@ -6,7 +6,7 @@ import { Fragment } from "react";
 import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
 import { FormDialog } from '@components/formDialog/FormDialog';
-import {Tasks } from '@services/task-service';
+import {Task } from '@services/task-service';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -15,7 +15,7 @@ import TableRow from '@mui/material/TableRow';
 
 
 interface RequestProps {
-    task: Tasks;
+    task: Task;
 }
 
 export const Request: React.FC<RequestProps> = ({ task }) => {

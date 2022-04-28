@@ -8,13 +8,11 @@ interface SearchHitsProps {
 }
 
 export interface SearchHit {
-    groupType: string; // - always "R" because these are request-level hits
-    groupId: string; // - the unique identifier for the request (e.g. IR-T1-r1)
-    requestId: string;
-    'docid': string; // - the unique identifier of the document
+    groupType?: string; // - always "R" because these are request-level hits
+    groupId?: string; // - the unique identifier for the request (e.g. IR-T1-r1)
+    requestId?: string;
+    docid: string; // - the unique identifier of the document
     docText: string; // - the actual text of the document
-    'isi-events'?: string[]; // - a list of events identified by our ISI-provided event recognizer software [ignore these for now]
-    'mitre-events'?: string[]; // - a list of events provided by Mitre [ignore these for now]
     events?: string[];
     sentenceRanges: Sentence[]; // - a list of the sentences that are in doc-text, described by these fields:
 };

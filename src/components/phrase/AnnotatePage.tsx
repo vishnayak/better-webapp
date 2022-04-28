@@ -3,7 +3,7 @@ import Paper from '@mui/material/Paper';
 import React from 'react';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
-import { Tasks } from '@services/task-service';
+import { Task } from '@services/task-service';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import { Grid } from '@mui/material';
@@ -13,7 +13,7 @@ import Typography from '@mui/material/Typography';
 
 
 export interface AnnotatePageProps {
-    task: Tasks;
+    task: Task;
 }
 function createTaskDoc(key: any, value: any) {
     return {

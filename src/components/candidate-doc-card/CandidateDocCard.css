@@ -1,0 +1,32 @@
+.candidate-doc-card-content {
+    margin: 12px;
+    transition: height 0.5s;
+}
+
+.candidate-doc-card-content--compact {
+    max-height: 40px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.candidate-doc-card {
+    margin: 8px;
+}
+
+.card-actions {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row-reverse;
+}
+
+.up-arrow {
+    transform: rotate(180deg);
+}
+
+.candidate-doc-card {
+    align-items: center;
+}
+
+.candidate-doc-card--checked {
+    background-color: #a7d8ee73 !important;
+}
