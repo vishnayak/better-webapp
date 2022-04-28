@@ -13,14 +13,14 @@ import { QueryCreation } from '@components/query-creation/QueryCreation';
 
 const columns: GridColDef[] = [
     {
-        field: 'taskId',
-        headerName: 'Task ID',
-        width: 100,
+        field: 'taskTitle',
+        headerName: 'Task Title',
+        width: 200,
     },
     {
-        field: 'requestId',
-        headerName: 'Request ID',
-        width: 150,
+        field: 'reqText',
+        headerName: 'Request',
+        width: 300,
     },
     {
         field: 'when',
@@ -115,19 +115,19 @@ export const SubmissionsPage: React.FC<{}> = () => {
     }
 
     return <div className='submissions-page'>
-        <h1>Query Dashboard</h1>
+        <h1>Submissions Dashboard</h1>
         {
         !isLoading ? isError ? <div className='fallback-text'>Something went wrong, please try reloading the page.</div> :
             <>
                 <div className={`submissions-page-creation ${isCreatingQuery ? 'submissions-page-creation-bordered' : ''}`}>
                     <div className='submissions-page-creation-title'>
-                        <h2>{isCreatingQuery ? 'Create and Run New Query' : ''}</h2>
+                        <h2>{isCreatingQuery ? 'Create and Run New Submission' : ''}</h2>
                         <Button 
                             onClick={handleTaskCreationClick} 
                             variant={isCreatingQuery ? 'outlined' : 'contained'} 
                             classes={{root: 'submissions-page-creation-button'}}
                         >
-                            {isCreatingQuery ? 'Cancel' : <><AddIcon /> Create a Query</>}
+                            {isCreatingQuery ? 'Cancel' : <><AddIcon /> Create a Submission</>}
                         </Button>
                     </div>
                     {isCreatingQuery && <QueryCreation onCreate={handleCreate} />}

@@ -11,7 +11,7 @@ const tabs = [
     path: '/'
   },
   {
-    name: 'Queries',
+    name: 'Submissions',
     path: '/submissions'
   }
 ];

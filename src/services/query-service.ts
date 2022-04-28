@@ -5,8 +5,8 @@ const BASE_URL = 'https://cessnock.cs.umass.edu:9300/'
 // const BASE_URL = 'http://localhost:5000/'
 
 export interface QuerySubmissionRequest {
-    taskId: string;
-    requestId: string;
+    taskNum: string;
+    reqNum: string;
 }
 
 export interface QuerySubmissionResponse {
@@ -15,8 +15,12 @@ export interface QuerySubmissionResponse {
 
 export interface Submission {
     id: string;
-    taskId: string;
-    requestId: string | null; // TODO: Remove null
+    taskNum: string;
+    taskTitle: string;
+    taskStmt: string;
+    taskNarr: string;
+    reqNum: string | null; // TODO: Remove null
+    reqText: string;
     status: SubmissionStatus;
     when: Date;
 }
@@ -28,8 +32,8 @@ export enum SubmissionStatus {
 
 export interface QueryHitsResponse {
     hits: SearchHit[];
-    requestId: string;
-    requestText: string;
+    reqNum: string;
+    reqText: string;
     taskNarr: string;
     taskNum: string;
     taskStmt: string;
