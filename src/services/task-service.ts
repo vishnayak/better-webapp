@@ -21,11 +21,34 @@ export interface Tasks {
     requests: Request[];
 }
 
+export interface SentencesAnnotation {
+    taskNarrative: string;
+    taskTitle: string;
+    taskStatement:string;
+    taskId:string;
+    annotatedRequest: AnnotatedRequest;
+}
+export interface AnnotatedRequest {
+    requestId: string;
+    requestText: string;
+    exampleDocs: SentencesExampleDocs[];
+}
+
+export interface SentencesExampleDocs {
+    docNumber: number;
+    docId: string;
+    sentences: Sentences[];
+}
+export interface Sentences{
+    sentencesId : string;
+    sentence: string;
+    judgement: string;
+}
+
 export interface Annotation{
     sentences: string;
     judgment: string;
 }
-
 export const getAllTasks = async (): Promise<Tasks[]> => {
     const request = new Request(`${BASE_URL}tasks`);
     return (await fetch(request)).json();  
@@ -35,3 +58,27 @@ export const getPhrasesForAnnotation = async (id: string): Promise<String> => {
     const request = new Request(`${BASE_URL}tasks/${id}/phrases-for-annotation`);
     return (await fetch(request)).json();
 };
+
+export const getSentencesForAnnotation = async (taskId: string, reqId : string): Promise<SentencesAnnotation> => {
+    const request = new Request(`${BASE_URL}tasks/${taskId}/requests/${reqId}/sentences-for-annotation`);
+    return (await fetch(request)).json();
+};
+
+export const postSentencesForAnnotation = async (taskId: string, reqId : string,sentencesAnnotation:SentencesAnnotation) => {
+    try {
+        const request = new Request(`${BASE_URL}tasks/${taskId}/requests/${reqId}/sentences-for-annotation`);
+        const response = await fetch(request, {
+         method: 'POST',
+         headers: {
+           'Content-Type': 'application/json'
+           },
+           body: JSON.stringify(sentencesAnnotation)
+         });
+         const data = await response.json();
+         console.log(data);
+       } catch(error) {
+     // enter your logic for when there is an error (ex. error toast)
+
+          console.log(error)
+         } 
+    }
