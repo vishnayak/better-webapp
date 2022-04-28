@@ -6,12 +6,13 @@ import { Fragment } from "react";
 import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
 import { FormDialog } from '@components/formDialog/FormDialog';
-import {Tasks } from '@services/task-service';
+import { Tasks } from '@services/task-service';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import { SentencesFormDialog } from '@components/formDialog/SentencesFormDialog';
 
 
 interface RequestProps {
@@ -34,9 +35,9 @@ export const Request: React.FC<RequestProps> = ({ task }) => {
                             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                         </IconButton>
                     </TableCell>
-                    <TableCell component="th" scope="row" rowSpan={task.taskExampleDocs.length + 1}>
+                    {/* <TableCell component="th" scope="row" rowSpan={task.taskExampleDocs.length + 1}>
                         {task.taskNum}
-                    </TableCell>
+                    </TableCell> */}
                     <TableCell align="right" rowSpan={task.taskExampleDocs.length + 1}>{task.taskTitle}</TableCell>
                     <TableCell align="right" rowSpan={task.taskExampleDocs.length + 1}>{task.taskStmt}</TableCell>
                     <TableCell align="right" rowSpan={task.taskExampleDocs.length + 1}>{task.taskNarr}</TableCell>
@@ -60,6 +61,7 @@ export const Request: React.FC<RequestProps> = ({ task }) => {
                                         <TableCell><b>Request Number</b></TableCell>
                                         <TableCell><b>Request Text</b></TableCell>
                                         <TableCell><b>Request Docs</b></TableCell>
+                                        <TableCell><b>Actions</b></TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -71,14 +73,25 @@ export const Request: React.FC<RequestProps> = ({ task }) => {
                                                 </TableCell>
                                                 <TableCell rowSpan={historyRow.exampleDocs.length + 1}>
                                                     {historyRow.reqText}</TableCell>
+
+                                                {historyRow.exampleDocs.map(detail => (
+                                                    <TableRow >
+                                                        <TableCell style={{ width: 150 }}>
+                                                            <FormDialog taskDoc={detail} />
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))}
+
+                                                <TableCell style={{ width: 150 }}>
+                                                    <SentencesFormDialog taskNum={task.taskNum} reqNum={historyRow.reqNum} />
+                                                </TableCell>
                                             </TableRow>
-                                            {historyRow.exampleDocs.map(detail => (
-                                                <TableRow >
-                                                    <TableCell style={{ width: 150 }}>
-                                                        <FormDialog taskDoc={detail} />
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
+
+                                            {/* <TableRow >
+                                                <TableCell style={{ width: 150 }}>
+                                                    <FormDialog taskDoc={detail} />
+                                                </TableCell>
+                                            </TableRow> */}
                                         </Fragment>
                                     ))}
                                 </TableBody>

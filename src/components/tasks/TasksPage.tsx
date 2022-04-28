@@ -49,16 +49,16 @@ export const TasksPage: React.FC<{}> = () => {
       {
         <TableContainer component={Paper}>
           {!open && !openCreateNewTask && !openSentences && (<div>
-            <h1>Tasks Dashboard</h1>
+            <h1>Create a BETTER Query</h1>
             <Table aria-label="collapsible table ">
               <TableHead>
                 <TableRow>
                   <TableCell />
-                  <TableCell><b>Task Num</b></TableCell>
-                  <TableCell align="right"><b>Task Title</b></TableCell>
-                  <TableCell align="right"><b>Task Statement</b></TableCell>
-                  <TableCell align="right"><b>Task Narrative</b></TableCell>
-                  <TableCell align="right"><b>Task Docs</b></TableCell>
+                  {/* <TableCell><b>Task Num</b></TableCell> */}
+                  <TableCell align="left"><b>Task Title</b></TableCell>
+                  <TableCell align="left"><b>Task Statement</b></TableCell>
+                  <TableCell align="left"><b>Task Narrative</b></TableCell>
+                  <TableCell align="left"><b>Task Docs</b></TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>

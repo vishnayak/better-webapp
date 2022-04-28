@@ -17,7 +17,7 @@ export const SearchPage: React.FC<{}> = () => {
 
     React.useEffect(() => {
         if(submissionId) {
-            getSubmissionById(submissionId).then(res => { 
+            getSubmissionById(submissionId).then(res => {
                 setSubmission(res); setIsIdValid(true);
                 // TODO: check for OK status beore proceeding here
                 getPaginatedHits(submissionId, 0, 100).then(res => { 
