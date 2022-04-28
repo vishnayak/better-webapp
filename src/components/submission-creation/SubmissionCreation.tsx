@@ -29,8 +29,8 @@ export interface SubmissionCreationProps {
 export const SubmissionCreation: React.FC<SubmissionCreationProps> = ({ onCreate }) => {
     const [taskMap, setTaskMap] = React.useState<Record<string, string>>({});
     const [taskRequestMap, setTaskRequestMap] = React.useState<Record<string, RequestOption[]>>({});
-    const [selectedTaskId, setSelectedTaskId] = React.useState<string | undefined>(undefined); 
-    const [selectedRequestId, setSelectedRequestId] = React.useState<string | undefined>(undefined); 
+    const [selectedTaskNum, setSelectedTaskNum] = React.useState<string | undefined>(undefined); 
+    const [selectedReqNum, setSelectedReqNum] = React.useState<string | undefined>(undefined); 
 
     React.useEffect(() => {
         const getData = async () => {
@@ -56,10 +56,10 @@ export const SubmissionCreation: React.FC<SubmissionCreationProps> = ({ onCreate
     }, []);
     
     const handleCreation = () => {
-        if(selectedTaskId && selectedRequestId) {
+        if(selectedTaskNum && selectedReqNum) {
             submitSubmission({
-                taskNum: selectedTaskId,
-                reqNum: selectedRequestId
+                taskNum: selectedTaskNum,
+                reqNum: selectedReqNum
             }).then(res => {
                 onCreate(res.id);
             });
@@ -68,27 +68,27 @@ export const SubmissionCreation: React.FC<SubmissionCreationProps> = ({ onCreate
     
     return <div className='submission-creation-fields'>
         <Autocomplete
-            value={selectedTaskId || null}
+            value={selectedTaskNum || null}
             disablePortal
             options={Object.keys(taskMap).sort()}
             getOptionLabel={t => taskMap[t]}
             sx={{ width: 300 }}
             renderInput={(params) => <TextField label={'Task Name'} {...params} />}
-            onChange={(event, val) => setSelectedTaskId(val || undefined)}
+            onChange={(event, val) => setSelectedTaskNum(val || undefined)}
         />
         <Autocomplete
-            value={selectedRequestId || null}
-            onChange={(event, val) => setSelectedRequestId(val || undefined)}
+            value={selectedReqNum || null}
+            onChange={(event, val) => setSelectedReqNum(val || undefined)}
             disablePortal
-            disabled={!selectedTaskId}
-            options={selectedTaskId ? taskRequestMap[selectedTaskId].map(request => request.id) : []}
+            disabled={!selectedTaskNum}
+            options={selectedTaskNum ? taskRequestMap[selectedTaskNum].map(request => request.id) : []}
             getOptionLabel={val => {
-                const matchedRequestOption = (taskRequestMap[selectedTaskId!])!.find(option => option.id === val);
+                const matchedRequestOption = (taskRequestMap[selectedTaskNum!])!.find(option => option.id === val);
                 return matchedRequestOption?.label?.length! > 0 ? matchedRequestOption!.label : val;
             }}
             sx={{ width: 300 }}
             renderInput={(params) => <TextField label={'Request Name'} {...params} />}
         />
-        <Button classes={{root: 'submission-creation-create-button'}} disabled={!(selectedTaskId && selectedRequestId)} onClick={handleCreation} variant={'contained'}>Create</Button>
+        <Button classes={{root: 'submission-creation-create-button'}} disabled={!(selectedTaskNum && selectedReqNum)} onClick={handleCreation} variant={'contained'}>Create</Button>
     </div>;
 };

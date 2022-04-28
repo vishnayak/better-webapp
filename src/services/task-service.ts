@@ -24,13 +24,13 @@ export interface Tasks {
 export interface SentencesAnnotation {
     taskNarrative: string;
     taskTitle: string;
-    taskStatement:string;
-    taskId:string;
+    taskStmt:string;
+    taskNum:string;
     annotatedRequest: AnnotatedRequest;
 }
 export interface AnnotatedRequest {
-    requestId: string;
-    requestText: string;
+    reqNum: string;
+    reqText: string;
     exampleDocs: SentencesExampleDocs[];
 }
 
@@ -59,14 +59,14 @@ export const getPhrasesForAnnotation = async (id: string): Promise<String> => {
     return (await fetch(request)).json();
 };
 
-export const getSentencesForAnnotation = async (taskId: string, reqId : string): Promise<SentencesAnnotation> => {
-    const request = new Request(`${BASE_URL}tasks/${taskId}/requests/${reqId}/sentences-for-annotation`);
+export const getSentencesForAnnotation = async (taskNum: string, reqNum : string): Promise<SentencesAnnotation> => {
+    const request = new Request(`${BASE_URL}tasks/${taskNum}/requests/${reqNum}/sentences-for-annotation`);
     return (await fetch(request)).json();
 };
 
-export const postSentencesForAnnotation = async (taskId: string, reqId : string,sentencesAnnotation:SentencesAnnotation) => {
+export const postSentencesForAnnotation = async (taskNum: string, reqNum : string,sentencesAnnotation:SentencesAnnotation) => {
     try {
-        const request = new Request(`${BASE_URL}tasks/${taskId}/requests/${reqId}/sentences-for-annotation`);
+        const request = new Request(`${BASE_URL}tasks/${taskNum}/requests/${reqNum}/sentences-for-annotation`);
         const response = await fetch(request, {
          method: 'POST',
          headers: {
