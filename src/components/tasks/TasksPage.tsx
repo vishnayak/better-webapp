@@ -24,7 +24,6 @@ export const TasksPage: React.FC<{}> = () => {
 
   React.useEffect(() => {
     getAllTasks().then(res => {
-      console.log(res)
       setTasks(res);
       // setIsLoading(false);
     }).catch(e => {
@@ -49,7 +48,7 @@ export const TasksPage: React.FC<{}> = () => {
       {
         <TableContainer component={Paper}>
           {!open && !openCreateNewTask && !openSentences && (<div>
-            <h1>Create a BETTER Query</h1>
+            <h1>Tasks Dashboard</h1>
             <Table aria-label="collapsible table ">
               <TableHead>
                 <TableRow>

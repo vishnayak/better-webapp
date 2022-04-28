@@ -58,8 +58,8 @@ export const QueryCreation: React.FC<QueryCreationProps> = ({ onCreate }) => {
     const handleCreation = () => {
         if(selectedTaskId && selectedRequestId) {
             submitQuery({
-                taskId: selectedTaskId,
-                requestId: selectedRequestId
+                taskNum: selectedTaskId,
+                reqNum: selectedRequestId
             }).then(res => {
                 onCreate(res.id);
             });

@@ -41,11 +41,11 @@ export const SearchPage: React.FC<{}> = () => {
         isIdValid ? 
             <>
                 <div className={'query-detail'}>
-                    <span><b>Task ID: </b> {submission!.taskId}</span>
+                    <span><b>Task Title: </b> {submission!.taskTitle}</span>
                     <span><b>Created on: </b> {new Date(submission!.when).toLocaleString()}</span>
                 </div>
                 <div  className={'query-detail'}>
-                    <span><b>Request ID: </b> {submission!.requestId}</span>
+                    <span><b>Request: </b> {submission!.reqText}</span>
                 </div>
             </> :
             <div className='fallback-text'>This submission with ID {submissionId} is invalid!</div>
