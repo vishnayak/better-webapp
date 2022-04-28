@@ -24,7 +24,6 @@ export const TasksPage: React.FC<{}> = () => {
 
   React.useEffect(() => {
     getAllTasks().then(res => {
-      console.log(res)
       setTasks(res);
       // setIsLoading(false);
     }).catch(e => {

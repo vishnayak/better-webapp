@@ -74,11 +74,7 @@ export const postSentencesForAnnotation = async (taskId: string, reqId : string,
            },
            body: JSON.stringify(sentencesAnnotation)
          });
-         const data = await response.json();
-         console.log(data);
-       } catch(error) {
-     // enter your logic for when there is an error (ex. error toast)
-
-          console.log(error)
-         } 
-    }
+    } catch (error) {
+        console.log(error)
+    } 
+}
