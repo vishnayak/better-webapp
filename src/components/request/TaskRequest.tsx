@@ -13,6 +13,8 @@ import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { SentencesFormDialog } from '@components/formDialog/SentencesFormDialog';
+import { PhrasesFormDialog } from '@components/formDialog/PhrasesFormDialog';
+
 
 
 interface RequestProps {
@@ -38,17 +40,27 @@ export const Request: React.FC<RequestProps> = ({ task }) => {
                     {/* <TableCell component="th" scope="row" rowSpan={task.taskExampleDocs.length + 1}>
                         {task.taskNum}
                     </TableCell> */}
-                    <TableCell align="left" rowSpan={task.taskExampleDocs.length + 1}>{task.taskTitle}</TableCell>
-                    <TableCell align="left" rowSpan={task.taskExampleDocs.length + 1}>{task.taskStmt}</TableCell>
-                    <TableCell align="left" rowSpan={task.taskExampleDocs.length + 1}>{task.taskNarr}</TableCell>
+                    <TableCell rowSpan={task.taskExampleDocs.length + 1}>{task.taskTitle}</TableCell>
+                    <TableCell rowSpan={task.taskExampleDocs.length + 1}>{task.taskStmt}</TableCell>
+                    <TableCell rowSpan={task.taskExampleDocs.length + 1}>{task.taskNarr}</TableCell>
+                    <TableCell rowSpan={task.taskExampleDocs.length + 1}> <PhrasesFormDialog task={task} /></TableCell>
                 </TableRow>
+                {/* <TableCell align="left" style={{ width: 150 }}> */}
                 {task.taskExampleDocs.map(detail => (
                     <TableRow >
-                        <TableCell style={{ width: 150 }}>
+                        <TableCell  style={{ width: 150 }}>
                             <FormDialog taskDoc={detail} />
+                            {/* <PhrasesFormDialog task={task} /> */}
                         </TableCell>
                     </TableRow>
                 ))}
+                {/* </TableCell> */}
+                {/* <TableRow> */}
+                {/* <TableCell rowSpan={task.taskExampleDocs.length + 1}>
+                        <PhrasesFormDialog task={task} />
+                    </TableCell> */}
+                {/* </TableRow> */}
+
             </Fragment>
             <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
                 <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -87,11 +99,6 @@ export const Request: React.FC<RequestProps> = ({ task }) => {
                                                 </TableCell>
                                             </TableRow>
 
-                                            {/* <TableRow >
-                                                <TableCell style={{ width: 150 }}>
-                                                    <FormDialog taskDoc={detail} />
-                                                </TableCell>
-                                            </TableRow> */}
                                         </Fragment>
                                     ))}
                                 </TableBody>

@@ -78,3 +78,18 @@ export const postSentencesForAnnotation = async (taskNum: string, reqNum : strin
         console.log(error)
     } 
 }
+
+export const postPhrasesForAnnotation = async (taskNum: string,phrasesAnnotation:string) => {
+    try {
+        const request = new Request(`${BASE_URL}tasks/${taskNum}/phrases-for-annotation`);
+        const response = await fetch(request, {
+         method: 'POST',
+         headers: {
+           'Content-Type': 'application/json'
+           },
+           body: phrasesAnnotation
+         });
+    } catch (error) {
+        console.log(error)
+    } 
+}

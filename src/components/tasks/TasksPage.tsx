@@ -25,10 +25,7 @@ export const TasksPage: React.FC<{}> = () => {
   React.useEffect(() => {
     getAllTasks().then(res => {
       setTasks(res);
-      // setIsLoading(false);
     }).catch(e => {
-      // setIsError(true);
-      // setIsLoading(false);
     });
   }, []);
 
@@ -57,7 +54,8 @@ export const TasksPage: React.FC<{}> = () => {
                   <TableCell align="center"><b>Task Title</b></TableCell>
                   <TableCell align="center"><b>Task Statement</b></TableCell>
                   <TableCell align="center"><b>Task Narrative</b></TableCell>
-                  <TableCell align="center"><b>Task Docs</b></TableCell>
+                  <TableCell align="center"><b>Actions</b></TableCell>
+                  <TableCell align="center"><b>Task Documents</b></TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -66,7 +64,7 @@ export const TasksPage: React.FC<{}> = () => {
                 ))}
               </TableBody>
             </Table>
-            <Grid container>
+            {/* <Grid container>
               <Grid item xs={2} />
               <Grid item xs={3} >
                 <Button onClick={activateBill} variant="contained">
@@ -84,17 +82,17 @@ export const TasksPage: React.FC<{}> = () => {
                 </Button>
               </Grid>
               <Grid item xs={1} />
-            </Grid>
-            <hr />
+            </Grid> */}
+            {/* <hr /> */}
           </div>)}
-          <div>
+          {/* <div>
             {open && <Phrases tasks={tasks} />}
             <hr />
           </div>
           <div>
             {openSentences && <Sentences tasks={tasks} />}
             <hr />
-          </div>
+          </div> */}
 
         </TableContainer>
       }</div>
