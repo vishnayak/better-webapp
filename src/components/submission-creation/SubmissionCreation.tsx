@@ -1,8 +1,8 @@
 import React from 'react';
 import { Autocomplete, Button, TextField } from '@mui/material';
 import {getAllTasks} from '@services/task-service';
-import './QueryCreation.css';
-import { submitQuery } from '@services/query-service';
+import './SubmissionCreation.css';
+import { submitSubmission } from '@services/submission-service';
 
 interface TaskOptionDetail {
     taskNum: string;
@@ -22,15 +22,15 @@ interface RequestOption {
     id: string;
 };
 
-export interface QueryCreationProps {
+export interface SubmissionCreationProps {
     onCreate: (id: string) => void;
 };
 
-export const QueryCreation: React.FC<QueryCreationProps> = ({ onCreate }) => {
+export const SubmissionCreation: React.FC<SubmissionCreationProps> = ({ onCreate }) => {
     const [taskMap, setTaskMap] = React.useState<Record<string, string>>({});
     const [taskRequestMap, setTaskRequestMap] = React.useState<Record<string, RequestOption[]>>({});
-    const [selectedTaskId, setSelectedTaskId] = React.useState<string | undefined>(undefined); 
-    const [selectedRequestId, setSelectedRequestId] = React.useState<string | undefined>(undefined); 
+    const [selectedTaskNum, setSelectedTaskNum] = React.useState<string | undefined>(undefined); 
+    const [selectedReqNum, setSelectedReqNum] = React.useState<string | undefined>(undefined); 
 
     React.useEffect(() => {
         const getData = async () => {
@@ -56,39 +56,39 @@ export const QueryCreation: React.FC<QueryCreationProps> = ({ onCreate }) => {
     }, []);
     
     const handleCreation = () => {
-        if(selectedTaskId && selectedRequestId) {
-            submitQuery({
-                taskId: selectedTaskId,
-                requestId: selectedRequestId
+        if(selectedTaskNum && selectedReqNum) {
+            submitSubmission({
+                taskNum: selectedTaskNum,
+                reqNum: selectedReqNum
             }).then(res => {
                 onCreate(res.id);
             });
         }
     }
     
-    return <div className='query-creation-fields'>
+    return <div className='submission-creation-fields'>
         <Autocomplete
-            value={selectedTaskId || null}
+            value={selectedTaskNum || null}
             disablePortal
             options={Object.keys(taskMap).sort()}
             getOptionLabel={t => taskMap[t]}
             sx={{ width: 300 }}
             renderInput={(params) => <TextField label={'Task Name'} {...params} />}
-            onChange={(event, val) => setSelectedTaskId(val || undefined)}
+            onChange={(event, val) => setSelectedTaskNum(val || undefined)}
         />
         <Autocomplete
-            value={selectedRequestId || null}
-            onChange={(event, val) => setSelectedRequestId(val || undefined)}
+            value={selectedReqNum || null}
+            onChange={(event, val) => setSelectedReqNum(val || undefined)}
             disablePortal
-            disabled={!selectedTaskId}
-            options={selectedTaskId ? taskRequestMap[selectedTaskId].map(request => request.id) : []}
+            disabled={!selectedTaskNum}
+            options={selectedTaskNum ? taskRequestMap[selectedTaskNum].map(request => request.id) : []}
             getOptionLabel={val => {
-                const matchedRequestOption = (taskRequestMap[selectedTaskId!])!.find(option => option.id === val);
+                const matchedRequestOption = (taskRequestMap[selectedTaskNum!])!.find(option => option.id === val);
                 return matchedRequestOption?.label?.length! > 0 ? matchedRequestOption!.label : val;
             }}
             sx={{ width: 300 }}
             renderInput={(params) => <TextField label={'Request Name'} {...params} />}
         />
-        <Button classes={{root: 'query-creation-create-button'}} disabled={!(selectedTaskId && selectedRequestId)} onClick={handleCreation} variant={'contained'}>Create</Button>
+        <Button classes={{root: 'submission-creation-create-button'}} disabled={!(selectedTaskNum && selectedReqNum)} onClick={handleCreation} variant={'contained'}>Create</Button>
     </div>;
 };

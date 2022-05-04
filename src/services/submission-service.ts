@@ -4,19 +4,23 @@ const BASE_URL = 'https://cessnock.cs.umass.edu:9300/'
 
 // const BASE_URL = 'http://localhost:5000/'
 
-export interface QuerySubmissionRequest {
-    taskId: string;
-    requestId: string;
+export interface SubmissionCreationRequest {
+    taskNum: string;
+    reqNum: string;
 }
 
-export interface QuerySubmissionResponse {
+export interface SubmissionCreationResponse {
     id: string;
 }
 
 export interface Submission {
     id: string;
-    taskId: string;
-    requestId: string | null; // TODO: Remove null
+    taskNum: string;
+    taskTitle: string;
+    taskStmt: string;
+    taskNarr: string;
+    reqNum: string | null; // TODO: Remove null
+    reqText: string;
     status: SubmissionStatus;
     when: Date;
 }
@@ -26,10 +30,10 @@ export enum SubmissionStatus {
     COMPLETED = 'COMPLETED'
 }
 
-export interface QueryHitsResponse {
+export interface SubmissionHitsResponse {
     hits: SearchHit[];
-    requestId: string;
-    requestText: string;
+    reqNum: string;
+    reqText: string;
     taskNarr: string;
     taskNum: string;
     taskStmt: string;
@@ -39,11 +43,11 @@ export interface QueryHitsResponse {
 
 export const BAD_SUBMISSION = 'BAD_SUBMISSION';
 
-export const submitQuery = async (query: QuerySubmissionRequest): Promise<QuerySubmissionResponse> => {
+export const submitSubmission = async (submission: SubmissionCreationRequest): Promise<SubmissionCreationResponse> => {
     const request = new Request(`${BASE_URL}submissions`, 
         {
             method: 'POST', 
-            body: JSON.stringify(query), 
+            body: JSON.stringify(submission), 
             headers: {'Content-Type': 'application/json'}
         });
     return (await fetch(request)).json();
@@ -63,7 +67,7 @@ export const getSubmissionStatusById = async (id: string): Promise<boolean> => {
     return (await fetch(request)).json();
 }
 
-export const getPaginatedHits = async (id: string, start: number, size: number): Promise<QueryHitsResponse> => {
+export const getPaginatedHits = async (id: string, start: number, size: number): Promise<SubmissionHitsResponse> => {
     const request = new Request(`${BASE_URL}submissions/${id}/hits?` + new URLSearchParams({
             start: start.toString(),
             numberHits: size.toString(),

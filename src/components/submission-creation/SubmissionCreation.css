@@ -1,13 +1,13 @@
-.query-creation-container {
+.submission-creation-container {
     margin: 16px;
 }
 
-.query-creation-fields {
+.submission-creation-fields {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.query-creation-create-button {
+.submission-creation-create-button {
     height: 36px;
 }

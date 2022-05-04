@@ -25,7 +25,6 @@ export const TasksPage: React.FC<{}> = () => {
 
   React.useEffect(() => {
     getAllTasks().then(res => {
-      console.log(res)
       setTasks(res);
       // setIsLoading(false);
     }).catch(e => {
@@ -56,11 +55,11 @@ export const TasksPage: React.FC<{}> = () => {
               <TableHead>
                 <TableRow>
                   <TableCell />
-                  <TableCell><b>Task Num</b></TableCell>
-                  <TableCell align="right"><b>Task Title</b></TableCell>
-                  <TableCell align="right"><b>Task Statement</b></TableCell>
-                  <TableCell align="right"><b>Task Narrative</b></TableCell>
-                  <TableCell align="right"><b>Task Docs</b></TableCell>
+                  {/* <TableCell><b>Task Num</b></TableCell> */}
+                  <TableCell align="center"><b>Task Title</b></TableCell>
+                  <TableCell align="center"><b>Task Statement</b></TableCell>
+                  <TableCell align="center"><b>Task Narrative</b></TableCell>
+                  <TableCell align="center"><b>Task Docs</b></TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>

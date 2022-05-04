@@ -41,16 +41,6 @@ export const AnnotatePage: React.FC<AnnotatePageProps> = ({ task }) => {
             map.set(k.key, annotation)
         });
         setOpen(true);
-        if (open) {
-            console.log("map is" + map);
-            // api.post("/tasks/" + taskNum + "/phrases-for-annotation", cart)
-            //     .then(res => {
-            //         console.log(res);
-            //     })
-            //     .catch(error => {
-            //         console.log("Error " + error)
-            //     })
-        }
     };
     const handleClose = () => {
         setOpen(false);
@@ -60,12 +50,7 @@ export const AnnotatePage: React.FC<AnnotatePageProps> = ({ task }) => {
     };
     React.useEffect(() => {
         getPhrasesForAnnotation(task.taskNum).then(res => {
-            console.log('res' + res)
             const entries = Object.entries(JSON.parse(JSON.stringify(res)))
-            // setMapPhrases(Object.entries(res));
-            // mapPhrases?.forEach((value: Annotation, key: String) => {
-            //     console.log('keyvalue pair' + key, value);
-            // });
             const localKeys: any[] = [];
 
             entries.forEach(([key, value]) => {

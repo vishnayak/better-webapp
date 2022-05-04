@@ -23,6 +23,30 @@ export interface Task {
     requests: Request[];
 }
 
+export interface SentencesAnnotation {
+    taskNarrative: string;
+    taskTitle: string;
+    taskStmt:string;
+    taskNum:string;
+    annotatedRequest: AnnotatedRequest;
+}
+export interface AnnotatedRequest {
+    reqNum: string;
+    reqText: string;
+    exampleDocs: SentencesExampleDocs[];
+}
+
+export interface SentencesExampleDocs {
+    docNumber: number;
+    docId: string;
+    sentences: Sentences[];
+}
+export interface Sentences{
+    sentencesId : string;
+    sentence: string;
+    judgement: string;
+}
+
 export interface Annotation{
     sentences: string;
     judgment: string;
@@ -81,3 +105,22 @@ export const getCandidateDocsForTask = async (taskId: string): Promise<Candidate
     const request = new Request(`${BASE_URL}tasks/${taskId}/candidate-docs`);
     return (await fetch(request)).json();
 };
+export const getSentencesForAnnotation = async (taskNum: string, reqNum : string): Promise<SentencesAnnotation> => {
+    const request = new Request(`${BASE_URL}tasks/${taskNum}/requests/${reqNum}/sentences-for-annotation`);
+    return (await fetch(request)).json();
+};
+
+export const postSentencesForAnnotation = async (taskNum: string, reqNum : string,sentencesAnnotation:SentencesAnnotation) => {
+    try {
+        const request = new Request(`${BASE_URL}tasks/${taskNum}/requests/${reqNum}/sentences-for-annotation`);
+        const response = await fetch(request, {
+         method: 'POST',
+         headers: {
+           'Content-Type': 'application/json'
+           },
+           body: JSON.stringify(sentencesAnnotation)
+         });
+    } catch (error) {
+        console.log(error)
+    } 
+}
