@@ -24,14 +24,20 @@ export const TasksPage: React.FC<{}> = () => {
   const [openCreateNewTask, setOpenCreateNewTask] = React.useState(false);
 
   React.useEffect(() => {
-    getAllTasks().then(res => {
+    fetchAllTasks();
+  }, []);
+
+  const fetchAllTasks = async () => {
+    try {
+      const res = await getAllTasks();
       setTasks(res);
       // setIsLoading(false);
-    }).catch(e => {
+    } catch (e) {
+      console.error(e);
       // setIsError(true);
       // setIsLoading(false);
-    });
-  }, []);
+    }
+  };
 
   const activateBill = () => {
     setOpen(true);
@@ -45,11 +51,11 @@ export const TasksPage: React.FC<{}> = () => {
 
   return (<TableContainer component={Paper}>
     <div className='tasks-page'>
-      <TaskCreationWizard onCreate={() => {}} isOpen={true} onClose={() => setOpenCreateNewTask(false)}/>
+      <TaskCreationWizard onCreate={fetchAllTasks} isOpen={openCreateNewTask} onClose={() => setOpenCreateNewTask(false)}/>
 
       {
         <TableContainer component={Paper}>
-          {!open && !openCreateNewTask && !openSentences && (<div>
+          {!open && !openSentences && (<div>
             <h1>Tasks Dashboard</h1>
             <Table aria-label="collapsible table ">
               <TableHead>
@@ -97,7 +103,6 @@ export const TasksPage: React.FC<{}> = () => {
             {openSentences && <Sentences tasks={tasks} />}
             <hr />
           </div>
-
         </TableContainer>
       }</div>
 

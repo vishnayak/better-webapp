@@ -10,7 +10,7 @@ import TableRow from '@mui/material/TableRow';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import { Grid } from '@mui/material';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+import Select from '@mui/material/Select';
 
 import React from 'react';
 

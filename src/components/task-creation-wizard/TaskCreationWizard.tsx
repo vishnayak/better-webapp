@@ -1,10 +1,9 @@
 import React from 'react';
-import { Box, Button, Checkbox, CircularProgress, Grid, Modal, Paper, Step, StepLabel, Stepper, TextField, Tooltip, Typography } from '@mui/material';
-import { CandidateDoc, createTask, getTaskById, Task } from '@services/task-service';
+import { Box, Button, CircularProgress, Grid, Modal, Paper, Step, StepLabel, Stepper, TextField, Tooltip, Typography } from '@mui/material';
+import LoadingButton from '@mui/lab/LoadingButton'
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import { addExampleDocsToTask, CandidateDoc, candidateDocToExampleDoc, createTask, ExampleDoc, getCandidateDocsForTask, getTaskById, updateTask } from '@services/task-service';
 import './TaskCreationWizard.css';
-import candidateDocs from './docs.json';
-import { SearchHitCard } from '@components/search-hit-card/SearchHitCard';
-import { SearchHit } from '@components/hits/SearchHits';
 import { CandidateDocCard } from '@components/candidate-doc-card/CandidateDocCard';
 
 export interface TaskCreationWizardProps {
@@ -14,28 +13,33 @@ export interface TaskCreationWizardProps {
     id?: string;
 };
 
-export interface ExampleDoc {
-    docid: string;
-	highlight: string;
-}
+interface SelectedExampleDoc {
+    doc: CandidateDoc;
+    highlight: string;
+    docNumber: number;
+};
 
-const steps = ['Describe the task', 'Select Example Docs', 'Annotate Phrases'];
+const steps = ['Describe the task', 'Select Example Docs', 'Annotate Sentences'];
+const MAX_EXAMPLE_DOCS = 2;
 
 export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => {
     const { isOpen, onClose, onCreate, id } = props;
-    // const [step, setStep] = React.useState(id ? -1 : 0);
-    const [step, setStep] = React.useState(1);
+    const [step, setStep] = React.useState(id ? -1 : 0);
+    // const [step, setStep] = React.useState(1);
+    const [taskNum, setTaskNum] = React.useState(id || '');
     const [taskTitle, setTaskTitle] = React.useState('');
     const [taskNarr, setTaskNarr] = React.useState('');
     const [taskStmt, setTaskStmt] = React.useState('');
-    // const [candidateDocs, setCandidateDocs] = React.useState<CandidateDoc[]>([]);
-    const [exampleDocMap, setExampleDocMap] = React.useState<Record<string, ExampleDoc>>({});
+    const [candidateDocs, setCandidateDocs] = React.useState<CandidateDoc[]>([]);
+    const [exampleDocMap, setExampleDocMap] = React.useState<Record<string, SelectedExampleDoc>>({});
     const [annotations, setAnnotations] = React.useState([]);
     const [helperText, setHelperText] = React.useState<string[]>([]);
+    const [isNextLoading, setIsNextLoading] = React.useState(false);
+    const [isConfirmingBack, setIsConfirmingBack] = React.useState(false);
 
     React.useEffect(() => {
         const setInitialStep = async () => {
-            if(id) {
+            if(id) { // edit mode
                 // fetch task with id
                 const task = await getTaskById(id);
                 // const task: Task = {
@@ -67,24 +71,53 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
     }, []);
 
     const handleBack = () => {
+        setIsConfirmingBack(false);
+        // reset step progress
+        if(step === 1) {
+            setCandidateDocs([]);
+            setExampleDocMap({});
+        } else if(step === 2) {
+            setAnnotations([]);
+        }
         setStep(Math.max(0, step - 1));
     };
 
     const handleNext = () => {
+        setIsConfirmingBack(false);
+        setIsNextLoading(true);
         if(step === 0) {
             // create new task
             // make api call
-            // createTask({
-            //     taskTitle: '',
-            //     taskNarr: '',
-            //     taskStmt: ''
-            // }).then((res) => {
-            //     // fetch example docs
-            // });
-            setStep(1);
+            if(taskTitle.length > 0 && taskNarr.length > 0 && taskStmt.length > 0){
+                const payload = {
+                    taskTitle,
+                    taskNarr,
+                    taskStmt
+                };
+                (taskNum ? updateTask(taskNum, { ...payload, taskNum }) : createTask(payload)).then((res) => {
+                    setTaskNum(res.taskNum);
+                    getCandidateDocsForTask(res.taskNum).then((docsResult) => {
+                        setCandidateDocs(docsResult.hits.slice(0, 20));
+                        setStep(1);
+                        setIsNextLoading(false);
+                    }).catch(e => {
+                        console.log(e);
+                        setIsNextLoading(false);
+                        // do nothing  for now :(
+                    });
+                });
+            }
         } else if(step === 1) {
             // post candidate docs
-            setStep(2);
+            const exampleDocs: ExampleDoc[] = Object.values(exampleDocMap).map(doc => candidateDocToExampleDoc(doc.doc, doc.docNumber, doc.highlight));
+            addExampleDocsToTask(taskNum, exampleDocs).then(res => {
+                setStep(2);
+                setIsNextLoading(false);
+            }).catch(e => {
+                console.log(e);
+                setIsNextLoading(false);
+                // do nothing  for now :(
+            });
         } else if(step === steps.length - 1) {
             // submit
             // make api call
@@ -118,12 +151,12 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
             if(taskTitle.length <= 0) { helper.push('Task Title cannot be blank.'); }
             if(taskStmt.length <= 0) { helper.push('Task Statement cannot be blank.'); }
             if(taskNarr.length <= 0) { helper.push('Task Narrative cannot be blank.'); }
-        } else {
+        } else if (step === 1) {
             if(Object.keys(exampleDocMap).length !== 2) { helper.push('Select exactly two example documents.'); }
             if(!Object.values(exampleDocMap).every(v => v.highlight.length > 0)) { 
                 helper.push('Select a highlight section for both documents'); 
             };
-        }
+        } else {}
         setHelperText(helper); 
     };
 
@@ -135,29 +168,52 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
         return true;
     };
 
-    const handleDocCheck = (docId: string, isChecked: boolean) => {
+    const handleDocCheck = (doc: CandidateDoc, isChecked: boolean) => {
+        const docId = doc.docid;
         if(isChecked)
-            setExampleDocMap({ ...exampleDocMap, [docId]: { docid: docId, highlight: '' } });
+            setExampleDocMap({ ...exampleDocMap, [docId]: { doc: doc, highlight: '', docNumber: Object.keys(exampleDocMap).length + 1 } });
         else {
             const newDocMap = Object.keys(exampleDocMap)
-                .filter(k => k !== docId).map(k => [k, exampleDocMap[k]])
-                .reduce((res, tup) => ({ ...res, [tup[0] as string]: tup[1] }), {});
+                .filter(k => k !== docId).map(k => exampleDocMap[k])
+                .reduce((res, exampleDoc) => ({ ...res, [exampleDoc.doc.docid]: { ...exampleDoc, docNumber: exampleDoc.docNumber - 1 } }), {});
             setExampleDocMap(newDocMap);
         }
     };
 
     const handleHighlightConfirm = (docId: string, text: string) => {
-        setExampleDocMap({ ...exampleDocMap, [docId]: { docid: docId, highlight: text } });
+        setExampleDocMap({ ...exampleDocMap, [docId]: { ...exampleDocMap[docId], highlight: text } });
     }
 
+    const isLastStep = step === steps.length - 1;
+
     const renderFooter = () => <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2, mt: 'auto' }}>
-        {step !== 0 && <Button
-            color="inherit"
-            onClick={handleBack}
-            sx={{ mr: 1 }}
-        >
-            Back
-        </Button>}
+        <Box padding={'0 6px'} border={isConfirmingBack ? '1px solid grey' : undefined} borderRadius={isConfirmingBack ? '4px' : undefined}>
+            {isConfirmingBack ? <>
+                <span>You will lose your progress in this step. Are you sure?</span>
+                <Button
+                    color={'error'}
+                    variant={'text'}
+                    onClick={handleBack}
+                    sx={{ mr: 1, ml: 1 }}
+                >
+                    Yes
+                </Button>
+                <Button
+                    variant={'text'}
+                    color={'inherit'}
+                    onClick={() => setIsConfirmingBack(false)}
+                >
+                    No
+                </Button>
+            </> :
+            (step !== 0 && <Button
+                color="inherit"
+                onClick={() => setIsConfirmingBack(true)}
+                sx={{ mr: 1 }}
+            >
+                Back
+            </Button>)}
+        </Box>
         <Box sx={{ flex: '1 1 auto' }} />
         {step !== 0 && (
             <Button color="inherit" onClick={handleSaveDraft} sx={{ mr: 1 }}>
@@ -168,9 +224,9 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
             helperText.length <= 0 ? '' : <>{helperText.map((t, i) => <li key={i}>{t}</li>)}</>
         }>
             <span onMouseOver={getHelper} hidden={false}>
-                <Button variant={'contained'} color={'primary'} onClick={handleNext} disabled={!validateNextStep()}>
-                    {step === steps.length - 1 ? 'Create Task' : 'Next'}
-                </Button>
+                <LoadingButton loading={isNextLoading} endIcon={!isLastStep && <NavigateNextIcon/>} loadingPosition="end" variant={'contained'} color={'primary'} onClick={handleNext} disabled={!validateNextStep()}>
+                    {isLastStep ? 'Finish' : 'Next'}
+                </LoadingButton>
             </span>
         </Tooltip>
     </Box>;
@@ -198,6 +254,7 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
                                     label="Task Title"
                                     value={taskTitle}
                                     onChange={(e) => setTaskTitle(e.target.value)}
+                                    disabled={isNextLoading}
                                 />
                             </Grid>
                         </Grid>
@@ -209,6 +266,7 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
                                     label="Task Statement"
                                     value={taskStmt}
                                     onChange={(e) => setTaskStmt(e.target.value)}
+                                    disabled={isNextLoading}
                                 />
                             </Grid>
                         </Grid>
@@ -222,17 +280,20 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
                                     value={taskNarr}
                                     onChange={(e) => setTaskNarr(e.target.value)}
                                     minRows={2}
+                                    disabled={isNextLoading}
                                 />
                             </Grid>
                         </Grid>
+                        {isNextLoading && <Grid item>Please wait, this may take upto 30 seconds...</Grid>}
                     </Grid>
                 ): step === 1 ? (
                     <Grid classes={{root: 'wizard-candidate-docs-section'}} container direction='column' spacing={4} mt={2}>
                         <div className={'wizard-instruction-text'}>Select <b>EXACTLY TWO</b> example documents and highlight most relevant text for each:</div>
                         {candidateDocs.map((doc, i) => <CandidateDocCard 
                             key = {`${i}${doc.docid}`} 
-                            onCheck={c => handleDocCheck(doc.docid, c)} 
+                            onCheck={c => handleDocCheck(doc, c)} 
                             checked = {doc.docid in exampleDocMap} 
+                            checkboxDisabled = {Object.keys(exampleDocMap).length > MAX_EXAMPLE_DOCS - 1}
                             doc={doc} 
                             highlightText={exampleDocMap[doc.docid]?.highlight || ''}
                             onHighlightConfirm={(t) => handleHighlightConfirm(doc.docid, t)}
