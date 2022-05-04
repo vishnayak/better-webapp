@@ -30,3 +30,7 @@
 .candidate-doc-card--checked {
     background-color: #a7d8ee73 !important;
 }
+
+.candidate-doc-card--completed {
+    background-color: #a7eebd99 !important;
+}

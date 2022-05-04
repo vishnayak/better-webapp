@@ -48,7 +48,7 @@ export const CandidateDocCard: React.FC<CandidateDocCardProps> = ({ doc, checked
     return <Grid item classes={{root: 'candidate-doc-card'}} container>
         <Grid item><Checkbox onChange={(e, isChecked) => onCheck(isChecked)} checked={checked}/></Grid>
         <Grid item xs={11}>
-            <Card id={id} elevation={8} classes={{ root: `candidate-doc-card ${checked ? 'candidate-doc-card--checked' : ''}` }}>
+            <Card id={id} elevation={8} classes={{ root: `candidate-doc-card ${checked ? ( highlightText ? 'candidate-doc-card--completed' : 'candidate-doc-card--checked') : ''}` }}>
                 <CardContent classes={{ root: expanded ? 'candidate-doc-card-content' : 'candidate-doc-card-content candidate-doc-card-content--compact' }}>
                     <Typography variant="body2">
                         {renderLines(doc.docText)}
