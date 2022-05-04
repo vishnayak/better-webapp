@@ -4,18 +4,11 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import { ExampleDoc } from '@services/task-service';
 import React from 'react';
 
 interface FormDialogProps {
-    taskDoc: ExampleDocs;
-}
-
-interface ExampleDocs {
-    docid: string;
-    docText: string;
-    docNumber: number;
-    highlight: string;
-    sentences: [];
+    taskDoc: ExampleDoc;
 }
 
 export const FormDialog: React.FC<FormDialogProps> = ({ taskDoc }) => {
