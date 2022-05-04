@@ -19,7 +19,7 @@ interface SelectedExampleDoc {
     docNumber: number;
 };
 
-const steps = ['Describe the task', 'Select Example Docs', 'Annotate Sentences'];
+const steps = ['Describe the task', 'Select Example Docs', 'Annotate Phrases'];
 const MAX_EXAMPLE_DOCS = 2;
 
 export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => {
