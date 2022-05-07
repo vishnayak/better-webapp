@@ -48,7 +48,7 @@ export const Request: React.FC<RequestProps> = ({ task }) => {
                 {/* <TableCell align="left" style={{ width: 150 }}> */}
                 {task.taskExampleDocs.map(detail => (
                     <TableRow >
-                        <TableCell  style={{ width: 150 }}>
+                        <TableCell style={{ width: 150 }}>
                             <FormDialog taskDoc={detail} />
                             {/* <PhrasesFormDialog task={task} /> */}
                         </TableCell>
@@ -86,19 +86,17 @@ export const Request: React.FC<RequestProps> = ({ task }) => {
                                                 <TableCell rowSpan={historyRow.exampleDocs.length + 1}>
                                                     {historyRow.reqText}</TableCell>
 
-                                                {historyRow.exampleDocs.map(detail => (
-                                                    <TableRow >
-                                                        <TableCell style={{ width: 150 }}>
-                                                            <FormDialog taskDoc={detail} />
-                                                        </TableCell>
-                                                    </TableRow>
-                                                ))}
-
                                                 <TableCell style={{ width: 150 }}>
                                                     <SentencesFormDialog taskNum={task.taskNum} reqNum={historyRow.reqNum} />
                                                 </TableCell>
                                             </TableRow>
-
+                                            {historyRow.exampleDocs.map(detail => (
+                                                <TableRow >
+                                                    <TableCell style={{ width: 150 }}>
+                                                        <FormDialog taskDoc={detail} />
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
                                         </Fragment>
                                     ))}
                                 </TableBody>
