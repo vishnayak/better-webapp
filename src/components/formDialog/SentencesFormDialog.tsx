@@ -20,33 +20,27 @@ interface SentencesFormDialogProps {
 }
 
 
-export const SentencesFormDialog: React.FC<SentencesFormDialogProps> = ({ taskNum, reqNum }) => {
-    const [open, setOpen] = React.useState(false);
-    const [openConfirmation, setOpenConfirmation] = React.useState(false);
+export const SentencesFormDialog: React.FC<SentencesFormDialogProps> = ({ taskNum, reqNum, sentencesAnnotation, setSentencesAnnotation, sentences, setSentences }) => {
+    // const [open, setOpen] = React.useState(false);
+    // const [openConfirmation, setOpenConfirmation] = React.useState(false);
 
 
-    const [sentencesAnnotation, setSentencesAnnotation] = React.useState<SentencesAnnotation>();
-    const [sentences, setSentences] = React.useState<Sentences[]>([]);
+    // const [sentencesAnnotation, setSentencesAnnotation] = React.useState<SentencesAnnotation>();
+    // const [sentences, setSentences] = React.useState<Sentences[]>([]);
 
     function handleClickOpen(sentences: Sentences[]) {
-        setOpen(true);
+        // setOpen(true);
         setSentences(sentences)
     }
 
     const handleClose = () => {
-        setOpen(false);
+        // setOpen(false);
     };
 
     const handleChange = (index: any) => (event: any) => {
-        sentences[index].judgement = event.target.value;
+        setSentences([...sentences.slice(0, index), { ...sentences[index], judgement: event.target.value }, ...sentences.slice(index+1, sentences.length - index - 1)]);
+        // sentences[index].judgement = event.target.value;
     };
-
-    React.useEffect(() => {
-        getSentencesForAnnotation(taskNum, reqNum).then(res => {
-            setSentencesAnnotation(res)
-        }).catch(e => {
-        });
-    }, []);
 
     const handleAnnotate = () => {
 

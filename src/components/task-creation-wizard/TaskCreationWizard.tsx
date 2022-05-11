@@ -25,7 +25,6 @@ const MAX_EXAMPLE_DOCS = 2;
 export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => {
     const { isOpen, onClose, onCreate, id } = props;
     const [step, setStep] = React.useState(id ? -1 : 0);
-    // const [step, setStep] = React.useState(1);
     const [taskNum, setTaskNum] = React.useState(id || '');
     const [taskTitle, setTaskTitle] = React.useState('');
     const [taskNarr, setTaskNarr] = React.useState('');
@@ -125,6 +124,11 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
                 taskTitle: '',
                 taskNarr: '',
                 taskStmt: ''
+            }).then((res) => {
+                getSentencesForAnnotation(taskNum, reqNum).then(res => {
+                    setSentencesAnnotation(res)
+                }).catch(e => {
+                });
             });
         } else {
             // next step
