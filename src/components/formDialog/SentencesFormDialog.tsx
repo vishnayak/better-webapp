@@ -37,8 +37,8 @@ export const SentencesFormDialog: React.FC<SentencesFormDialogProps> = ({ taskNu
         // setOpen(false);
     };
     const handleCloseConfirmationPage = () => {
-        setOpenConfirmation(false);
-        setOpen(false);
+        // setOpenConfirmation(false);
+        // setOpen(false);
     };
 
     const handleChange = (index: any) => (event: any) => {
@@ -54,7 +54,7 @@ export const SentencesFormDialog: React.FC<SentencesFormDialogProps> = ({ taskNu
             console.log('error' + e)
         });
 
-        setOpenConfirmation(true);
+        // setOpenConfirmation(true);
 
     };
     return (
@@ -67,7 +67,7 @@ export const SentencesFormDialog: React.FC<SentencesFormDialogProps> = ({ taskNu
                         </TableCell> 
                     </TableRow>
                 ))}
-                <Dialog open={open} onClose={handleClose} fullWidth maxWidth="lg">
+                <Dialog open={true} onClose={handleClose} fullWidth maxWidth="lg">
                     <DialogTitle>Judge Sentences</DialogTitle>
                     <DialogContent>
                         {sentences.map((sen, index) => (
