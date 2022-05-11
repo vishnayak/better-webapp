@@ -8,3 +8,9 @@
     font-size: 14px;
     padding: 8px;
 }
+
+.pagination-text-section {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 16px;
+}
