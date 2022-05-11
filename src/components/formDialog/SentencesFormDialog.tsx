@@ -36,6 +36,10 @@ export const SentencesFormDialog: React.FC<SentencesFormDialogProps> = ({ taskNu
     const handleClose = () => {
         // setOpen(false);
     };
+    const handleCloseConfirmationPage = () => {
+        setOpenConfirmation(false);
+        setOpen(false);
+    };
 
     const handleChange = (index: any) => (event: any) => {
         setSentences([...sentences.slice(0, index), { ...sentences[index], judgement: event.target.value }, ...sentences.slice(index+1, sentences.length - index - 1)]);
@@ -47,6 +51,7 @@ export const SentencesFormDialog: React.FC<SentencesFormDialogProps> = ({ taskNu
         postSentencesForAnnotation(taskNum, reqNum, sentencesAnnotation!).then(res => {
             console.log('res' + res)
         }).catch(e => {
+            console.log('error' + e)
         });
 
         setOpenConfirmation(true);
@@ -55,11 +60,11 @@ export const SentencesFormDialog: React.FC<SentencesFormDialogProps> = ({ taskNu
     return (
         <React.Fragment>
             <div>
-                {sentencesAnnotation?.annotatedRequest.exampleDocs.map(exampleDoc => (
+                {sentencesAnnotation?.request.exampleDocs.map(exampleDoc => (
                     <TableRow >
                         <TableCell>
                             <Button variant="contained" onClick={() => handleClickOpen(exampleDoc.sentences)}>Annotate</Button>
-                        </TableCell>
+                        </TableCell> 
                     </TableRow>
                 ))}
                 <Dialog open={open} onClose={handleClose} fullWidth maxWidth="lg">
@@ -89,18 +94,26 @@ export const SentencesFormDialog: React.FC<SentencesFormDialogProps> = ({ taskNu
                                 </TableRow>
                             </React.Fragment>
                         ))}
-                        {openConfirmation && (<Grid container>
-                            <Grid item>
-                                <Typography align="center">
-                                    The annotations are submitted successfully. Please head to submissions page!
-                                </Typography>
-                            </Grid>
-                        </Grid>)}
 
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleAnnotate}>Submit</Button>
                         <Button onClick={handleClose}>Cancel</Button>
+                    </DialogActions>
+                </Dialog>
+                <Dialog open={openConfirmation} onClose={handleCloseConfirmationPage} fullWidth maxWidth="lg">
+                    <DialogTitle>Confirmation</DialogTitle>
+                    <DialogContent>
+                        <Grid container>
+                            <Grid item>
+                                <Typography align="center">
+                                    The annotations are submitted successfully. Please head to submissions page!
+                                </Typography>
+                            </Grid>
+                        </Grid>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleCloseConfirmationPage}>Ok!</Button>
                     </DialogActions>
                 </Dialog>
             </div>

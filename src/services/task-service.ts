@@ -22,7 +22,7 @@ export interface SentencesAnnotation {
     taskTitle: string;
     taskStmt:string;
     taskNum:string;
-    annotatedRequest: AnnotatedRequest;
+    request: AnnotatedRequest;
 }
 
 export interface AnnotatedRequest {
@@ -169,6 +169,21 @@ export const postSentencesForAnnotation = async (taskNum: string, reqNum : strin
            'Content-Type': 'application/json'
            },
            body: JSON.stringify(sentencesAnnotation)
+         });
+    } catch (error) {
+        console.log(error)
+    } 
+}
+
+export const postPhrasesForAnnotation = async (taskNum: string,phrasesAnnotation:string) => {
+    try {
+        const request = new Request(`${BASE_URL}tasks/${taskNum}/phrases-for-annotation`);
+        const response = await fetch(request, {
+         method: 'POST',
+         headers: {
+           'Content-Type': 'application/json'
+           },
+           body: phrasesAnnotation
          });
     } catch (error) {
         console.log(error)
