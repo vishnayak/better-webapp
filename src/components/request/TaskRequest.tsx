@@ -54,12 +54,6 @@ export const Request: React.FC<RequestProps> = ({ task }) => {
                         </TableCell>
                     </TableRow>
                 ))}
-                {/* </TableCell> */}
-                {/* <TableRow> */}
-                {/* <TableCell rowSpan={task.taskExampleDocs.length + 1}>
-                        <PhrasesFormDialog task={task} />
-                    </TableCell> */}
-                {/* </TableRow> */}
 
             </Fragment>
             <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
@@ -72,23 +66,19 @@ export const Request: React.FC<RequestProps> = ({ task }) => {
                                     <TableRow>
                                         <TableCell><b>Request Number</b></TableCell>
                                         <TableCell><b>Request Text</b></TableCell>
-                                        <TableCell><b>Request Docs</b></TableCell>
                                         <TableCell><b>Actions</b></TableCell>
+                                        <TableCell><b>Request Docs</b></TableCell>
+
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
                                     {task.requests.map((historyRow) => (
                                         <Fragment>
-                                            <TableRow>
-                                                <TableCell rowSpan={historyRow.exampleDocs.length + 1}>
-                                                    {historyRow.reqNum}
-                                                </TableCell>
-                                                <TableCell rowSpan={historyRow.exampleDocs.length + 1}>
-                                                    {historyRow.reqText}</TableCell>
-
-                                                <TableCell style={{ width: 150 }}>
-                                                    <SentencesFormDialog taskNum={task.taskNum} reqNum={historyRow.reqNum} />
-                                                </TableCell>
+                                            <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
+                                                
+                                                <TableCell rowSpan={historyRow.exampleDocs.length + 1}>{historyRow.reqNum}</TableCell>
+                                                <TableCell rowSpan={historyRow.exampleDocs.length + 1}>{historyRow.reqText}</TableCell>
+                                                <TableCell rowSpan={historyRow.exampleDocs.length + 1}> <SentencesFormDialog taskNum={task.taskNum} reqNum={historyRow.reqNum} /></TableCell>
                                             </TableRow>
                                             {historyRow.exampleDocs.map(detail => (
                                                 <TableRow >
@@ -97,6 +87,7 @@ export const Request: React.FC<RequestProps> = ({ task }) => {
                                                     </TableCell>
                                                 </TableRow>
                                             ))}
+
                                         </Fragment>
                                     ))}
                                 </TableBody>

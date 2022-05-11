@@ -66,11 +66,11 @@ export const SentencesFormDialog: React.FC<SentencesFormDialogProps> = ({ taskNu
     return (
         <React.Fragment>
             <div>
-                {sentencesAnnotation?.annotatedRequest.exampleDocs.map(exampleDoc => (
+                {sentencesAnnotation?.request.exampleDocs.map(exampleDoc => (
                     <TableRow >
                         <TableCell>
                             <Button variant="contained" onClick={() => handleClickOpen(exampleDoc.sentences)}>Annotate</Button>
-                        </TableCell>
+                        </TableCell> 
                     </TableRow>
                 ))}
                 <Dialog open={open} onClose={handleClose} fullWidth maxWidth="lg">

@@ -26,7 +26,7 @@ export interface SentencesAnnotation {
     taskTitle: string;
     taskStmt:string;
     taskNum:string;
-    annotatedRequest: AnnotatedRequest;
+    request: AnnotatedRequest;
 }
 export interface AnnotatedRequest {
     reqNum: string;
