@@ -16,7 +16,11 @@ import React from 'react';
 
 interface SentencesFormDialogProps {
     taskNum: string;
-    reqNum: string
+    reqNum: string;
+    sentencesAnnotation: SentencesAnnotation;
+    setSentencesAnnotation: () => {},;
+    sentences: Sentences[];
+    setSentences: () => {};
 }
 
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Button, CircularProgress, Grid, Modal, Paper, Step, StepLabel, Stepper, TextField, Tooltip, Typography } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton'
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import { addExampleDocsToTask, CandidateDoc, candidateDocToExampleDoc, createTask, ExampleDoc, getCandidateDocsForTask, getTaskById, updateTask } from '@services/task-service';
+import { addExampleDocsToTask, CandidateDoc, candidateDocToExampleDoc, createTask, ExampleDoc, getCandidateDocsForTask, getPhrasesForAnnotation, getSentencesForAnnotation, getTaskById, Sentences, SentencesAnnotation, updateTask } from '@services/task-service';
 import './TaskCreationWizard.css';
 import { CandidateDocCard } from '@components/candidate-doc-card/CandidateDocCard';
 
@@ -23,18 +23,23 @@ const steps = ['Describe the task', 'Select Example Docs', 'Annotate Phrases'];
 const MAX_EXAMPLE_DOCS = 2;
 
 export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => {
+    // modal control state
     const { isOpen, onClose, onCreate, id } = props;
     const [step, setStep] = React.useState(id ? -1 : 0);
+    const [helperText, setHelperText] = React.useState<string[]>([]);
+    const [isNextLoading, setIsNextLoading] = React.useState(false);
+    const [isConfirmingBack, setIsConfirmingBack] = React.useState(false);
+    // step 1
     const [taskNum, setTaskNum] = React.useState(id || '');
     const [taskTitle, setTaskTitle] = React.useState('');
     const [taskNarr, setTaskNarr] = React.useState('');
     const [taskStmt, setTaskStmt] = React.useState('');
+    // step 2
     const [candidateDocs, setCandidateDocs] = React.useState<CandidateDoc[]>([]);
     const [exampleDocMap, setExampleDocMap] = React.useState<Record<string, SelectedExampleDoc>>({});
-    const [annotations, setAnnotations] = React.useState([]);
-    const [helperText, setHelperText] = React.useState<string[]>([]);
-    const [isNextLoading, setIsNextLoading] = React.useState(false);
-    const [isConfirmingBack, setIsConfirmingBack] = React.useState(false);
+    // step 3
+    const [sentencesForAnnotation, setSentencesForAnnotation] = React.useState<Sentences[]>([]);
+    const [annotations, setAnnotations] = React.useState<SentencesAnnotation[]>([]);
 
     React.useEffect(() => {
         const setInitialStep = async () => {
@@ -110,6 +115,10 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
             // post candidate docs
             const exampleDocs: ExampleDoc[] = Object.values(exampleDocMap).map(doc => candidateDocToExampleDoc(doc.doc, doc.docNumber, doc.highlight));
             addExampleDocsToTask(taskNum, exampleDocs).then(res => {
+                getPhrasesForAnnotation(taskNum, reqNum).then(res => {
+                    setSentencesForAnnotation(res)
+                }).catch(e => {
+                });
                 setStep(2);
                 setIsNextLoading(false);
             }).catch(e => {
@@ -120,16 +129,6 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
         } else if(step === steps.length - 1) {
             // submit
             // make api call
-            createTask({
-                taskTitle: '',
-                taskNarr: '',
-                taskStmt: ''
-            }).then((res) => {
-                getSentencesForAnnotation(taskNum, reqNum).then(res => {
-                    setSentencesAnnotation(res)
-                }).catch(e => {
-                });
-            });
         } else {
             // next step
             setStep(Math.min(steps.length, step + 1));
