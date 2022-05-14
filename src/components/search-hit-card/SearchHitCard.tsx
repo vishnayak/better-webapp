@@ -1,5 +1,5 @@
 import { SearchHit } from '@components/hits/SearchHits';
-import { Box, Button, Card, CardActions, CardContent, IconButton, LinearProgress, Typography } from '@mui/material';
+import { Button, Card, CardActions, CardContent, Chip, IconButton, Typography } from '@mui/material';
 import React from 'react';
 import './SearchHitCard.css';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -58,13 +58,14 @@ export const SearchHitCard: React.FC<SearchHitCardProps> = ({ searchHit, showTra
     }
 
     return <Card elevation={8} classes={{ root: 'search-hit-card' }}>
+        {searchHit.isRelevant && <Chip classes={{label: 'search-hit-relevance-label-span', root: 'search-hit-relevance-label'}} label="Relevant" color="success" />}
         <CardContent classes={{ root: expanded ? 'search-hit-card-content' : 'search-hit-card-content search-hit-card-content--compact' }}>
             <Typography variant="body2">
                 {insertNewLines(text)}
             </Typography>
         </CardContent>
         <CardActions classes={{ root: 'card-actions' }}>
-            <IconButton onClick={() => setExpanded(!expanded)} aria-label="expand">
+            <IconButton classes={{root: 'search-hit-expand-button'}} onClick={() => setExpanded(!expanded)} aria-label="expand">
                 {expanded ? 
                 <KeyboardArrowDownIcon fontSize={'large'} classes={{root: 'up-arrow'}} /> : 
                 <KeyboardArrowDownIcon fontSize={'large'} />}
