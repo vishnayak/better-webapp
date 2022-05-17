@@ -44,7 +44,11 @@ export interface Sentences{
 
 export interface Annotation{
     sentences: string;
-    judgment: string;
+    judgment: AnnotationJudgement;
+}
+
+export interface PhraseAnnotation {
+    [phrase: string]: Annotation;
 }
 
 export interface TaskCreationPayload {
@@ -94,6 +98,10 @@ export interface CandidateDocsResult {
     totalNumHits: number;
 }
 
+export enum AnnotationJudgement {
+    NONE='', P='P', E='E', G='G', F='F', B='B'
+};
+
 export const candidateDocToExampleDoc = (c: CandidateDoc, docNumber: number, highlight: string): ExampleDoc => {
     const {docid, docText, sentenceRanges: sentences } = c; 
     return {
@@ -115,7 +123,15 @@ export const getTaskById = async (id: string): Promise<Task> => {
     return (await fetch(request)).json();
 };
 
-export const getPhrasesForAnnotation = async (id: string): Promise<String> => {
+export const getPhrasesForAnnotation = async (id: string): Promise<any[]> => {
+    const request = new Request(`${BASE_URL}tasks/${id}/phrases-for-annotation`);
+    const res = (await fetch(request)).json();
+    return Object.entries(res).map(([key, value]) => {
+        return { key, value: (value as Annotation).sentences };
+    });
+};
+
+export const getAnnotationPhrases = async (id: string): Promise<PhraseAnnotation> => {
     const request = new Request(`${BASE_URL}tasks/${id}/phrases-for-annotation`);
     return (await fetch(request)).json();
 };
@@ -175,15 +191,15 @@ export const postSentencesForAnnotation = async (taskNum: string, reqNum : strin
     } 
 }
 
-export const postPhrasesForAnnotation = async (taskNum: string,phrasesAnnotation:string) => {
+export const postPhrasesForAnnotation = async (taskNum: string, phrasesAnnotation: PhraseAnnotation) => {
     try {
         const request = new Request(`${BASE_URL}tasks/${taskNum}/phrases-for-annotation`);
         const response = await fetch(request, {
-         method: 'POST',
-         headers: {
-           'Content-Type': 'application/json'
-           },
-           body: phrasesAnnotation
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(phrasesAnnotation)
          });
     } catch (error) {
         console.log(error)

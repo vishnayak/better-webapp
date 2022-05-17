@@ -2,9 +2,10 @@ import React from 'react';
 import { Box, Button, CircularProgress, Grid, Modal, Paper, Step, StepLabel, Stepper, TextField, Tooltip, Typography } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton'
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import { addExampleDocsToTask, CandidateDoc, candidateDocToExampleDoc, createTask, ExampleDoc, getCandidateDocsForTask, getPhrasesForAnnotation, getSentencesForAnnotation, getTaskById, Sentences, SentencesAnnotation, updateTask } from '@services/task-service';
+import { addExampleDocsToTask, AnnotationJudgement, CandidateDoc, candidateDocToExampleDoc, createTask, ExampleDoc, getAnnotationPhrases, getCandidateDocsForTask, getPhrasesForAnnotation, getSentencesForAnnotation, getTaskById, PhraseAnnotation, postPhrasesForAnnotation, Sentences, SentencesAnnotation, updateTask } from '@services/task-service';
 import './TaskCreationWizard.css';
 import { CandidateDocCard } from '@components/candidate-doc-card/CandidateDocCard';
+import { PhrasesFormDialog } from '@components/formDialog/PhrasesFormDialog';
 
 export interface TaskCreationWizardProps {
     isOpen: boolean;
@@ -20,7 +21,7 @@ interface SelectedExampleDoc {
 };
 
 const steps = ['Describe the task', 'Select Example Docs', 'Annotate Phrases'];
-const MAX_EXAMPLE_DOCS = 2;
+const MAX_EXAMPLE_DOCS = 4;
 
 export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => {
     // modal control state
@@ -38,35 +39,28 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
     const [candidateDocs, setCandidateDocs] = React.useState<CandidateDoc[]>([]);
     const [exampleDocMap, setExampleDocMap] = React.useState<Record<string, SelectedExampleDoc>>({});
     // step 3
-    const [sentencesForAnnotation, setSentencesForAnnotation] = React.useState<Sentences[]>([]);
-    const [annotations, setAnnotations] = React.useState<SentencesAnnotation[]>([]);
-
+    const [initialAnnotatedPhrases, setInitialAnnotatedPhrases] = React.useState<PhraseAnnotation>({});
+    const phrasesForAnnotation = React.useRef<PhraseAnnotation>({});
+    
     React.useEffect(() => {
         const setInitialStep = async () => {
             if(id) { // edit mode
                 // fetch task with id
                 const task = await getTaskById(id);
-                // const task: Task = {
-                //     taskTitle: '',
-                //     taskNum: '',
-                //     taskStmt: '',
-                //     taskNarr: '',
-                //     taskExampleDocs: [],
-                //     requests: []
-                // };
                 // set step to 2 if annotations are present
-                let annotations = [];
                 try {
-                    annotations = [];
-                } catch {
-                    console.log('Annotations call failed.');
-                }
-                if(annotations.length > 0) {
-                    setStep(2);
-                } else if(task.taskExampleDocs) {
-                    setStep(1);
-                } else {
-                    setStep(0);
+                    const phrases = await getAnnotationPhrases(id);
+                    if(Object.keys(phrases).length > 0) {
+                        setStep(2);
+                        setInitialAnnotatedPhrases(phrases);
+                        phrasesForAnnotation.current = phrases;
+                    } else if(task.taskExampleDocs?.length > 0) {
+                        setStep(1);
+                    } else {
+                        setStep(0);
+                    }
+                } catch(e) {
+                    console.error('Annotations call failed: ', e);
                 }
             }
         };
@@ -81,7 +75,8 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
             setCandidateDocs([]);
             setExampleDocMap({});
         } else if(step === 2) {
-            setAnnotations([]);
+            setInitialAnnotatedPhrases({});
+            phrasesForAnnotation.current = {};
         }
         setStep(Math.max(0, step - 1));
     };
@@ -92,7 +87,7 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
         if(step === 0) {
             // create new task
             // make api call
-            if(taskTitle.length > 0 && taskNarr.length > 0 && taskStmt.length > 0){
+            if(taskTitle.length > 0){
                 const payload = {
                     taskTitle,
                     taskNarr,
@@ -110,14 +105,18 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
                         // do nothing  for now :(
                     });
                 });
+            } else {
+                setIsNextLoading(false);
             }
         } else if(step === 1) {
             // post candidate docs
             const exampleDocs: ExampleDoc[] = Object.values(exampleDocMap).map(doc => candidateDocToExampleDoc(doc.doc, doc.docNumber, doc.highlight));
             addExampleDocsToTask(taskNum, exampleDocs).then(res => {
-                getPhrasesForAnnotation(taskNum, reqNum).then(res => {
-                    setSentencesForAnnotation(res)
+                getAnnotationPhrases(taskNum).then(res => {
+                    setInitialAnnotatedPhrases(res);
+                    phrasesForAnnotation.current = res;
                 }).catch(e => {
+                    console.error(e);
                 });
                 setStep(2);
                 setIsNextLoading(false);
@@ -128,10 +127,17 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
             });
         } else if(step === steps.length - 1) {
             // submit
-            // make api call
+            postPhrasesForAnnotation(taskNum, phrasesForAnnotation.current).then(res => {
+                setIsNextLoading(false);
+                onCreate();
+            }).catch(e => {
+                console.log(e);
+                setIsNextLoading(false);
+            });
         } else {
             // next step
             setStep(Math.min(steps.length, step + 1));
+            setIsNextLoading(true);
         }
         setHelperText([]);
     };
@@ -145,19 +151,19 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
     };
 
     const validateFirstStep = () => {
-        return taskTitle.length > 0 && taskStmt.length > 0 && taskNarr.length > 0;
+        return taskTitle.length > 0;
     };
 
     const getHelper = () => {
         const helper = [];
         if(step === 0 ) {
             if(taskTitle.length <= 0) { helper.push('Task Title cannot be blank.'); }
-            if(taskStmt.length <= 0) { helper.push('Task Statement cannot be blank.'); }
-            if(taskNarr.length <= 0) { helper.push('Task Narrative cannot be blank.'); }
+            // if(taskStmt.length <= 0) { helper.push('Task Statement cannot be blank.'); }
+            // if(taskNarr.length <= 0) { helper.push('Task Narrative cannot be blank.'); }
         } else if (step === 1) {
-            if(Object.keys(exampleDocMap).length !== 2) { helper.push('Select exactly two example documents.'); }
+            if(Object.keys(exampleDocMap).length === 0 || Object.keys(exampleDocMap).length < MAX_EXAMPLE_DOCS) { helper.push('Select example documents (upto 4).'); }
             if(!Object.values(exampleDocMap).every(v => v.highlight.length > 0)) { 
-                helper.push('Select a highlight section for both documents'); 
+                helper.push('Select a highlight section for all documents'); 
             };
         } else {}
         setHelperText(helper); 
@@ -185,7 +191,17 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
 
     const handleHighlightConfirm = (docId: string, text: string) => {
         setExampleDocMap({ ...exampleDocMap, [docId]: { ...exampleDocMap[docId], highlight: text } });
-    }
+    };
+
+    const handleAnnotate = (phrase: string, judgment: AnnotationJudgement) => {
+        phrasesForAnnotation.current = {
+            ...phrasesForAnnotation.current,
+            [phrase]: {
+                ...phrasesForAnnotation.current[phrase],
+                judgment
+            }
+        };
+    };
 
     const isLastStep = step === steps.length - 1;
 
@@ -290,7 +306,7 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
                         {isNextLoading && <Grid item>Please wait, this may take upto 30 seconds...</Grid>}
                     </Grid>
                 ): step === 1 ? (
-                    <Grid classes={{root: 'wizard-candidate-docs-section'}} container direction='column' spacing={4} mt={2}>
+                    <Grid classes={{root: 'wizard-body'}} container direction='column' spacing={4} mt={2}>
                         <div className={'wizard-instruction-text'}>Select <b>EXACTLY TWO</b> example documents and highlight most relevant text for each:</div>
                         {candidateDocs.map((doc, i) => <CandidateDocCard 
                             key = {`${i}${doc.docid}`} 
@@ -302,13 +318,15 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
                             onHighlightConfirm={(t) => handleHighlightConfirm(doc.docid, t)}
                         />)}
                     </Grid>
-                ) : (
+                ) : step === 2 ? (
                     <React.Fragment>
-                    <Typography sx={{ mt: 2, mb: 1 }}>Step {step + 1}</Typography>
-                    
+                        <div className={'wizard-body'}>
+                            <Typography sx={{ mt: 2, mb: 1 }}>Annotate Phrases</Typography>
+                            <PhrasesFormDialog taskNum={taskNum} onAnnotate={handleAnnotate} annotations={initialAnnotatedPhrases} />
+                        </div>
                     </React.Fragment>
-                )}
-                {renderFooter()}
+                ) : ('Task Created!')}
+                {step < 3 && renderFooter()}
             </> : <CircularProgress size={60} classes={{root: 'wizard-loading'}} />}
         </Paper>
     </Modal>; 

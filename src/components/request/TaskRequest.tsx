@@ -43,7 +43,7 @@ export const Request: React.FC<RequestProps> = ({ task }) => {
                     <TableCell rowSpan={task.taskExampleDocs.length + 1}>{task.taskTitle}</TableCell>
                     <TableCell rowSpan={task.taskExampleDocs.length + 1}>{task.taskStmt}</TableCell>
                     <TableCell rowSpan={task.taskExampleDocs.length + 1}>{task.taskNarr}</TableCell>
-                    <TableCell rowSpan={task.taskExampleDocs.length + 1}> <PhrasesFormDialog task={task} /></TableCell>
+                    {/* <TableCell rowSpan={task.taskExampleDocs.length + 1}> <PhrasesFormDialog task={task} /></TableCell> */}
                 </TableRow>
                 {/* <TableCell align="left" style={{ width: 150 }}> */}
                 {task.taskExampleDocs.map(detail => (

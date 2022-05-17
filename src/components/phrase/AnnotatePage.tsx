@@ -15,12 +15,6 @@ import Typography from '@mui/material/Typography';
 export interface AnnotatePageProps {
     task: Task;
 }
-function createTaskDoc(key: any, value: any) {
-    return {
-        key,
-        value,
-    };
-}
 
 export const AnnotatePage: React.FC<AnnotatePageProps> = ({ task }) => {
     const [open, setOpen] = React.useState(false);
@@ -50,13 +44,7 @@ export const AnnotatePage: React.FC<AnnotatePageProps> = ({ task }) => {
     };
     React.useEffect(() => {
         getPhrasesForAnnotation(task.taskNum).then(res => {
-            const entries = Object.entries(JSON.parse(JSON.stringify(res)))
-            const localKeys: any[] = [];
-
-            entries.forEach(([key, value]) => {
-                localKeys.push(createTaskDoc(key, (value as Annotation).sentences));
-            });
-            setKeys(localKeys)
+            setKeys(res);
         }).catch(e => {
         });
     }, []);

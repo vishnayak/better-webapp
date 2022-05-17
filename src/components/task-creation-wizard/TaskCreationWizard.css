@@ -15,7 +15,7 @@
     margin: auto;
 }
 
-.wizard-candidate-docs-section {
+.wizard-body {
     overflow-x: hidden;
     overflow-y: scroll;
     flex-wrap: nowrap !important;

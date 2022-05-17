@@ -11,6 +11,7 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import AddIcon from '@mui/icons-material/Add';
 import { Grid } from '@mui/material';
 import { Sentences } from '@components/sentences/Sentences';
 import { TaskCreationWizard } from '@components/task-creation-wizard/TaskCreationWizard';
@@ -42,12 +43,19 @@ export const TasksPage: React.FC<{}> = () => {
   const activateSentencesAnnotation = () => {
     setOpenSentences(true);
   };
-  const activateCreateNewTask = () => {
+  const handleTaskCreationClick = () => {
     setOpenCreateNewTask(true);
   };
 
   return (<TableContainer component={Paper}>
     <div className='tasks-page'>
+      <Button 
+          onClick={handleTaskCreationClick} 
+          variant={'contained'} 
+          classes={{root: 'submissions-page-creation-button'}}
+      >
+        {<><AddIcon /> Create a Task</>}
+      </Button>
       <TaskCreationWizard onCreate={fetchAllTasks} isOpen={openCreateNewTask} onClose={() => setOpenCreateNewTask(false)}/>
 
       {

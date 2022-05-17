@@ -18,9 +18,9 @@ interface SentencesFormDialogProps {
     taskNum: string;
     reqNum: string;
     sentencesAnnotation: SentencesAnnotation;
-    setSentencesAnnotation: () => {},;
+    setSentencesAnnotation: (annotation: SentencesAnnotation) => {};
     sentences: Sentences[];
-    setSentences: () => {};
+    setSentences: (sentences: Sentences[]) => {};
 }
 
 
@@ -34,16 +34,16 @@ export const SentencesFormDialog: React.FC<SentencesFormDialogProps> = ({ taskNu
 
     function handleClickOpen(sentences: Sentences[]) {
         // setOpen(true);
-        setSentences(sentences)
+        setSentences(sentences);
     }
 
     const handleClose = () => {
         // setOpen(false);
     };
-    const handleCloseConfirmationPage = () => {
-        // setOpenConfirmation(false);
-        // setOpen(false);
-    };
+    // const handleCloseConfirmationPage = () => {
+    //     setOpenConfirmation(false);
+    //     // setOpen(false);
+    // };
 
     const handleChange = (index: any) => (event: any) => {
         setSentences([...sentences.slice(0, index), { ...sentences[index], judgement: event.target.value }, ...sentences.slice(index+1, sentences.length - index - 1)]);
@@ -105,7 +105,7 @@ export const SentencesFormDialog: React.FC<SentencesFormDialogProps> = ({ taskNu
                         <Button onClick={handleClose}>Cancel</Button>
                     </DialogActions>
                 </Dialog>
-                <Dialog open={openConfirmation} onClose={handleCloseConfirmationPage} fullWidth maxWidth="lg">
+                {/* <Dialog open={openConfirmation} onClose={handleCloseConfirmationPage} fullWidth maxWidth="lg">
                     <DialogTitle>Confirmation</DialogTitle>
                     <DialogContent>
                         <Grid container>
@@ -119,7 +119,7 @@ export const SentencesFormDialog: React.FC<SentencesFormDialogProps> = ({ taskNu
                     <DialogActions>
                         <Button onClick={handleCloseConfirmationPage}>Ok!</Button>
                     </DialogActions>
-                </Dialog>
+                </Dialog> */}
             </div>
         </React.Fragment>
     );
