@@ -1,7 +1,6 @@
 import React from 'react';
 import { getAllTasks, Task } from '@services/task-service';
 import './TasksPage.css';
-import { Phrases } from '@components/phrase/Phrases';
 import { Request } from '@components/request/TaskRequest'
 import { Button } from '@mui/material';
 import TableContainer from '@mui/material/TableContainer';
@@ -12,8 +11,6 @@ import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import AddIcon from '@mui/icons-material/Add';
-import { Grid } from '@mui/material';
-import { Sentences } from '@components/sentences/Sentences';
 import { TaskCreationWizard } from '@components/task-creation-wizard/TaskCreationWizard';
 
 
@@ -23,6 +20,7 @@ export const TasksPage: React.FC<{}> = () => {
   const [tasks, setTasks] = React.useState<Task[]>([]);
 
   const [openCreateNewTask, setOpenCreateNewTask] = React.useState(false);
+  const [editingTaskId, setEditingTaskId] = React.useState<string | undefined>(undefined);
 
   React.useEffect(() => {
     fetchAllTasks();
@@ -37,31 +35,44 @@ export const TasksPage: React.FC<{}> = () => {
     }
   };
 
-  const activateBill = () => {
-    setOpen(true);
-  };
-  const activateSentencesAnnotation = () => {
-    setOpenSentences(true);
-  };
   const handleTaskCreationClick = () => {
     setOpenCreateNewTask(true);
   };
 
+  const handleEdit = (taskNum: string) => {
+    setEditingTaskId(taskNum);
+  };
+
+  const handleModalClose = () => {
+    setOpenCreateNewTask(false)
+    setEditingTaskId(undefined);
+  };
+
+  const handleTaskCreate = () => {
+    fetchAllTasks();
+    handleModalClose();
+  };
+
   return (<TableContainer component={Paper}>
     <div className='tasks-page'>
-      <Button 
-          onClick={handleTaskCreationClick} 
-          variant={'contained'} 
-          classes={{root: 'submissions-page-creation-button'}}
-      >
-        {<><AddIcon /> Create a Task</>}
-      </Button>
-      <TaskCreationWizard onCreate={fetchAllTasks} isOpen={openCreateNewTask} onClose={() => setOpenCreateNewTask(false)}/>
-
       {
         <TableContainer component={Paper}>
           {!open && !openSentences && (<div>
             <h1>Tasks Dashboard</h1>
+            <Button 
+              onClick={handleTaskCreationClick} 
+              variant={'contained'} 
+              classes={{root: 'tasks-page-creation-button'}}
+            >
+              {<><AddIcon /> Create a Task</>}
+            </Button>
+            {(openCreateNewTask || editingTaskId) && <TaskCreationWizard 
+              taskNum={editingTaskId} 
+              onCreate={handleTaskCreate} 
+              isOpen={openCreateNewTask || (editingTaskId !== undefined)} 
+              onClose={handleModalClose}
+            />}
+
             <Table aria-label="collapsible table ">
               <TableHead>
                 <TableRow>
@@ -76,7 +87,7 @@ export const TasksPage: React.FC<{}> = () => {
               </TableHead>
               <TableBody>
                 {tasks.map((task) => (
-                  <Request key={task.taskNum} task={task} />
+                  <Request onEdit={() => handleEdit(task.taskNum)} key={task.taskNum} task={task} />
                 ))}
               </TableBody>
             </Table>

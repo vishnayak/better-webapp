@@ -12,16 +12,16 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import { SentencesFormDialog } from '@components/formDialog/SentencesFormDialog';
-import { PhrasesFormDialog } from '@components/formDialog/PhrasesFormDialog';
+import { Button } from '@mui/material';
 
 
 
 interface RequestProps {
     task: Task;
+    onEdit: () => void;
 }
 
-export const Request: React.FC<RequestProps> = ({ task }) => {
+export const Request: React.FC<RequestProps> = ({ task, onEdit }) => {
     const [open, setOpen] = React.useState(false);
 
     return (
@@ -43,7 +43,7 @@ export const Request: React.FC<RequestProps> = ({ task }) => {
                     <TableCell rowSpan={task.taskExampleDocs.length + 1}>{task.taskTitle}</TableCell>
                     <TableCell rowSpan={task.taskExampleDocs.length + 1}>{task.taskStmt}</TableCell>
                     <TableCell rowSpan={task.taskExampleDocs.length + 1}>{task.taskNarr}</TableCell>
-                    {/* <TableCell rowSpan={task.taskExampleDocs.length + 1}> <PhrasesFormDialog task={task} /></TableCell> */}
+                    <TableCell rowSpan={task.taskExampleDocs.length + 1}> <Button variant={'contained'} onClick={onEdit}>Edit</Button></TableCell>
                 </TableRow>
                 {/* <TableCell align="left" style={{ width: 150 }}> */}
                 {task.taskExampleDocs.map(detail => (
@@ -66,7 +66,7 @@ export const Request: React.FC<RequestProps> = ({ task }) => {
                                     <TableRow>
                                         <TableCell><b>Request Number</b></TableCell>
                                         <TableCell><b>Request Text</b></TableCell>
-                                        <TableCell><b>Actions</b></TableCell>
+                                        {/* <TableCell><b>Actions</b></TableCell> */}
                                         <TableCell><b>Request Docs</b></TableCell>
 
                                     </TableRow>
@@ -78,7 +78,7 @@ export const Request: React.FC<RequestProps> = ({ task }) => {
                                                 
                                                 <TableCell rowSpan={historyRow.exampleDocs.length + 1}>{historyRow.reqNum}</TableCell>
                                                 <TableCell rowSpan={historyRow.exampleDocs.length + 1}>{historyRow.reqText}</TableCell>
-                                                <TableCell rowSpan={historyRow.exampleDocs.length + 1}> <SentencesFormDialog taskNum={task.taskNum} reqNum={historyRow.reqNum} /></TableCell>
+                                                {/* <TableCell rowSpan={historyRow.exampleDocs.length + 1}> <SentencesFormDialog taskNum={task.taskNum} reqNum={historyRow.reqNum} /></TableCell> */}
                                             </TableRow>
                                             {historyRow.exampleDocs.map(detail => (
                                                 <TableRow >

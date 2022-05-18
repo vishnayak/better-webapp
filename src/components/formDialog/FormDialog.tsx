@@ -24,7 +24,7 @@ export const FormDialog: React.FC<FormDialogProps> = ({ taskDoc }) => {
     return (
         <React.Fragment>
             {/* <div> */}
-            <Button variant="contained" onClick={handleClickOpen}>
+            <Button variant="outlined" onClick={handleClickOpen}>
                 Doc - {taskDoc.docNumber}
             </Button>
             <Dialog open={open} onClose={handleClose} fullWidth maxWidth="lg">
