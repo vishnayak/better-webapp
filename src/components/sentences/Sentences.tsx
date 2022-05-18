@@ -8,7 +8,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { Grid } from '@mui/material';
-import { Tasks } from '@services/task-service';
+import { Task } from '@services/task-service';
 import { PhraseRequest } from '@components/request/PhraseRequest'
 import { Request } from '@components/request/TaskRequest'
 
@@ -16,7 +16,7 @@ import { Request } from '@components/request/TaskRequest'
 
 
 export interface SentencesProps {
-    tasks: Tasks[];
+    tasks: Task[];
 }
 
 export const Sentences: React.FC<SentencesProps> = ({ tasks }) => {
@@ -40,7 +40,7 @@ export const Sentences: React.FC<SentencesProps> = ({ tasks }) => {
                     </TableHead>
                     <TableBody>
                         {tasks.map((task) => (
-                            <Request key={task.taskNum} task={task} />
+                            <Request key={task.taskNum} onEdit={()=>{}} task={task} />
                         ))}
                     </TableBody>
                 </Table>

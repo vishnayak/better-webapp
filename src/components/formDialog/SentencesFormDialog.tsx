@@ -19,41 +19,39 @@ import React from 'react';
 
 interface SentencesFormDialogProps {
     taskNum: string;
-    reqNum: string
+    reqNum: string;
+    sentencesAnnotation: SentencesAnnotation;
+    setSentencesAnnotation: (annotation: SentencesAnnotation) => {};
+    sentences: Sentences[];
+    setSentences: (sentences: Sentences[]) => {};
 }
 
 
-export const SentencesFormDialog: React.FC<SentencesFormDialogProps> = ({ taskNum, reqNum }) => {
-    const [open, setOpen] = React.useState(false);
-    const [openConfirmation, setOpenConfirmation] = React.useState(false);
+export const SentencesFormDialog: React.FC<SentencesFormDialogProps> = ({ taskNum, reqNum, sentencesAnnotation, setSentencesAnnotation, sentences, setSentences }) => {
+    // const [open, setOpen] = React.useState(false);
+    // const [openConfirmation, setOpenConfirmation] = React.useState(false);
 
 
-    const [sentencesAnnotation, setSentencesAnnotation] = React.useState<SentencesAnnotation>();
-    const [sentences, setSentences] = React.useState<Sentences[]>([]);
+    // const [sentencesAnnotation, setSentencesAnnotation] = React.useState<SentencesAnnotation>();
+    // const [sentences, setSentences] = React.useState<Sentences[]>([]);
 
     function handleClickOpen(sentences: Sentences[]) {
-        setOpen(true);
-        setSentences(sentences)
+        // setOpen(true);
+        setSentences(sentences);
     }
 
     const handleClose = () => {
-        setOpen(false);
+        // setOpen(false);
     };
-    const handleCloseConfirmationPage = () => {
-        setOpenConfirmation(false);
-        setOpen(false);
-    };
+    // const handleCloseConfirmationPage = () => {
+    //     setOpenConfirmation(false);
+    //     // setOpen(false);
+    // };
 
     const handleChange = (index: any) => (event: any) => {
-        sentences[index].judgement = event.target.value;
+        setSentences([...sentences.slice(0, index), { ...sentences[index], judgement: event.target.value }, ...sentences.slice(index+1, sentences.length - index - 1)]);
+        // sentences[index].judgement = event.target.value;
     };
-
-    React.useEffect(() => {
-        getSentencesForAnnotation(taskNum, reqNum).then(res => {
-            setSentencesAnnotation(res)
-        }).catch(e => {
-        });
-    }, []);
 
     const handleAnnotate = () => {
 
@@ -63,7 +61,7 @@ export const SentencesFormDialog: React.FC<SentencesFormDialogProps> = ({ taskNu
             console.log('error' + e)
         });
 
-        setOpenConfirmation(true);
+        // setOpenConfirmation(true);
 
     };
     return (
@@ -76,7 +74,7 @@ export const SentencesFormDialog: React.FC<SentencesFormDialogProps> = ({ taskNu
                         </TableCell> 
                     </TableRow>
                 ))}
-                <Dialog open={open} onClose={handleClose} fullWidth maxWidth="lg">
+                <Dialog open={true} onClose={handleClose} fullWidth maxWidth="lg">
                     <DialogTitle>Judge Sentences</DialogTitle>
                     <DialogContent>
                         {sentences.map((sen, index) => (
@@ -110,7 +108,7 @@ export const SentencesFormDialog: React.FC<SentencesFormDialogProps> = ({ taskNu
                         <Button onClick={handleClose}>Cancel</Button>
                     </DialogActions>
                 </Dialog>
-                <Dialog open={openConfirmation} onClose={handleCloseConfirmationPage} fullWidth maxWidth="lg">
+                {/* <Dialog open={openConfirmation} onClose={handleCloseConfirmationPage} fullWidth maxWidth="lg">
                     <DialogTitle>Confirmation</DialogTitle>
                     <DialogContent>
                         <Grid container>
@@ -124,7 +122,7 @@ export const SentencesFormDialog: React.FC<SentencesFormDialogProps> = ({ taskNu
                     <DialogActions>
                         <Button onClick={handleCloseConfirmationPage}>Ok!</Button>
                     </DialogActions>
-                </Dialog>
+                </Dialog> */}
             </div>
         </React.Fragment>
     );

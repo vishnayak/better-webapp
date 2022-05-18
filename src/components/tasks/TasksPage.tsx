@@ -1,7 +1,6 @@
 import React from 'react';
-import { getAllTasks, Tasks } from '@services/task-service';
+import { getAllTasks, Task } from '@services/task-service';
 import './TasksPage.css';
-import { Phrases } from '@components/phrase/Phrases';
 import { Request } from '@components/request/TaskRequest'
 import { Button } from '@mui/material';
 import TableContainer from '@mui/material/TableContainer';
@@ -11,41 +10,69 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import { Grid } from '@mui/material';
-import { Sentences } from '@components/sentences/Sentences';
+import AddIcon from '@mui/icons-material/Add';
+import { TaskCreationWizard } from '@components/task-creation-wizard/TaskCreationWizard';
 
 
 export const TasksPage: React.FC<{}> = () => {
   const [open, setOpen] = React.useState(false);
   const [openSentences, setOpenSentences] = React.useState(false);
-  const [tasks, setTasks] = React.useState<Tasks[]>([]);
+  const [tasks, setTasks] = React.useState<Task[]>([]);
 
   const [openCreateNewTask, setOpenCreateNewTask] = React.useState(false);
+  const [editingTaskId, setEditingTaskId] = React.useState<string | undefined>(undefined);
 
   React.useEffect(() => {
-    getAllTasks().then(res => {
-      setTasks(res);
-    }).catch(e => {
-    });
+    fetchAllTasks();
   }, []);
 
-  const activateBill = () => {
-    setOpen(true);
+  const fetchAllTasks = async () => {
+    try {
+      const res = await getAllTasks();
+      setTasks(res);
+    } catch (e) {
+      console.error(e);
+    }
   };
-  const activateSentencesAnnotation = () => {
-    setOpenSentences(true);
-  };
-  const activateCreateNewTask = () => {
+
+  const handleTaskCreationClick = () => {
     setOpenCreateNewTask(true);
+  };
+
+  const handleEdit = (taskNum: string) => {
+    setEditingTaskId(taskNum);
+  };
+
+  const handleModalClose = () => {
+    setOpenCreateNewTask(false)
+    setEditingTaskId(undefined);
+  };
+
+  const handleTaskCreate = () => {
+    fetchAllTasks();
+    handleModalClose();
   };
 
   return (<TableContainer component={Paper}>
     <div className='tasks-page'>
-
       {
         <TableContainer component={Paper}>
-          {!open && !openCreateNewTask && !openSentences && (<div>
+          {!open && !openSentences && (<div>
             <h1>Tasks Dashboard</h1>
+            <Button 
+              onClick={handleTaskCreationClick} 
+              variant={'contained'} 
+              classes={{root: 'tasks-page-creation-button'}}
+            >
+              {<><AddIcon /> Create a Task</>}
+            </Button>
+            {(openCreateNewTask || editingTaskId) && <TaskCreationWizard 
+              taskNum={editingTaskId} 
+              onCreate={handleTaskCreate} 
+              isOpen={openCreateNewTask || (editingTaskId !== undefined)} 
+              onClose={handleModalClose}
+            />}
+
             <Table aria-label="collapsible table ">
               <TableHead>
                 <TableRow>
@@ -60,7 +87,7 @@ export const TasksPage: React.FC<{}> = () => {
               </TableHead>
               <TableBody>
                 {tasks.map((task) => (
-                  <Request key={task.taskNum} task={task} />
+                  <Request onEdit={() => handleEdit(task.taskNum)} key={task.taskNum} task={task} />
                 ))}
               </TableBody>
             </Table>

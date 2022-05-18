@@ -2,7 +2,7 @@
     max-width: 100%;
     margin: auto;
     padding-top: 1rem;
-    height: calc(100vh - 200px);
+    height: calc(100vh - 100px);
 }
 
 .fallback-text {
@@ -11,6 +11,10 @@
 
 .link-text {
     text-decoration: none;
+}
+
+.tasks-page-creation-button {
+    margin: 16px !important;
 }
 
 /* 

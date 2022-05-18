@@ -1,25 +1,18 @@
 import Button from '@mui/material/Button';
-import Paper from '@mui/material/Paper';
 import React from 'react';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
-import { Tasks } from '@services/task-service';
+import { AnnotationJudgement, Task } from '@services/task-service';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import { Grid } from '@mui/material';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+import Select from '@mui/material/Select';
 import { Annotation, getPhrasesForAnnotation } from '@services/task-service';
 import Typography from '@mui/material/Typography';
 
 
 export interface AnnotatePageProps {
-    task: Tasks;
-}
-function createTaskDoc(key: any, value: any) {
-    return {
-        key,
-        value,
-    };
+    task: Task;
 }
 
 export const AnnotatePage: React.FC<AnnotatePageProps> = ({ task }) => {
@@ -31,9 +24,9 @@ export const AnnotatePage: React.FC<AnnotatePageProps> = ({ task }) => {
         value: ''
     }]);
     const handleAnnotate = () => {
-        var annotation: Annotation = {
+        let annotation: Annotation = {
             sentences: "",
-            judgment: ""
+            judgment: AnnotationJudgement.NONE
         }, map = new Map();
         keys.map((k, index) => {
             annotation.sentences = k.value;
@@ -50,13 +43,7 @@ export const AnnotatePage: React.FC<AnnotatePageProps> = ({ task }) => {
     };
     React.useEffect(() => {
         getPhrasesForAnnotation(task.taskNum).then(res => {
-            const entries = Object.entries(JSON.parse(JSON.stringify(res)))
-            const localKeys: any[] = [];
-
-            entries.forEach(([key, value]) => {
-                localKeys.push(createTaskDoc(key, (value as Annotation).sentences));
-            });
-            setKeys(localKeys)
+            setKeys(res);
         }).catch(e => {
         });
     }, []);

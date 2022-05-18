@@ -8,13 +8,13 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { Grid } from '@mui/material';
-import { Tasks } from '@services/task-service';
+import { Task } from '@services/task-service';
 import { PhraseRequest } from '@components/request/PhraseRequest'
 
 
 
 export interface PhrasesProps {
-    tasks: Tasks[];
+    tasks: Task[];
 }
 
 export const Phrases: React.FC<PhrasesProps> = ({ tasks }) => {

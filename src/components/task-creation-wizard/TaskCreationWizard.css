@@ -1,0 +1,36 @@
+.wizard-paper {
+    margin: auto;
+    padding: 2rem;
+    height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+.wizard-modal {
+    position: absolute;
+    width: 80%;
+    height: 90%;
+    box-shadow: 24;
+    margin: auto;
+}
+
+.wizard-body {
+    overflow-x: hidden;
+    overflow-y: scroll;
+    flex-wrap: nowrap !important;
+}
+
+.wizard-loading {
+    margin: auto;
+}
+
+.wizard-instruction-text {
+    padding-left: 1rem;
+}
+
+.wizard-tooltip {
+    padding: 1rem !important;
+    font-size: 13px !important;
+    background-color: #141212c9 !important;
+}
