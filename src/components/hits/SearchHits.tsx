@@ -17,6 +17,7 @@ export interface SearchHit {
     events?: string[];
     sentenceRanges: Sentence[]; // - a list of the sentences that are in doc-text, described by these fields:
     translatedDocText: string;
+    isRelevant: boolean;
 };
 
 export interface Sentence { 

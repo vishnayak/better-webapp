@@ -10,7 +10,10 @@ import TableRow from '@mui/material/TableRow';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import { Grid } from '@mui/material';
-import Select from '@mui/material/Select';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
 
 import React from 'react';
 
@@ -79,22 +82,22 @@ export const SentencesFormDialog: React.FC<SentencesFormDialogProps> = ({ taskNu
                                 <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
                                     <TableCell >{sen.sentence}</TableCell>
                                     <TableCell>
-                                        <InputLabel id="demo-simple-select-label">Rating</InputLabel>
-                                        <Select
-                                            labelId="demo-simple-select-label"
-                                            id="demo-simple-select"
-                                            value={sen.judgement}
-                                            label="Rating"
-                                            sx={{ minWidth: 180 }}
-                                            onChange={handleChange(index)}
-                                        >
-                                            <MenuItem value={'P'}>Perfect</MenuItem>
-                                            <MenuItem value={'E'}>Excellent Match</MenuItem>
-                                            <MenuItem value={'G'}>Good Match</MenuItem>
-                                            <MenuItem value={'F'}>Fair Match</MenuItem>
-                                            <MenuItem value={'B'}>bad Match</MenuItem>
-                                        </Select>
-                                    </TableCell>
+                                            <InputLabel id="demo-simple-select-label">Rating</InputLabel>
+
+                                            <RadioGroup
+                                                row
+                                                aria-labelledby="demo-row-radio-buttons-group-label"
+                                                name="row-radio-buttons-group"
+                                                sx={{ minWidth: 180 }}
+                                                onChange={handleChange(index)}
+                                            >
+                                                <FormControlLabel value="P" control={<Radio />} label="Perfect" />
+                                                <FormControlLabel value="E" control={<Radio />} label="Excellent Match" />
+                                                <FormControlLabel value="G" control={<Radio />} label="Good Match" />
+                                                <FormControlLabel value="F" control={<Radio />} label="Fair Match" />
+                                                <FormControlLabel value="B" control={<Radio />} label="Bad Match" />
+                                            </RadioGroup>
+                                        </TableCell>
                                 </TableRow>
                             </React.Fragment>
                         ))}

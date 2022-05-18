@@ -31,6 +31,7 @@ export const SubmissionCreation: React.FC<SubmissionCreationProps> = ({ onCreate
     const [taskRequestMap, setTaskRequestMap] = React.useState<Record<string, RequestOption[]>>({});
     const [selectedTaskNum, setSelectedTaskNum] = React.useState<string | undefined>(undefined); 
     const [selectedReqNum, setSelectedReqNum] = React.useState<string | undefined>(undefined); 
+    const [isCreating, setIsCreating] = React.useState(false);
 
     React.useEffect(() => {
         const getData = async () => {
@@ -57,10 +58,12 @@ export const SubmissionCreation: React.FC<SubmissionCreationProps> = ({ onCreate
     
     const handleCreation = () => {
         if(selectedTaskNum && selectedReqNum) {
+            setIsCreating(true);
             submitSubmission({
                 taskNum: selectedTaskNum,
                 reqNum: selectedReqNum
             }).then(res => {
+                setIsCreating(false);
                 onCreate(res.id);
             });
         }
@@ -89,6 +92,8 @@ export const SubmissionCreation: React.FC<SubmissionCreationProps> = ({ onCreate
             sx={{ width: 300 }}
             renderInput={(params) => <TextField label={'Request Name'} {...params} />}
         />
-        <Button classes={{root: 'submission-creation-create-button'}} disabled={!(selectedTaskNum && selectedReqNum)} onClick={handleCreation} variant={'contained'}>Create</Button>
+        <Button classes={{root: 'submission-creation-create-button'}} disabled={!(selectedTaskNum && selectedReqNum) || isCreating} onClick={handleCreation} variant={'contained'}>
+            {isCreating ? 'Creating...' : 'Create'}
+        </Button>
     </div>;
 };
