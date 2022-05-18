@@ -40,7 +40,7 @@ export const Sentences: React.FC<SentencesProps> = ({ tasks }) => {
                     </TableHead>
                     <TableBody>
                         {tasks.map((task) => (
-                            <Request key={task.taskNum} task={task} />
+                            <Request key={task.taskNum} onEdit={()=>{}} task={task} />
                         ))}
                     </TableBody>
                 </Table>
