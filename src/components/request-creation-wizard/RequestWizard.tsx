@@ -64,7 +64,7 @@ function getSentenceAnnotations(task: Task, reqNum: string, reqText: string, exa
             judgement: annotationMap[doc.docid][sentenceId].judgment
         }))
     }));
-    return {
+    const res = {
         taskNarrative: task.taskNarr,
         taskTitle: task.taskTitle,
         taskStmt: task.taskStmt,
@@ -75,6 +75,7 @@ function getSentenceAnnotations(task: Task, reqNum: string, reqText: string, exa
             exampleDocs: docs
         }
     };
+    return res;
 };
 
 interface SentenceRowData {
@@ -148,6 +149,7 @@ export const RequestWizard: React.FC<RequestWizardProps> = (props) => {
                 try {
                     const sentences = getSentenceAnnotationMap(await getSentencesForAnnotation(task.taskNum, requestNumProp));
                     if(Object.keys(sentences).length > 0) {
+                        setExampleDocMap(getExampleDocMap(request.exampleDocs));
                         setInitialAnnotatedSentences(sentences);
                         setStep(2);
                         sentencesForAnnotation.current = sentences;
@@ -155,7 +157,7 @@ export const RequestWizard: React.FC<RequestWizardProps> = (props) => {
                         const docsResult = await getCandidateDocsForRequest(task.taskNum, requestNumProp);
                         const reorderedDocs = reorderCandidateDocs(docsResult.hits, request.exampleDocs);
                         setCandidateDocs(reorderedDocs.slice(0, 20));
-                        setExampleDocMap(getExampleDocMap(task.taskExampleDocs));
+                        setExampleDocMap(getExampleDocMap(request.exampleDocs));
                         setStep(1);
                     } else {
                         setReqText(request.reqText);
