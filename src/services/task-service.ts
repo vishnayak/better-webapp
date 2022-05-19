@@ -61,6 +61,12 @@ export interface TaskUpdatePayload extends TaskCreationPayload {
     taskNum: string;
 }
 
+export interface RequestCreationPayload {
+    reqText: string;
+}
+
+export interface RequestUpdatePayload extends RequestCreationPayload {}
+
 export interface CandidateDocsResponse {
     taskNum: string;
 	taskTitle: string;
@@ -102,6 +108,15 @@ export enum AnnotationJudgement {
     NONE='', P='P', E='E', G='G', F='F', B='B'
 };
 
+// utils
+
+function getResult(response: Response) {
+    if(response.ok) {
+        return response.json();
+    }
+    throw Error(JSON.stringify(response));
+}
+
 export const candidateDocToExampleDoc = (c: CandidateDoc, docNumber: number, highlight: string): ExampleDoc => {
     const {docid, docText, sentenceRanges: sentences } = c; 
     return {
@@ -113,19 +128,21 @@ export const candidateDocToExampleDoc = (c: CandidateDoc, docNumber: number, hig
     };
 }; 
 
+// task actions
+
 export const getAllTasks = async (): Promise<Task[]> => {
     const request = new Request(`${BASE_URL}tasks`);
-    return (await fetch(request)).json();  
+    return getResult(await fetch(request));  
 };
 
 export const getTaskById = async (id: string): Promise<Task> => {
     const request = new Request(`${BASE_URL}tasks/${id}`);
-    return (await fetch(request)).json();
+    return getResult(await fetch(request));
 };
 
 export const getPhrasesForAnnotation = async (id: string): Promise<any[]> => {
     const request = new Request(`${BASE_URL}tasks/${id}/phrases-for-annotation`);
-    const res = (await fetch(request)).json();
+    const res = getResult(await fetch(request));
     return Object.entries(res).map(([key, value]) => {
         return { key, value: (value as Annotation).sentences };
     });
@@ -133,7 +150,7 @@ export const getPhrasesForAnnotation = async (id: string): Promise<any[]> => {
 
 export const getAnnotationPhrases = async (id: string): Promise<PhraseAnnotation> => {
     const request = new Request(`${BASE_URL}tasks/${id}/phrases-for-annotation`);
-    return (await fetch(request)).json();
+    return getResult(await fetch(request));
 };
 
 export const createTask = async (payload: TaskCreationPayload): Promise<Task> => {
@@ -143,7 +160,7 @@ export const createTask = async (payload: TaskCreationPayload): Promise<Task> =>
             body: JSON.stringify(payload), 
             headers: {'Content-Type': 'application/json'}
         });
-    return (await fetch(request)).json();
+    return getResult(await fetch(request));
 };
 
 export const updateTask = async (taskNum: string, payload: TaskUpdatePayload): Promise<Task> => {
@@ -153,7 +170,7 @@ export const updateTask = async (taskNum: string, payload: TaskUpdatePayload): P
             body: JSON.stringify(payload), 
             headers: {'Content-Type': 'application/json'}
         });
-    return (await fetch(request)).json();
+    return getResult(await fetch(request));
 };
 
 export const addExampleDocsToTask = async (taskNum: string, exampleDocs: ExampleDoc[]) => {
@@ -168,12 +185,69 @@ export const addExampleDocsToTask = async (taskNum: string, exampleDocs: Example
 
 export const getCandidateDocsForTask = async (taskId: string): Promise<CandidateDocsResponse> => {
     const request = new Request(`${BASE_URL}tasks/${taskId}/candidate-docs`);
-    return (await fetch(request)).json();
+    return getResult(await fetch(request));
+};
+
+export const postPhrasesForAnnotation = async (taskNum: string, phrasesAnnotation: PhraseAnnotation) => {
+    try {
+        const request = new Request(`${BASE_URL}tasks/${taskNum}/phrases-for-annotation`);
+        const response = await fetch(request, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(phrasesAnnotation)
+         });
+    } catch (error) {
+        console.log(error)
+    } 
+}
+
+// Request actions
+
+export const getRequestByReqNum = async (taskNum: string, reqNum: string): Promise<Request> => {
+    const request = new Request(`${BASE_URL}tasks/${taskNum}/requests/${reqNum}`);
+    return getResult(await fetch(request));
+};
+
+export const createRequest = async (taskNum: string, payload: RequestCreationPayload): Promise<Request> => {
+    const request = new Request(`${BASE_URL}tasks/${taskNum}/requests`, 
+        {
+            method: 'POST', 
+            body: JSON.stringify(payload), 
+            headers: {'Content-Type': 'application/json'}
+        });
+    return getResult(await fetch(request));
+};
+
+export const updateRequest = async (taskNum: string, reqNum: string, payload: RequestUpdatePayload): Promise<Request> => {
+    const request = new Request(`${BASE_URL}tasks/${taskNum}/requests/${reqNum}`, 
+        {
+            method: 'PATCH', 
+            body: JSON.stringify(payload), 
+            headers: {'Content-Type': 'application/json'}
+        });
+    return getResult(await fetch(request));
+};
+
+export const addExampleDocsToRequest = async (taskNum: string, reqNum: string, exampleDocs: ExampleDoc[]) => {
+    const request = new Request(`${BASE_URL}tasks/${taskNum}/requests/${reqNum}/example-docs`, {
+        method: 'POST', 
+        body: JSON.stringify(exampleDocs), 
+        headers: {'Content-Type': 'application/json'}
+    });
+    await fetch(request);
+    return true;
+};
+
+export const getCandidateDocsForRequest = async (taskNum: string, reqNum: string): Promise<CandidateDocsResponse> => {
+    const request = new Request(`${BASE_URL}tasks/${taskNum}/requests/${reqNum}/candidate-docs`);
+    return getResult(await fetch(request));
 };
 
 export const getSentencesForAnnotation = async (taskNum: string, reqNum : string): Promise<SentencesAnnotation> => {
     const request = new Request(`${BASE_URL}tasks/${taskNum}/requests/${reqNum}/sentences-for-annotation`);
-    return (await fetch(request)).json();
+    return getResult(await fetch(request));
 };
 
 export const postSentencesForAnnotation = async (taskNum: string, reqNum : string,sentencesAnnotation:SentencesAnnotation) => {
@@ -185,21 +259,6 @@ export const postSentencesForAnnotation = async (taskNum: string, reqNum : strin
            'Content-Type': 'application/json'
            },
            body: JSON.stringify(sentencesAnnotation)
-         });
-    } catch (error) {
-        console.log(error)
-    } 
-}
-
-export const postPhrasesForAnnotation = async (taskNum: string, phrasesAnnotation: PhraseAnnotation) => {
-    try {
-        const request = new Request(`${BASE_URL}tasks/${taskNum}/phrases-for-annotation`);
-        const response = await fetch(request, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(phrasesAnnotation)
          });
     } catch (error) {
         console.log(error)

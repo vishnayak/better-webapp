@@ -1,23 +1,102 @@
-import React from 'react';
-import { Box, Button, CircularProgress, Grid, Modal, Paper, Step, StepLabel, Stepper, TextField, Tooltip, Typography } from '@mui/material';
-import LoadingButton from '@mui/lab/LoadingButton'
+import LoadingButton from '@mui/lab/LoadingButton';
+import { Box, Button, CircularProgress, Grid, Link, Modal, Paper, Step, StepLabel, Stepper, TextField, Tooltip, Typography } from '@mui/material';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import { addExampleDocsToTask, AnnotationJudgement, CandidateDoc, candidateDocToExampleDoc, createTask, ExampleDoc, getAnnotationPhrases, getCandidateDocsForTask, getPhrasesForAnnotation, getSentencesForAnnotation, getTaskById, PhraseAnnotation, postPhrasesForAnnotation, Sentences, SentencesAnnotation, updateTask } from '@services/task-service';
-import './TaskCreationWizard.css';
+import { addExampleDocsToRequest, AnnotationJudgement, CandidateDoc, candidateDocToExampleDoc, createRequest, ExampleDoc, getCandidateDocsForRequest, getRequestByReqNum, getSentencesForAnnotation, postSentencesForAnnotation, Sentences, SentencesAnnotation, Task, updateRequest } from '@services/task-service';
+import React from 'react';
+import { submitSubmission } from '@services/submission-service';
 import { CandidateDocCard } from '@components/candidate-doc-card/CandidateDocCard';
-import { PhraseRow } from '@components/formDialog/PhraseRow';
+import { SentenceRow } from '@components/formDialog/SentenceRow';
 
-export interface TaskCreationWizardProps {
+import './RequestWizard.css';
+import { useNavigate } from 'react-router-dom';
+
+export interface RequestWizardProps {
     isOpen: boolean;
     onClose: () => void;
     onCreate: () => void;
-    taskNum?: string;
+    task: Task;
+    requestNum?: string;
 };
+
+const steps = ['Describe the Request', 'Select Example Docs', 'Annotate Sentences'];
+const MAX_EXAMPLE_DOCS = 4;
+
+/**
+ * { [docId]: { [sentenceId]: "<judgement>" } }
+ */
+type SentenceAnnotationMap = Record<string, Record<string, {
+    sentence: string;
+    judgment: AnnotationJudgement;
+}>>;
 
 interface SelectedExampleDoc {
     doc: CandidateDoc;
     highlight: string;
     docNumber: number;
+};
+
+function getSentenceAnnotationMap(annotation: SentencesAnnotation): SentenceAnnotationMap {
+    const examples = annotation.request.exampleDocs;
+    const docIdToSentences: Record<string, Sentences[]> = examples.reduce((prev, curr) => ({
+        ...prev,
+        [curr.docId]: curr.sentences
+    }), {});
+    const result: SentenceAnnotationMap = {};
+    Object.keys(docIdToSentences).forEach(docId => {
+        result[docId] = {};
+        docIdToSentences[docId].forEach((sent) => {
+            result[docId][sent.sentencesId] = { 
+                sentence: sent.sentence,
+                judgment: sent.judgement as AnnotationJudgement 
+            };
+        });
+    });
+    return result;
+};
+
+function getSentenceAnnotations(task: Task, reqNum: string, reqText: string, exampleDocs: ExampleDoc[], annotationMap: SentenceAnnotationMap): SentencesAnnotation {
+    const docs = exampleDocs.map(doc => ({
+        docNumber: doc.docNumber,
+        docId: doc.docid,
+        sentences: Object.keys(annotationMap[doc.docid]).map(sentenceId => ({
+            sentencesId : sentenceId,
+            sentence: '',
+            judgement: annotationMap[doc.docid][sentenceId].judgment
+        }))
+    }));
+    return {
+        taskNarrative: task.taskNarr,
+        taskTitle: task.taskTitle,
+        taskStmt: task.taskStmt,
+        taskNum: task.taskNum,
+        request: {
+            reqNum,
+            reqText,
+            exampleDocs: docs
+        }
+    };
+};
+
+interface SentenceRowData {
+    docId: string; 
+    sentenceId: string; 
+    sentence: string; 
+    judgment: AnnotationJudgement;
+}
+
+function getAllSentences(annotationMap: SentenceAnnotationMap): SentenceRowData[] {
+    const res: SentenceRowData[] = [];
+    Object.keys(annotationMap).forEach(k => {
+        Object.keys(annotationMap[k]).forEach(s => {
+            res.push({
+                docId: k,
+                sentenceId: s,
+                sentence: annotationMap[k][s].sentence,
+                judgment: annotationMap[k][s].judgment
+            });
+        });
+    });
+    return res;
 };
 
 function getExampleDocMap(exampleDocs: ExampleDoc[]) {
@@ -42,50 +121,44 @@ function reorderCandidateDocs(candidateDocs: CandidateDoc[], exampleDocs: Exampl
     return [...firstDocs, ...nextDocs];
 }
 
-const steps = ['Describe the Task', 'Select Example Docs', 'Annotate Phrases'];
-const MAX_EXAMPLE_DOCS = 4;
-
-export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => {
+export const RequestWizard: React.FC<RequestWizardProps> = (props) => {
     // modal control state
-    const { isOpen, onClose, onCreate, taskNum: taskNumProp } = props;
-    const [step, setStep] = React.useState(taskNumProp ? -1 : 0);
+    const { isOpen, onClose, onCreate, task, requestNum: requestNumProp } = props;
+    const [step, setStep] = React.useState(requestNumProp ? -1 : 0);
     const [helperText, setHelperText] = React.useState<string[]>([]);
     const [isNextLoading, setIsNextLoading] = React.useState(false);
     const [isConfirmingBack, setIsConfirmingBack] = React.useState(false);
+    let navigate = useNavigate();
     // step 1
-    const [taskNum, setTaskNum] = React.useState(taskNumProp || '');
-    const [taskTitle, setTaskTitle] = React.useState('');
-    const [taskNarr, setTaskNarr] = React.useState('');
-    const [taskStmt, setTaskStmt] = React.useState('');
+    const [reqNum, setReqNum] = React.useState(requestNumProp || '');
+    const [reqText, setReqText] = React.useState('');
     // step 2
     const [candidateDocs, setCandidateDocs] = React.useState<CandidateDoc[]>([]);
     const [exampleDocMap, setExampleDocMap] = React.useState<Record<string, SelectedExampleDoc>>({});
     // step 3
-    const [initialAnnotatedPhrases, setInitialAnnotatedPhrases] = React.useState<PhraseAnnotation>({});
-    const phrasesForAnnotation = React.useRef<PhraseAnnotation>({});
-    
+    const [initialAnnotatedSentences, setInitialAnnotatedSentences] = React.useState<SentenceAnnotationMap>({});
+    const sentencesForAnnotation = React.useRef<SentenceAnnotationMap>({});
+
     React.useEffect(() => {
         const setInitialStep = async () => {
-            if(taskNumProp) { // edit mode
-                // fetch task with id
-                const task = await getTaskById(taskNumProp);
+            if(requestNumProp) {
+                // fetch request with id
+                const request = await getRequestByReqNum(task.taskNum, requestNumProp);
                 // set step to 2 if annotations are present
                 try {
-                    const phrases = await getAnnotationPhrases(taskNumProp);
-                    if(Object.keys(phrases).length > 0) {
-                        setInitialAnnotatedPhrases(phrases);
+                    const sentences = getSentenceAnnotationMap(await getSentencesForAnnotation(task.taskNum, requestNumProp));
+                    if(Object.keys(sentences).length > 0) {
+                        setInitialAnnotatedSentences(sentences);
                         setStep(2);
-                        phrasesForAnnotation.current = phrases;
-                    } else if(task.taskExampleDocs?.length > 0) {
-                        const docsResult = await getCandidateDocsForTask(task.taskNum);
-                        const reorderedDocs = reorderCandidateDocs(docsResult.hits, task.taskExampleDocs);
+                        sentencesForAnnotation.current = sentences;
+                    } else if(request.exampleDocs?.length > 0) {
+                        const docsResult = await getCandidateDocsForRequest(task.taskNum, requestNumProp);
+                        const reorderedDocs = reorderCandidateDocs(docsResult.hits, request.exampleDocs);
                         setCandidateDocs(reorderedDocs.slice(0, 20));
                         setExampleDocMap(getExampleDocMap(task.taskExampleDocs));
                         setStep(1);
                     } else {
-                        setTaskTitle(task.taskTitle);
-                        setTaskStmt(task.taskStmt);
-                        setTaskNarr(task.taskNarr);
+                        setReqText(request.reqText);
                         setStep(0);
                     }
                 } catch(e) {
@@ -93,22 +166,8 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
                 }
             }
         };
-        
         setInitialStep();
     }, []);
-
-    const handleBack = () => {
-        setIsConfirmingBack(false);
-        // reset step progress
-        if(step === 1) {
-            setCandidateDocs([]);
-            setExampleDocMap({});
-        } else if(step === 2) {
-            setInitialAnnotatedPhrases({});
-            phrasesForAnnotation.current = {};
-        }
-        setStep(Math.max(0, step - 1));
-    };
 
     const handleNext = () => {
         setIsConfirmingBack(false);
@@ -116,15 +175,13 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
         if(step === 0) {
             // create new task
             // make api call
-            if(taskTitle.length > 0){
+            if(reqText.length > 0){
                 const payload = {
-                    taskTitle,
-                    taskNarr,
-                    taskStmt
+                    reqText
                 };
-                (taskNum ? updateTask(taskNum, { ...payload, taskNum }) : createTask(payload)).then((res) => {
-                    setTaskNum(res.taskNum);
-                    getCandidateDocsForTask(res.taskNum).then((docsResult) => {
+                (reqNum ? updateRequest(task.taskNum, reqNum, payload) : createRequest(task.taskNum, payload)).then((res) => {
+                    setReqNum(res.reqNum);
+                    getCandidateDocsForRequest(task.taskNum, res.reqNum).then((docsResult) => {
                         setCandidateDocs(docsResult.hits.slice(0, 20));
                         setStep(1);
                         setIsNextLoading(false);
@@ -140,10 +197,10 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
         } else if(step === 1) {
             // post candidate docs
             const exampleDocs: ExampleDoc[] = Object.values(exampleDocMap).map(doc => candidateDocToExampleDoc(doc.doc, doc.docNumber, doc.highlight));
-            addExampleDocsToTask(taskNum, exampleDocs).then(r => {
-                getAnnotationPhrases(taskNum).then(res => {
-                    setInitialAnnotatedPhrases(res);
-                    phrasesForAnnotation.current = res;
+            addExampleDocsToRequest(task.taskNum, reqNum, exampleDocs).then(r => {
+                getSentencesForAnnotation(task.taskNum, reqNum).then(res => {
+                    setInitialAnnotatedSentences(getSentenceAnnotationMap(res));
+                    sentencesForAnnotation.current = getSentenceAnnotationMap(res);
                     setStep(2);
                     setIsNextLoading(false);
                 }).catch(e => {
@@ -157,9 +214,14 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
             });
         } else if(step === steps.length - 1) {
             // submit
-            postPhrasesForAnnotation(taskNum, phrasesForAnnotation.current).then(res => {
+            const exampleDocs: ExampleDoc[] = Object.values(exampleDocMap).map(doc => candidateDocToExampleDoc(doc.doc, doc.docNumber, doc.highlight));
+            postSentencesForAnnotation(
+                task.taskNum, 
+                reqNum, 
+                getSentenceAnnotations(task, reqNum, reqText, exampleDocs, sentencesForAnnotation.current)
+            ).then(res => {
+                setStep(3);
                 setIsNextLoading(false);
-                onCreate();
             }).catch(e => {
                 console.error(e);
                 setIsNextLoading(false);
@@ -172,27 +234,37 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
         setHelperText([]);
     };
 
+    const handleFinish = async (createSubmission: boolean) => {
+        if(createSubmission) {
+            const id = (await submitSubmission({
+                taskNum: task.taskNum,
+                reqNum
+            })).id;
+            navigate(`/hits/${id}`);
+        } else { 
+            onCreate();
+        }
+    };
+
+    const handleBack = () => {
+        setIsConfirmingBack(false);
+        // reset step progress
+        if(step === 1) {
+            setCandidateDocs([]);
+            setExampleDocMap({});
+        } else if(step === 2) {
+            setInitialAnnotatedSentences({});
+            sentencesForAnnotation.current = {};
+        }
+        setStep(Math.max(0, step - 1));
+    };
+
     const validateNextStep: () => boolean = () => {
         return (step === 0 && validateFirstStep()) ||  (step === 1 && validateSecondStep()) || (step === 2 && validateThirdStep());
     };
 
     const validateFirstStep = () => {
-        return taskTitle.length > 0;
-    };
-
-    const getHelper = () => {
-        const helper = [];
-        if(step === 0 ) {
-            if(taskTitle.length <= 0) { helper.push('Task Title cannot be blank.'); }
-            // if(taskStmt.length <= 0) { helper.push('Task Statement cannot be blank.'); }
-            // if(taskNarr.length <= 0) { helper.push('Task Narrative cannot be blank.'); }
-        } else if (step === 1) {
-            if(Object.keys(exampleDocMap).length === 0 || Object.keys(exampleDocMap).length < MAX_EXAMPLE_DOCS) { helper.push('Select example documents (upto 4).'); }
-            if(!Object.values(exampleDocMap).every(v => v.highlight.length > 0)) { 
-                helper.push('Select a highlight section for all documents'); 
-            };
-        } else {}
-        setHelperText(helper); 
+        return reqText.length > 0;
     };
 
     const validateSecondStep = () => {
@@ -201,6 +273,19 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
 
     const validateThirdStep = () => {
         return true;
+    };
+
+    const getHelper = () => {
+        const helper = [];
+        if(step === 0 ) {
+            if(reqText.length <= 0) { helper.push('Request text cannot be blank.'); }
+        } else if (step === 1) {
+            if(Object.keys(exampleDocMap).length === 0 || Object.keys(exampleDocMap).length < MAX_EXAMPLE_DOCS) { helper.push('Select example documents (upto 4).'); }
+            if(!Object.values(exampleDocMap).every(v => v.highlight.length > 0)) { 
+                helper.push('Select a highlight section for all documents'); 
+            };
+        } else {}
+        setHelperText(helper); 
     };
 
     const handleDocCheck = (doc: CandidateDoc, isChecked: boolean) => {
@@ -219,14 +304,8 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
         setExampleDocMap({ ...exampleDocMap, [docId]: { ...exampleDocMap[docId], highlight: text } });
     };
 
-    const handleAnnotate = (phrase: string, judgment: AnnotationJudgement) => {
-        phrasesForAnnotation.current = {
-            ...phrasesForAnnotation.current,
-            [phrase]: {
-                ...phrasesForAnnotation.current[phrase],
-                judgment
-            }
-        };
+    const handleAnnotate = (docId: string, sentenceId: string, judgment: AnnotationJudgement) => {
+        sentencesForAnnotation.current[docId][sentenceId].judgment = judgment;
     };
 
     const isLastStep = step === steps.length - 1;
@@ -264,9 +343,9 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
             helperText.length <= 0 ? '' : <>{helperText.map((t, i) => <li key={i}>{t}</li>)}</>
         }>
             <span onMouseOver={getHelper} hidden={false}>
-                <LoadingButton loading={isNextLoading} endIcon={!isLastStep && <NavigateNextIcon/>} loadingPosition="end" variant={'contained'} color={'primary'} onClick={handleNext} disabled={!validateNextStep()}>
-                    {isLastStep ? 'Save and Finish' : 'Next'}
-                </LoadingButton>
+                {step < steps.length ? <LoadingButton loading={isNextLoading} endIcon={!isLastStep && <NavigateNextIcon/>} loadingPosition="end" variant={'contained'} color={'primary'} onClick={handleNext} disabled={!validateNextStep()}>
+                    {isLastStep ? 'Create Request' : 'Next'}
+                </LoadingButton> : ''}
             </span>
         </Tooltip>
     </Box>;
@@ -275,7 +354,7 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
         open={isOpen}
         onClose={onClose}
         classes={{root: 'wizard-modal'}}
-    >
+        >
         <Paper classes={{root: 'wizard-paper'}}>
             {step >= 0 ? <>
                 <Stepper activeStep={step}>
@@ -287,39 +366,13 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
                 {step === 0 ? (
                     <Grid container direction='column' spacing={4} mt={2}>
                         <Grid item container>
-                            <Grid item xs={8} md={6}>
-                                <TextField
-                                    required
-                                    fullWidth
-                                    label="Task Title"
-                                    value={taskTitle}
-                                    onChange={(e) => setTaskTitle(e.target.value)}
-                                    disabled={isNextLoading}
-                                />
-                            </Grid>
-                        </Grid>
-                        <Grid item container>
                             <Grid item xs={10}>
                                 <TextField
                                     required
                                     fullWidth
-                                    label="Task Statement"
-                                    value={taskStmt}
-                                    onChange={(e) => setTaskStmt(e.target.value)}
-                                    disabled={isNextLoading}
-                                />
-                            </Grid>
-                        </Grid>
-                        <Grid item container>
-                            <Grid item xs={10}>
-                                <TextField
-                                    multiline
-                                    required
-                                    fullWidth
-                                    label="Task Narrative"
-                                    value={taskNarr}
-                                    onChange={(e) => setTaskNarr(e.target.value)}
-                                    minRows={2}
+                                    label="Request Text"
+                                    value={reqText}
+                                    onChange={(e) => setReqText(e.target.value)}
                                     disabled={isNextLoading}
                                 />
                             </Grid>
@@ -342,18 +395,29 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
                 ) : step === 2 ? (
                     <React.Fragment>
                         <div className={'wizard-body'}>
-                            <Typography sx={{ mt: 2, mb: 1 }}>Annotate Phrases</Typography>
-                            {Object.keys(initialAnnotatedPhrases).map((k) => (
-                                <PhraseRow 
-                                    key={`${k}${initialAnnotatedPhrases[k].judgment}`} 
-                                    annotation={initialAnnotatedPhrases[k]} 
-                                    phraseName={k} 
-                                    onAnnotate={(j) => handleAnnotate(k, j)}
+                            <Typography sx={{ mt: 2, mb: 1 }}>Judge Sentences</Typography>
+                            {getAllSentences(initialAnnotatedSentences).map((sent) => (
+                                <SentenceRow 
+                                    key={`${sent.sentence}${sent.judgment}`} 
+                                    judgment={sent.judgment} 
+                                    sentence={sent.sentence} 
+                                    onAnnotate={(j) => handleAnnotate(sent.docId, sent.sentenceId, j)}
                                 />
                             ))}
                         </div>
                     </React.Fragment>
-                ) : ('Task Created!')}
+                ) : <div className={'wizard-final'}>
+                    <span>
+                        Your request has been created! 
+                    </span>
+                    <br/>
+                    <span>
+                        <Link component={'button'} className={'wizard-final-link'} onClick={() => handleFinish(true)}>Click Here</Link> to run a submission for this request.
+                    </span>
+                    <span>
+                        <Link component={'button'} className={'wizard-final-link'} onClick={() => handleFinish(false)}>Click Here</Link> to see all tasks.
+                    </span>
+                </div>}
                 {step < 3 && renderFooter()}
             </> : <CircularProgress size={60} classes={{root: 'wizard-loading'}} />}
         </Paper>

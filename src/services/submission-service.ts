@@ -41,6 +41,13 @@ export interface SubmissionHitsResponse {
     totalNumHits: number;
 }
 
+function getResult(response: Response) {
+    if(response.ok) {
+        return response.json();
+    }
+    throw Error(JSON.stringify(response));
+}
+
 export const BAD_SUBMISSION = 'BAD_SUBMISSION';
 
 export const submitSubmission = async (submission: SubmissionCreationRequest): Promise<SubmissionCreationResponse> => {
@@ -50,7 +57,7 @@ export const submitSubmission = async (submission: SubmissionCreationRequest): P
             body: JSON.stringify(submission), 
             headers: {'Content-Type': 'application/json'}
         });
-    return (await fetch(request)).json();
+    return getResult(await fetch(request));
 }
 
 export const getSubmissionById = async (id: string): Promise<Submission> => {
@@ -64,7 +71,7 @@ export const getSubmissionById = async (id: string): Promise<Submission> => {
 
 export const getSubmissionStatusById = async (id: string): Promise<boolean> => {
     const request = new Request(`${BASE_URL}submissions/${id}/status`);
-    return (await fetch(request)).json();
+    return getResult(await fetch(request));
 }
 
 export const getPaginatedHits = async (id: string, start: number, size: number): Promise<SubmissionHitsResponse> => {
@@ -86,7 +93,7 @@ export const getPaginatedHits = async (id: string, start: number, size: number):
 
 export const getAllSubmissions = async (): Promise<Submission[]> => {
     const request = new Request(`${BASE_URL}submissions`);
-    return (await fetch(request)).json();
+    return getResult(await fetch(request));
 };
 
 export const deleteSubmission = async (submissionId: string): Promise<boolean> => {
