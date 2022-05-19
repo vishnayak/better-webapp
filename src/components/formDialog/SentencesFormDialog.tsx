@@ -49,7 +49,7 @@ export const SentencesFormDialog: React.FC<SentencesFormDialogProps> = ({ taskNu
     // };
 
     const handleChange = (index: any) => (event: any) => {
-        setSentences([...sentences.slice(0, index), { ...sentences[index], judgement: event.target.value }, ...sentences.slice(index+1, sentences.length - index - 1)]);
+        setSentences([...sentences.slice(0, index), { ...sentences[index], judgment: event.target.value }, ...sentences.slice(index+1, sentences.length - index - 1)]);
         // sentences[index].judgement = event.target.value;
     };
 
