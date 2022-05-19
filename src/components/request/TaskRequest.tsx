@@ -14,14 +14,17 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { Button } from '@mui/material';
 
+import './TaskRequest.css';
 
 
 interface RequestProps {
     task: Task;
     onEdit: () => void;
+    onAddRequest: () => void;
+    onEditRequest: (reqNum: string) => void;
 }
 
-export const Request: React.FC<RequestProps> = ({ task, onEdit }) => {
+export const Request: React.FC<RequestProps> = ({ task, onEdit, onEditRequest, onAddRequest }) => {
     const [open, setOpen] = React.useState(false);
 
     return (
@@ -43,7 +46,10 @@ export const Request: React.FC<RequestProps> = ({ task, onEdit }) => {
                     <TableCell rowSpan={task.taskExampleDocs.length + 1}>{task.taskTitle}</TableCell>
                     <TableCell rowSpan={task.taskExampleDocs.length + 1}>{task.taskStmt}</TableCell>
                     <TableCell rowSpan={task.taskExampleDocs.length + 1}>{task.taskNarr}</TableCell>
-                    <TableCell rowSpan={task.taskExampleDocs.length + 1}> <Button variant={'contained'} onClick={onEdit}>Edit</Button></TableCell>
+                    <TableCell rowSpan={task.taskExampleDocs.length + 1}> 
+                        <Button variant={'contained'} classes={{root: 'task-action-button'}} onClick={onEdit}>Edit</Button>
+                        <Button variant={'outlined'} classes={{root: 'task-action-button'}} onClick={onAddRequest}>Add Request</Button>
+                    </TableCell>
                 </TableRow>
                 {/* <TableCell align="left" style={{ width: 150 }}> */}
                 {task.taskExampleDocs.map(detail => (
@@ -66,21 +72,21 @@ export const Request: React.FC<RequestProps> = ({ task, onEdit }) => {
                                     <TableRow>
                                         <TableCell><b>Request Number</b></TableCell>
                                         <TableCell><b>Request Text</b></TableCell>
-                                        {/* <TableCell><b>Actions</b></TableCell> */}
+                                        <TableCell><b>Actions</b></TableCell>
                                         <TableCell><b>Request Docs</b></TableCell>
 
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {task.requests.map((historyRow) => (
+                                    {task.requests.map((requestItem) => (
                                         <Fragment>
                                             <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
                                                 
-                                                <TableCell rowSpan={historyRow.exampleDocs.length + 1}>{historyRow.reqNum}</TableCell>
-                                                <TableCell rowSpan={historyRow.exampleDocs.length + 1}>{historyRow.reqText}</TableCell>
-                                                {/* <TableCell rowSpan={historyRow.exampleDocs.length + 1}> <SentencesFormDialog taskNum={task.taskNum} reqNum={historyRow.reqNum} /></TableCell> */}
+                                                <TableCell rowSpan={requestItem.exampleDocs.length + 1}>{requestItem.reqNum}</TableCell>
+                                                <TableCell rowSpan={requestItem.exampleDocs.length + 1}>{requestItem.reqText}</TableCell>
+                                                <TableCell rowSpan={requestItem.exampleDocs.length + 1}><Button onClick={() => {onEditRequest(requestItem.reqNum)}}>Edit</Button></TableCell>
                                             </TableRow>
-                                            {historyRow.exampleDocs.map(detail => (
+                                            {requestItem.exampleDocs.map(detail => (
                                                 <TableRow >
                                                     <TableCell style={{ width: 150 }}>
                                                         <FormDialog taskDoc={detail} />

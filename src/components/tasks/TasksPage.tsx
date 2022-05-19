@@ -12,15 +12,18 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import AddIcon from '@mui/icons-material/Add';
 import { TaskCreationWizard } from '@components/task-creation-wizard/TaskCreationWizard';
+import { RequestWizard } from '@components/request-creation-wizard/RequestWizard';
 
 
 export const TasksPage: React.FC<{}> = () => {
   const [open, setOpen] = React.useState(false);
-  const [openSentences, setOpenSentences] = React.useState(false);
   const [tasks, setTasks] = React.useState<Task[]>([]);
 
   const [openCreateNewTask, setOpenCreateNewTask] = React.useState(false);
+  const [openCreateNewRequest, setOpenCreateNewRequest] = React.useState(false);
   const [editingTaskId, setEditingTaskId] = React.useState<string | undefined>(undefined);
+  const [editingRequestId, setEditingRequestId] = React.useState<string | undefined>(undefined);
+  const [requestModalParentTask, setRequestModalParentTask] = React.useState<Task | undefined>(undefined);
 
   React.useEffect(() => {
     fetchAllTasks();
@@ -43,21 +46,45 @@ export const TasksPage: React.FC<{}> = () => {
     setEditingTaskId(taskNum);
   };
 
-  const handleModalClose = () => {
+  const handleTaskModalClose = () => {
     setOpenCreateNewTask(false)
     setEditingTaskId(undefined);
   };
 
   const handleTaskCreate = () => {
     fetchAllTasks();
-    handleModalClose();
+    handleTaskModalClose();
   };
+
+  const handleRequestModalClose = () => {
+    setOpenCreateNewRequest(false)
+    setEditingTaskId(undefined);
+    setRequestModalParentTask(undefined);
+  };
+
+  const handleCreateRequestClick = (task: Task) => {
+    setRequestModalParentTask(task);
+    setOpenCreateNewRequest(true);
+  };
+
+  const handleRequestCreate = () => {
+    fetchAllTasks();
+    handleRequestModalClose();
+  };
+
+  const handleEditRequestClick = (task: Task, reqNum: string) => {
+    setRequestModalParentTask(task);
+    setEditingRequestId(reqNum);
+  };
+
+  // todo: submissions, annotations, edit button
+  // ad context to ech step of modal
 
   return (<TableContainer component={Paper}>
     <div className='tasks-page'>
       {
         <TableContainer component={Paper}>
-          {!open && !openSentences && (<div>
+          {!open && (<div>
             <h1>Tasks Dashboard</h1>
             <Button 
               onClick={handleTaskCreationClick} 
@@ -70,7 +97,14 @@ export const TasksPage: React.FC<{}> = () => {
               taskNum={editingTaskId} 
               onCreate={handleTaskCreate} 
               isOpen={openCreateNewTask || (editingTaskId !== undefined)} 
-              onClose={handleModalClose}
+              onClose={handleTaskModalClose}
+            />}
+            {((openCreateNewRequest || editingRequestId) && requestModalParentTask) && <RequestWizard 
+              task={requestModalParentTask} 
+              requestNum={editingRequestId}
+              onCreate={handleRequestCreate} 
+              isOpen={openCreateNewRequest || (editingRequestId !== undefined)} 
+              onClose={handleRequestModalClose}
             />}
 
             <Table aria-label="collapsible table ">
@@ -87,7 +121,10 @@ export const TasksPage: React.FC<{}> = () => {
               </TableHead>
               <TableBody>
                 {tasks.map((task) => (
-                  <Request onEdit={() => handleEdit(task.taskNum)} key={task.taskNum} task={task} />
+                  <Request onEdit={() => handleEdit(task.taskNum)} 
+                    onAddRequest={() => handleCreateRequestClick(task)} 
+                    onEditRequest={(rNum) => handleEditRequestClick(task, rNum)} 
+                    key={task.taskNum} task={task} />
                 ))}
               </TableBody>
             </Table>
