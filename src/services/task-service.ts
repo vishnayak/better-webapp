@@ -39,7 +39,7 @@ export interface SentencesExampleDocs {
 export interface Sentences{
     sentenceId : string;
     sentence: string;
-    judgement: string;
+    judgment: string;
 }
 
 export interface Annotation{

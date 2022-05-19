@@ -47,7 +47,7 @@ function getSentenceAnnotationMap(annotation: SentencesAnnotation): SentenceAnno
         docIdToSentences[docId].forEach((sent) => {
             result[docId][sent.sentenceId] = { 
                 sentence: sent.sentence,
-                judgment: sent.judgement as AnnotationJudgement 
+                judgment: sent.judgment as AnnotationJudgement 
             };
         });
     });
@@ -61,7 +61,7 @@ function getSentenceAnnotations(task: Task, reqNum: string, reqText: string, exa
         sentences: Object.keys(annotationMap[doc.docid]).map(sentenceId => ({
             sentenceId : sentenceId,
             sentence: '',
-            judgement: annotationMap[doc.docid][sentenceId].judgment
+            judgment: annotationMap[doc.docid][sentenceId].judgment
         }))
     }));
     const res = {
