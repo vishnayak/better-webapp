@@ -37,7 +37,7 @@ export interface SentencesExampleDocs {
     sentences: Sentences[];
 }
 export interface Sentences{
-    sentencesId : string;
+    sentenceId : string;
     sentence: string;
     judgement: string;
 }
