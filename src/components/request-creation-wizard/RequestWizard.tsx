@@ -45,7 +45,7 @@ function getSentenceAnnotationMap(annotation: SentencesAnnotation): SentenceAnno
     Object.keys(docIdToSentences).forEach(docId => {
         result[docId] = {};
         docIdToSentences[docId].forEach((sent) => {
-            result[docId][sent.sentencesId] = { 
+            result[docId][sent.sentenceId] = { 
                 sentence: sent.sentence,
                 judgment: sent.judgement as AnnotationJudgement 
             };
@@ -59,7 +59,7 @@ function getSentenceAnnotations(task: Task, reqNum: string, reqText: string, exa
         docNumber: doc.docNumber,
         docId: doc.docid,
         sentences: Object.keys(annotationMap[doc.docid]).map(sentenceId => ({
-            sentencesId : sentenceId,
+            sentenceId : sentenceId,
             sentence: '',
             judgement: annotationMap[doc.docid][sentenceId].judgment
         }))
