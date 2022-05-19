@@ -38,11 +38,11 @@ export const Sentences: React.FC<SentencesProps> = ({ tasks }) => {
                             <TableCell><b>Task Docs</b></TableCell>
                         </TableRow>
                     </TableHead>
-                    <TableBody>
+                    {/* <TableBody>
                         {tasks.map((task) => (
                             <Request key={task.taskNum} onEdit={()=>{}} task={task} />
                         ))}
-                    </TableBody>
+                    </TableBody> */}
                 </Table>
                 <Grid container>
                     <Grid item xs={11} />
