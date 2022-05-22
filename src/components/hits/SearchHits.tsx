@@ -29,27 +29,45 @@ export interface Sentence {
 
 const TRANSLATE_ALL = 'Translate All';
 const SHOW_ORIGINAL = 'Show Original';
+const SHOW_ALL = 'Show all Hits';
+const SHOW_RELEVANT = 'Filter Relevant Hits';
 
 export const SearchHits: React.FC<SearchHitsProps> = ({ hits }) => {
+    const allIndices: number[] = [];
+    const relevantIndices: number[] = [];
+    hits.forEach((hit, i) => {
+        allIndices.push(i);
+        if(hit.isRelevant) relevantIndices.push(i); 
+    });
+    // const indicesToShow = React.useRef<number[]>(allIndices);
 
     const [page, setPage] = React.useState(1);
     const [translateAll, setTranslateAll] = React.useState<boolean>(false);
+    const [showRelevant, setShowRelevant] = React.useState<boolean>(false);
     const pageSize = 20;
     const handlePageChange = (e: any, pageNum: number) => { setPage(pageNum); };
     const handleTranslateAllClick = () => {
         setTranslateAll(prev => !prev);
     }
 
+    const handleFilterToggle = () => {
+        setShowRelevant(prev => !prev);
+        setPage(1);
+    };
 
-    const pgNo = Math.ceil(hits.length/pageSize);
+
+    const indicesToShow = showRelevant ? relevantIndices : allIndices;
+    const pgNo = Math.ceil(indicesToShow.length/pageSize);
+
     return hits.length > 0 ? <>
         <Pagination classes={{ root: 'search-hits-pagination' }} count = {pgNo} page={page} onChange={handlePageChange}/>
         <div className={'pagination-text-section'}>
-            <div className={'pagination-text'}>{`Showing ${(page-1)*pageSize + 1} - ${Math.min(page*pageSize, hits.length)} of ${hits.length} hits`}</div>
+            <div className={'pagination-text'}>{`Showing ${Math.min((page-1)*pageSize + 1, indicesToShow.length)} - ${Math.min(page*pageSize, indicesToShow.length)} of ${indicesToShow.length} hits`}</div>
+            <Button variant={'outlined'} onClick={handleFilterToggle}>{showRelevant ? SHOW_ALL : SHOW_RELEVANT}</Button>
             <Button variant={'outlined'} onClick={handleTranslateAllClick}>{translateAll ? SHOW_ORIGINAL : TRANSLATE_ALL}</Button>
         </div>
-        {hits.slice((page-1)*pageSize, (page-1)*pageSize + 10 ).map(result => <React.Fragment key = {result.docid}>
-            <SearchHitCard searchHit = {result} showTranslated={translateAll}/>
+        {indicesToShow.slice((page-1)*pageSize, (page-1)*pageSize + 10 ).map(index => <React.Fragment key = {hits[index].docid}>
+            <SearchHitCard searchHit = {hits[index]} hitIndex={index} showTranslated={translateAll}/>
         </React.Fragment>)}
         <Pagination classes={{ root: 'search-hits-pagination' }} count = {pgNo} page={page} onChange={handlePageChange}/>
     </> : <div className='fallback-text'>No hits to display.</div>;
