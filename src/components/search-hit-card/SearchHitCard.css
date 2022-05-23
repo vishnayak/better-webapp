@@ -28,7 +28,6 @@
 }
 
 .search-hit-relevance-label {
-    position: absolute;
     height: 16px !important;
     border-radius: 4px !important;
     margin: 4px 24px;
@@ -40,4 +39,11 @@
     font-weight: bold;
     padding: 8px !important;
     font-size: 9px !important;
+}
+
+.search-hit-card-header {
+    position: sticky;
+    margin: 0 8px;
+    font-size: 12px !important;
+    top: 4px;
 }

@@ -346,7 +346,7 @@ export const RequestWizard: React.FC<RequestWizardProps> = (props) => {
         }>
             <span onMouseOver={getHelper} hidden={false}>
                 {step < steps.length ? <LoadingButton loading={isNextLoading} endIcon={!isLastStep && <NavigateNextIcon/>} loadingPosition="end" variant={'contained'} color={'primary'} onClick={handleNext} disabled={!validateNextStep()}>
-                    {isLastStep ? 'Create Request' : 'Next'}
+                    {isLastStep ? (requestNumProp ? 'Save Changes' : 'Create Request') : 'Next'}
                 </LoadingButton> : ''}
             </span>
         </Tooltip>

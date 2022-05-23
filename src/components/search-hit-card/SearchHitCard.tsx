@@ -7,9 +7,10 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 export interface SearchHitCardProps {
     searchHit: SearchHit;
     showTranslated: boolean;
+    hitIndex: number; // 0-indexed
 }
 
-export const SearchHitCard: React.FC<SearchHitCardProps> = ({ searchHit, showTranslated }) => {
+export const SearchHitCard: React.FC<SearchHitCardProps> = ({ searchHit, showTranslated, hitIndex }) => {
     const [text, setText] = React.useState(showTranslated ? searchHit.translatedDocText : searchHit.docText);
     const [expanded, setExpanded] = React.useState(false);
     const [translateButtonLabel, setTranslateButtonLabel] = React.useState('Translate');
@@ -58,7 +59,10 @@ export const SearchHitCard: React.FC<SearchHitCardProps> = ({ searchHit, showTra
     }
 
     return <Card elevation={8} classes={{ root: 'search-hit-card' }}>
-        {searchHit.isRelevant && <Chip classes={{label: 'search-hit-relevance-label-span', root: 'search-hit-relevance-label'}} label="Relevant" color="success" />}
+        <div className={'search-hit-card-header'}>
+            <span>{hitIndex+1}.</span>
+            {searchHit.isRelevant && <Chip classes={{label: 'search-hit-relevance-label-span', root: 'search-hit-relevance-label'}} label="Relevant" color="success" />}
+        </div>
         <CardContent classes={{ root: expanded ? 'search-hit-card-content' : 'search-hit-card-content search-hit-card-content--compact' }}>
             <Typography variant="body2">
                 {insertNewLines(text)}
