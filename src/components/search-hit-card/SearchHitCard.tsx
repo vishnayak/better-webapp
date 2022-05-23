@@ -60,7 +60,7 @@ export const SearchHitCard: React.FC<SearchHitCardProps> = ({ searchHit, showTra
 
     return <Card elevation={8} classes={{ root: 'search-hit-card' }}>
         <div className={'search-hit-card-header'}>
-            <span>#{hitIndex+1}</span>
+            <span>{hitIndex+1}.</span>
             {searchHit.isRelevant && <Chip classes={{label: 'search-hit-relevance-label-span', root: 'search-hit-relevance-label'}} label="Relevant" color="success" />}
         </div>
         <CardContent classes={{ root: expanded ? 'search-hit-card-content' : 'search-hit-card-content search-hit-card-content--compact' }}>

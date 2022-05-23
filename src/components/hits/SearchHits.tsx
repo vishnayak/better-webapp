@@ -2,7 +2,7 @@ import React from 'react';
 import Pagination from '@mui/material/Pagination';
 import './SearchHits.css';
 import { SearchHitCard } from '@components/search-hit-card/SearchHitCard';
-import { Button } from '@mui/material';
+import { Button, FormControl, MenuItem, Select, SelectChangeEvent } from '@mui/material';
 
 interface SearchHitsProps {
     hits: SearchHit[];
@@ -29,8 +29,6 @@ export interface Sentence {
 
 const TRANSLATE_ALL = 'Translate All';
 const SHOW_ORIGINAL = 'Show Original';
-const SHOW_ALL = 'Show all Hits';
-const SHOW_RELEVANT = 'Filter Relevant Hits';
 
 export const SearchHits: React.FC<SearchHitsProps> = ({ hits }) => {
     const allIndices: number[] = [];
@@ -50,8 +48,8 @@ export const SearchHits: React.FC<SearchHitsProps> = ({ hits }) => {
         setTranslateAll(prev => !prev);
     }
 
-    const handleFilterToggle = () => {
-        setShowRelevant(prev => !prev);
+    const handleFilterChange = (e: SelectChangeEvent<number>) => {
+        setShowRelevant(!!e.target.value);
         setPage(1);
     };
 
@@ -63,7 +61,18 @@ export const SearchHits: React.FC<SearchHitsProps> = ({ hits }) => {
         <Pagination classes={{ root: 'search-hits-pagination' }} count = {pgNo} page={page} onChange={handlePageChange}/>
         <div className={'pagination-text-section'}>
             <div className={'pagination-text'}>{`Showing ${Math.min((page-1)*pageSize + 1, indicesToShow.length)} - ${Math.min(page*pageSize, indicesToShow.length)} of ${indicesToShow.length} hits`}</div>
-            <Button variant={'outlined'} onClick={handleFilterToggle}>{showRelevant ? SHOW_ALL : SHOW_RELEVANT}</Button>
+            <FormControl variant='standard' sx={{ m: 1, minWidth: 120 }}>
+                <Select
+                    labelId={'filter-label'}
+                    value={showRelevant ? 1 : 0}
+                    onChange={handleFilterChange}
+                    label='Filter Hits'
+                >
+                    <MenuItem value={0}>All hits</MenuItem>
+                    <MenuItem value={1}>Relevant Hits</MenuItem>
+                </Select>
+            </FormControl>
+            {/* <Button variant={'outlined'} onClick={handleFilterToggle}>{showRelevant ? SHOW_ALL : SHOW_RELEVANT}</Button> */}
             <Button variant={'outlined'} onClick={handleTranslateAllClick}>{translateAll ? SHOW_ORIGINAL : TRANSLATE_ALL}</Button>
         </div>
         {indicesToShow.slice((page-1)*pageSize, (page-1)*pageSize + 10 ).map(index => <React.Fragment key = {hits[index].docid}>

@@ -42,5 +42,8 @@
 }
 
 .search-hit-card-header {
-    position: absolute;
+    position: sticky;
+    margin: 0 8px;
+    font-size: 12px !important;
+    top: 4px;
 }
