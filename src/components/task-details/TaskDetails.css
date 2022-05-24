@@ -10,8 +10,62 @@
 
 .task-details-title {
     margin: 16px 0;
+    font-weight: bold;
+    font-size: 20px;
 }
 
-.task-details-stmt {}
+.task-details-stmt {
+    font-size: 18px;
+    margin: 16px 0;
+}
 
-.task-details-narr {}
+.task-details-narr {
+    margin: 16px 0;
+}
+
+.task-details-card {
+    margin: 16px;
+    max-height: 80vh;
+    overflow-y: scroll !important;
+}
+
+.task-details-example-doc-label {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    margin-top: 8px !important;
+}
+
+.request-details {
+    display: flex;
+    flex-direction: column;
+    margin-left: 12px;
+}
+
+.request-details-text {
+    display: flex;
+    align-items: center;
+    margin-left: -40px;
+    font-size: 18px;
+}
+
+.request-details-heading {
+    padding: 16px 0 8px 0;
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.request-details-hr {
+    width: 100%;
+    margin: 20px 0;
+}
+
+.request-details-submission-link {
+    display: inline-flex;
+    align-items: center;
+}
+
+.request-details-button {
+    margin-left: 32px !important;
+}
+  
