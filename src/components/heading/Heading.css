@@ -1,0 +1,47 @@
+.heading {
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: 0;
+    line-height: 1.2em;
+    padding: 16px 0;
+    margin: 16px 0;
+    position: relative;
+}
+
+.heading:before {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 5px;
+    width: 55px;
+    background-color: #111;
+}
+
+.heading:after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 2px;
+    height: 1px;
+    width: 95%;
+    max-width: 255px;
+    background-color: #333;
+}
+
+
+.heading--small {
+    color: #222;
+    font-size: 18px !important;
+    margin: 0px !important;
+}
+
+.heading--small:after {
+    max-width: 200px;
+}
+
+.heading--small:before {
+    height: 2px;
+    width: 30px;
+    max-width: 200px;
+}

@@ -19,7 +19,7 @@ export interface Submission {
     taskTitle: string;
     taskStmt: string;
     taskNarr: string;
-    reqNum: string | null; // TODO: Remove null
+    reqNum: string;
     reqText: string;
     status: SubmissionStatus;
     when: Date;
@@ -67,6 +67,11 @@ export const getSubmissionById = async (id: string): Promise<Submission> => {
         throw new Error(BAD_SUBMISSION);
     }
     return response.json();
+}
+
+export const getSubmissionsByTaskNum = async (taskNum: string): Promise<Submission[]> => {
+    const request = new Request(`${BASE_URL}submissions?taskNum=${taskNum}`);
+    return getResult(await fetch(request));
 }
 
 export const getSubmissionStatusById = async (id: string): Promise<boolean> => {

@@ -10,6 +10,13 @@ export interface SearchHitCardProps {
     hitIndex: number; // 0-indexed
 }
 
+export const insertNewLines = (text: string) => {
+    return <>{text.split('\n').map((t, index) => {
+        if(index === 0) return <React.Fragment key={index}>{t}</React.Fragment>;
+        else return <React.Fragment key={index}><br/>{t}</React.Fragment>;
+    })}</>;
+}
+
 export const SearchHitCard: React.FC<SearchHitCardProps> = ({ searchHit, showTranslated, hitIndex }) => {
     const [text, setText] = React.useState(showTranslated ? searchHit.translatedDocText : searchHit.docText);
     const [expanded, setExpanded] = React.useState(false);
@@ -50,13 +57,6 @@ export const SearchHitCard: React.FC<SearchHitCardProps> = ({ searchHit, showTra
             setText(searchHit.docText);
         }
     }, [showTranslated, searchHit.translatedDocText, searchHit.docText]);
-
-    const insertNewLines = (text: string) => {
-        return <>{text.split('\n').map((t, index) => {
-            if(index === 0) return <React.Fragment key={index}>{t}</React.Fragment>;
-            else return <React.Fragment key={index}><br/>{t}</React.Fragment>;
-        })}</>;
-    }
 
     return <Card elevation={8} classes={{ root: 'search-hit-card' }}>
         <div className={'search-hit-card-header'}>
