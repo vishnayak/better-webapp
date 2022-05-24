@@ -222,8 +222,7 @@ export const RequestWizard: React.FC<RequestWizardProps> = (props) => {
                 reqNum, 
                 getSentenceAnnotations(task, reqNum, reqText, exampleDocs, sentencesForAnnotation.current)
             ).then(res => {
-                setStep(3);
-                setIsNextLoading(false);
+                handleFinish(true).then(_ => setIsNextLoading(false));
             }).catch(e => {
                 console.error(e);
                 setIsNextLoading(false);
@@ -242,7 +241,7 @@ export const RequestWizard: React.FC<RequestWizardProps> = (props) => {
                 taskNum: task.taskNum,
                 reqNum
             })).id;
-            navigate(`/hits/${id}`);
+            navigate(`/submissions/${id}`);
         } else { 
             onCreate();
         }
@@ -346,7 +345,7 @@ export const RequestWizard: React.FC<RequestWizardProps> = (props) => {
         }>
             <span onMouseOver={getHelper} hidden={false}>
                 {step < steps.length ? <LoadingButton loading={isNextLoading} endIcon={!isLastStep && <NavigateNextIcon/>} loadingPosition="end" variant={'contained'} color={'primary'} onClick={handleNext} disabled={!validateNextStep()}>
-                    {isLastStep ? (requestNumProp ? 'Save Changes' : 'Create Request') : 'Next'}
+                    {isLastStep ? (requestNumProp ? 'Save Changes and run Submission' : 'Create Request and run Submission') : 'Next'}
                 </LoadingButton> : ''}
             </span>
         </Tooltip>
@@ -408,18 +407,7 @@ export const RequestWizard: React.FC<RequestWizardProps> = (props) => {
                             ))}
                         </div>
                     </React.Fragment>
-                ) : <div className={'wizard-final'}>
-                    <span>
-                        Your request has been created! 
-                    </span>
-                    <br/>
-                    <span>
-                        <Link component={'button'} className={'wizard-final-link'} onClick={() => handleFinish(true)}>Click Here</Link> to run a submission for this request.
-                    </span>
-                    <span>
-                        <Link component={'button'} className={'wizard-final-link'} onClick={() => handleFinish(false)}>Click Here</Link> to see all tasks.
-                    </span>
-                </div>}
+                ) : <></>}
                 {step < 3 && renderFooter()}
             </> : <CircularProgress size={60} classes={{root: 'wizard-loading'}} />}
         </Paper>

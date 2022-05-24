@@ -1,0 +1,17 @@
+.task-details-page {
+    width: 80%;
+    margin: auto;
+}
+
+.task-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.task-details-title {
+    margin: 16px 0;
+}
+
+.task-details-stmt {}
+
+.task-details-narr {}

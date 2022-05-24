@@ -3,7 +3,9 @@ import { Routes, Route, Navigate, Link, NavLink } from "react-router-dom";
 import { SearchPage } from '@components/search-page/SearchPage';
 import './App.css';
 import { SubmissionsPage } from '@components/submissions-page/SubmissionsPage';
-import { TasksPage } from '@components/tasks/TasksPage';
+import { TasksPage } from '@components/tasks-page/TasksPage';
+import { TasksDashboard } from '@components/tasks/TasksDashboard';
+import { TaskDetails } from '@components/task-details/TaskDetails';
 
 const tabs = [
   {
@@ -29,8 +31,10 @@ export const App: React.FC<{}> = () => {
       </header>
       <div className='body'>
         <Routes>
-          <Route path="/hits/:submissionId" element={<SearchPage />} />
-          <Route path="/" element={<TasksPage />} />
+          <Route path="/submissions/:submissionId" element={<SearchPage />} />
+          <Route path="/" element={<TasksDashboard />} />
+          <Route path="/tasks" element={<TasksPage />} />
+          <Route path="/tasks/:taskNum" element={<TaskDetails />} />
           <Route path="/submissions" element={<SubmissionsPage />} />
           <Route
             path="*"

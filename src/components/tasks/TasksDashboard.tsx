@@ -1,6 +1,6 @@
 import React from 'react';
 import { getAllTasks, Task } from '@services/task-service';
-import './TasksPage.css';
+import './TasksDashboard.css';
 import { Request } from '@components/request/TaskRequest'
 import { Button } from '@mui/material';
 import TableContainer from '@mui/material/TableContainer';
@@ -15,7 +15,7 @@ import { TaskCreationWizard } from '@components/task-creation-wizard/TaskCreatio
 import { RequestWizard } from '@components/request-creation-wizard/RequestWizard';
 
 
-export const TasksPage: React.FC<{}> = () => {
+export const TasksDashboard: React.FC<{}> = () => {
   const [open, setOpen] = React.useState(false);
   const [tasks, setTasks] = React.useState<Task[]>([]);
 
@@ -81,7 +81,7 @@ export const TasksPage: React.FC<{}> = () => {
   // ad context to ech step of modal
 
   return (<TableContainer component={Paper}>
-    <div className='tasks-page'>
+    <div className='tasks-dashboard'>
       {
         <TableContainer component={Paper}>
           {!open && (<div>
@@ -89,7 +89,7 @@ export const TasksPage: React.FC<{}> = () => {
             <Button 
               onClick={handleTaskCreationClick} 
               variant={'contained'} 
-              classes={{root: 'tasks-page-creation-button'}}
+              classes={{root: 'tasks-dashboard-creation-button'}}
             >
               {<><AddIcon /> Create a Task</>}
             </Button>

@@ -1,4 +1,4 @@
-.tasks-page {
+.tasks-dashboard {
     max-width: 100%;
     margin: auto;
     padding-top: 1rem;
@@ -13,7 +13,7 @@
     text-decoration: none;
 }
 
-.tasks-page-creation-button {
+.tasks-dashboard-creation-button {
     margin: 16px !important;
 }
 
