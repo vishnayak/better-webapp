@@ -51,7 +51,7 @@ export const RequestDetails: React.FC<RequestDetailsProps> = ({ request, taskNum
             <ArrowForwardIcon sx={{mr: 2}} />
             <span>{request.reqText}</span>
             {submissions.length > 0 && <Button classes={{root: 'request-details-button'}} variant='outlined' onClick={() => handleHitsOpen(submissions[0].id)}>Show Hits &nbsp; <OpenInNewIcon /></Button>}
-            {<Button classes={{root: 'request-details-button'}} variant='outlined' onClick={() => handleSubmission()}>Run New Submission &nbsp; <OpenInNewIcon /></Button>}
+            {<Button classes={{root: 'request-details-button'}} disabled={isCreatingSubmission} variant='outlined' onClick={() => handleSubmission()}>Run New Submission &nbsp; <OpenInNewIcon /></Button>}
         </div>
         <span className='request-details-heading'>Example Documents</span>
         <div className='task-details-example-docs'>
