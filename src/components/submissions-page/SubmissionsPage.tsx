@@ -76,7 +76,7 @@ export const SubmissionsPage: React.FC<{}> = () => {
             renderCell: (params) => {
                 return <>
                     {(params.row as Submission).status === SubmissionStatus.COMPLETED && 
-                        <Link className={'link-text'} to={`/hits/${(params.row as Submission).id}`}>
+                        <Link className={'link-text'} to={`/submissions/${(params.row as Submission).id}`}>
                             <Button variant={'outlined'}>
                                 Get Hits
                             </Button>
@@ -115,22 +115,24 @@ export const SubmissionsPage: React.FC<{}> = () => {
     }
 
     return <div className='submissions-page'>
-        <h1>Submissions Dashboard</h1>
         {
         !isLoading ? isError ? <div className='fallback-text'>Something went wrong, please try reloading the page.</div> :
             <>
-                <div className={`submissions-page-creation ${isCreatingSubmission ? 'submissions-page-creation-bordered' : ''}`}>
-                    <div className='submissions-page-creation-title'>
-                        <h2>{isCreatingSubmission ? 'Create and Run New Submission' : ''}</h2>
-                        <Button 
-                            onClick={handleTaskCreationClick} 
-                            variant={isCreatingSubmission ? 'outlined' : 'contained'} 
-                            classes={{root: 'submissions-page-creation-button'}}
-                        >
-                            {isCreatingSubmission ? 'Cancel' : <><AddIcon /> Create a Submission</>}
-                        </Button>
+                <div className='submissions-page-header'>
+                    <span className='submissions-page-title'>Submissions</span>
+                    <div className={`submissions-page-creation ${isCreatingSubmission ? 'submissions-page-creation-bordered' : ''}`}>
+                        <div className='submissions-page-creation-title'>
+                            <h2>{isCreatingSubmission ? 'Create and Run New Submission' : ''}</h2>
+                            <Button 
+                                onClick={handleTaskCreationClick} 
+                                variant={isCreatingSubmission ? 'outlined' : 'contained'} 
+                                classes={{root: 'submissions-page-creation-button'}}
+                            >
+                                {isCreatingSubmission ? 'Cancel' : <><AddIcon /> Create a Submission</>}
+                            </Button>
+                        </div>
+                        {isCreatingSubmission && <SubmissionCreation onCreate={handleCreate} />}
                     </div>
-                    {isCreatingSubmission && <SubmissionCreation onCreate={handleCreate} />}
                 </div>
                 <DataGrid
                     rows={submissions}

@@ -1,0 +1,23 @@
+.tasks-page {
+    display: flex;
+    flex-direction: column;
+    max-width: 90%;
+    margin: auto;
+    padding-top: 1rem;
+    height: calc(100vh - 90px);
+}
+
+.tasks-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tasks-page-title {
+    font-weight: 700;
+    font-size: 30px;
+}
+
+.tasks-page-creation-button {
+    margin: 16px !important;
+}
