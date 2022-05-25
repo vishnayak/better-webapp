@@ -222,7 +222,7 @@ export const RequestWizard: React.FC<RequestWizardProps> = (props) => {
                 reqNum, 
                 getSentenceAnnotations(task, reqNum, reqText, exampleDocs, sentencesForAnnotation.current)
             ).then(res => {
-                handleFinish(true).then(_ => setIsNextLoading(false));
+                handleFinish().then(_ => setIsNextLoading(false));
             }).catch(e => {
                 console.error(e);
                 setIsNextLoading(false);
@@ -235,16 +235,19 @@ export const RequestWizard: React.FC<RequestWizardProps> = (props) => {
         setHelperText([]);
     };
 
-    const handleFinish = async (createSubmission: boolean) => {
-        if(createSubmission) {
-            const id = (await submitSubmission({
-                taskNum: task.taskNum,
-                reqNum
-            })).id;
+    const handleFinish = async () => {
+        const id = (await submitSubmission({
+            taskNum: task.taskNum,
+            reqNum
+        })).id;
+        if(!requestNumProp) {
+            // creating new request
             navigate(`/submissions/${id}`);
         } else { 
-            onCreate();
+            // editing a request (probably by reannotating)
+            window.open(`/submissions/${id}`, '_blank');
         }
+        onCreate();
     };
 
     const handleBack = () => {
