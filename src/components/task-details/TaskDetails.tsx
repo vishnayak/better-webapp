@@ -12,7 +12,6 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { RequestDetails } from './RequestDetails';
 import './TaskDetails.css';
-import sample from 'lodash.sample';
 
 interface PhraseAnnotationRow {
     phrase: string;

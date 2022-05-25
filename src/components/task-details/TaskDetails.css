@@ -63,7 +63,7 @@
 }
 
 .task-details-annotation-see-more {
-    width: 100px;
+    max-width: 150px;
     margin: auto !important;
 }
 
