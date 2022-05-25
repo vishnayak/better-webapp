@@ -108,6 +108,15 @@ export enum AnnotationJudgement {
     NONE='', P='P', E='E', G='G', F='F', B='B'
 };
 
+export const AnnotationJudgementNames: Record<AnnotationJudgement, string> = {
+    [AnnotationJudgement.NONE]: 'None',
+    [AnnotationJudgement.P]: 'Perfect',
+    [AnnotationJudgement.E]: 'Excellent',
+    [AnnotationJudgement.G]: 'Good',
+    [AnnotationJudgement.F]: 'Fair',
+    [AnnotationJudgement.B]: 'Bad',
+}
+
 // utils
 
 function getResult(response: Response) {

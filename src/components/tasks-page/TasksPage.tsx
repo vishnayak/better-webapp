@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import './TasksPage.css';
 import { Button } from '@mui/material';
 import { TaskCreationWizard } from '@components/task-creation-wizard/TaskCreationWizard';
-import { RequestWizard } from '@components/request-creation-wizard/RequestWizard';
 import AddIcon from '@mui/icons-material/Add';
 
 const columns: GridColDef[] = [
@@ -46,10 +45,10 @@ export const TasksPage: React.FC<{}> = () => {
     const [isError, setIsError] = React.useState<boolean>(false);
 
     const [openCreateNewTask, setOpenCreateNewTask] = React.useState(false);
-    const [openCreateNewRequest, setOpenCreateNewRequest] = React.useState(false);
+    // const [openCreateNewRequest, setOpenCreateNewRequest] = React.useState(false);
     const [editingTaskId, setEditingTaskId] = React.useState<string | undefined>(undefined);
-    const [editingRequestId, setEditingRequestId] = React.useState<string | undefined>(undefined);
-    const [requestModalParentTask, setRequestModalParentTask] = React.useState<Task | undefined>(undefined);
+    // const [editingRequestId, setEditingRequestId] = React.useState<string | undefined>(undefined);
+    // const [requestModalParentTask, setRequestModalParentTask] = React.useState<Task | undefined>(undefined);
 
     const navigate = useNavigate();
     React.useEffect(() => {
@@ -79,42 +78,27 @@ export const TasksPage: React.FC<{}> = () => {
 
     const handleTaskCreationClick = () => {
         setOpenCreateNewTask(true);
-      };
-    
-      const handleEdit = (taskNum: string) => {
-        setEditingTaskId(taskNum);
-      };
-    
-      const handleTaskModalClose = () => {
+    };
+
+    // const handleEdit = (taskNum: string) => {
+    //     setEditingTaskId(taskNum);
+    // };
+
+    const handleTaskModalClose = () => {
         setOpenCreateNewTask(false)
         setEditingTaskId(undefined);
-      };
-    
-      const handleTaskCreate = () => {
+    };
+
+    const handleTaskCreate = () => {
         fetchTasks();
         handleTaskModalClose();
-      };
-    
-      const handleRequestModalClose = () => {
-        setOpenCreateNewRequest(false)
-        setEditingTaskId(undefined);
-        setRequestModalParentTask(undefined);
-      };
-    
-      const handleCreateRequestClick = (task: Task) => {
-        setRequestModalParentTask(task);
-        setOpenCreateNewRequest(true);
-      };
-    
-      const handleRequestCreate = () => {
-        fetchTasks();
-        handleRequestModalClose();
-      };
-    
-      const handleEditRequestClick = (task: Task, reqNum: string) => {
-        setRequestModalParentTask(task);
-        setEditingRequestId(reqNum);
-      };
+    };
+
+    // const handleRequestModalClose = () => {
+    //     setOpenCreateNewRequest(false)
+    //     setEditingTaskId(undefined);
+    //     setRequestModalParentTask(undefined);
+    // };
 
     return <div className='tasks-page'>
         {
@@ -134,13 +118,6 @@ export const TasksPage: React.FC<{}> = () => {
                             onCreate={handleTaskCreate} 
                             isOpen={openCreateNewTask || (editingTaskId !== undefined)} 
                             onClose={handleTaskModalClose}
-                        />}
-                        {((openCreateNewRequest || editingRequestId) && requestModalParentTask) && <RequestWizard 
-                            task={requestModalParentTask} 
-                            requestNum={editingRequestId}
-                            onCreate={handleRequestCreate} 
-                            isOpen={openCreateNewRequest || (editingRequestId !== undefined)} 
-                            onClose={handleRequestModalClose}
                         />}
                     </div>
                     <DataGrid

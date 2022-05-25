@@ -32,8 +32,8 @@ export const App: React.FC<{}> = () => {
       <div className='body'>
         <Routes>
           <Route path="/submissions/:submissionId" element={<SearchPage />} />
-          <Route path="/" element={<TasksDashboard />} />
-          <Route path="/tasks" element={<TasksPage />} />
+          <Route path="/" element={<TasksPage />} />
+          <Route path="/tasks" element={<TasksDashboard />} />
           <Route path="/tasks/:taskNum" element={<TaskDetails />} />
           <Route path="/submissions" element={<SubmissionsPage />} />
           <Route
