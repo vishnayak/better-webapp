@@ -132,7 +132,6 @@ export const RequestDetails: React.FC<RequestDetailsProps> = ({ request, taskNum
                             <TableRow
                                 key={row.sentence}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 }, '& > *': { padding: '8px' } }}
-                                className={`task-details-annotations-row`}
                             >
                                 <TableCell>{row.sentence}</TableCell>
                                 <TableCell>{AnnotationJudgementNames[row.judgment]}</TableCell>
