@@ -102,7 +102,7 @@ export const TasksPage: React.FC<{}> = () => {
 
     return <div className='tasks-page'>
         {
-            !isLoading ? isError ? <div className='fallback-text'>Something went wrong, please try reloading the page.</div> :
+            !isLoading ? (isError ? <div className='fallback-text'>Something went wrong, please try reloading the page.</div> :
                 <>
                     <div className='tasks-page-header'>
                         <span className='tasks-page-title'>Tasks</span>
@@ -133,7 +133,7 @@ export const TasksPage: React.FC<{}> = () => {
                         onRowClick={(params) => handleTaskClick(params.id as string)}
                         sx={{ '& .MuiDataGrid-row': { cursor: 'pointer' } }}
                     />
-                </>
+                </>)
             : <div className='fallback-text'>Loading...</div>
         }
     </div>;

@@ -4,7 +4,7 @@ import { TaskCreationWizard } from '@components/task-creation-wizard/TaskCreatio
 import Add from '@mui/icons-material/Add';
 import Edit from '@mui/icons-material/Edit';
 import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown';
-import { Button, Card, CardContent, CardHeader, Link, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { Button, Card, CardContent, CardHeader, CircularProgress, Link, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import { getSubmissionsByTaskNum, Submission } from '@services/submission-service';
 import { AnnotationJudgment, AnnotationJudgmentNames, getAnnotationPhrases, getTaskById, PhraseAnnotation, Task } from '@services/task-service';
 import React from 'react';
@@ -75,6 +75,7 @@ export const TaskDetails: React.FC<{}> = () => {
     };
 
     const refreshTask = async () => {
+        setIsLoading(true);
         try {
             const res = await getTaskById(taskNum);
             const annotationRes = await getAnnotationPhrases(taskNum);
@@ -118,10 +119,12 @@ export const TaskDetails: React.FC<{}> = () => {
         setSeeAllAnnotations(prev => !prev);
     }
 
-    // TODO: Loading and error states
-
     return <div className='task-details-page'>
-        {!isLoading && task && <div className='task-details'>
+        {isLoading ? 
+        <div style={{textAlign: 'center'}}>
+            <CircularProgress size={60} classes={{root: 'fallback-text'}} />
+        </div>: 
+        (task ? <div className='task-details'>
             {isEditing && <TaskCreationWizard 
                 taskNum={taskNum} 
                 onCreate={() => handleEditTaskClick(false)} 
@@ -214,6 +217,6 @@ export const TaskDetails: React.FC<{}> = () => {
                 {task.taskExampleDocs.length === 0 && <>&nbsp;Add example documents to create a request.</>}
             </span>:
             task.requests.map(req => <RequestDetails key={req.reqNum} taskNum={taskNum} request={req} submissions={submissionMap[req.reqNum] || []} onReannotate={() => setEditingRequestId(req.reqNum)} />)}
-        </div>}
+        </div> : <div className='fallback-text'>This Task Id is invalid!</div>)}
     </div>;
 };

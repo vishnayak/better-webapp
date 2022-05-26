@@ -7,7 +7,7 @@ import { getPaginatedHits, getSubmissionById, Submission, BAD_SUBMISSION } from 
 export const SearchPage: React.FC<{}> = () => {
     const params = useParams();
     const [hitsLoading, setHitsLoading] = React.useState(true);
-    const [isIdValid, setIsIdValid] = React.useState(false);
+    const [isIdValid, setIsIdValid] = React.useState(true);
     const [searchHits, setSearchHits] = React.useState<SearchHit[]>([]);
     const [submissionId, setSubmissionId] = React.useState<string | undefined>(undefined);
     const [submission, setSubmission] = React.useState<Submission | undefined>(undefined);
@@ -39,15 +39,15 @@ export const SearchPage: React.FC<{}> = () => {
 
     return <div className="search-page">{
         isIdValid ? 
-            <>
+            (submission ? <>
                 <div className={'submission-detail'}>
-                    <span><b>Task Title: </b> {submission!.taskTitle}</span>
-                    <span><b>Created on: </b> {new Date(submission!.when).toLocaleString()}</span>
+                    <span><b>Task Title: </b> {submission.taskTitle}</span>
+                    <span><b>Created on: </b> {new Date(submission.when).toLocaleString()}</span>
                 </div>
                 <div  className={'submission-detail'}>
                     <span><b>Request: </b> {submission!.reqText}</span>
                 </div>
-            </> :
+            </> : '') :
             <div className='fallback-text'>This submission with ID {submissionId} is invalid!</div>
     }
     {
