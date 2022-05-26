@@ -81,7 +81,7 @@ export const PhraseRow: React.FC<PhraseRowProps> = ({ phraseName, annotation, on
                         aria-labelledby="demo-row-radio-buttons-group-label"
                         name="row-radio-buttons-group"
                         sx={{ minWidth: 180 }}
-                        defaultValue={annotation.judgment === AnnotationJudgment.NONE ? undefined : annotation.judgment}
+                        defaultValue={annotation.judgment}
                         onChange={(e, value) => { e.preventDefault(); onAnnotate(value as AnnotationJudgment); }}
                     >
                         <FormControlLabel value="P" control={<Radio />} label="Perfect" />
@@ -89,6 +89,7 @@ export const PhraseRow: React.FC<PhraseRowProps> = ({ phraseName, annotation, on
                         <FormControlLabel value="G" control={<Radio />} label="Good" />
                         <FormControlLabel value="F" control={<Radio />} label="Fair" />
                         <FormControlLabel value="B" control={<Radio />} label="Bad" />
+                        <FormControlLabel value="" control={<Radio />} label="None" />
                     </RadioGroup>
                 </TableCell>
             </TableRow>
