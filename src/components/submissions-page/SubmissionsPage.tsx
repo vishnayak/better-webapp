@@ -116,7 +116,9 @@ export const SubmissionsPage: React.FC<{}> = () => {
 
     return <div className='submissions-page'>
         {
-        !isLoading ? isError ? <div className='fallback-text'>Something went wrong, please try reloading the page.</div> :
+            isLoading ? 
+            <div className='fallback-text'>Loading...</div> : 
+            (isError ? <div className='fallback-text'>Something went wrong, please try reloading the page.</div> :
             <>
                 <div className='submissions-page-header'>
                     <span className='submissions-page-title'>Submissions</span>
@@ -149,7 +151,7 @@ export const SubmissionsPage: React.FC<{}> = () => {
                     disableSelectionOnClick
                 />
                 {deletingSubmissionId && <ConfirmationDialog open={!!deletingSubmissionId} onConfirm={handleConfirmDelete} onClose={() => setDeletingSubmissionId(undefined)} />}
-            </>
-        : <div className='fallback-text'>Loading...</div>
-    }</div>;
+            </>)
+        }
+    </div>;
 };
