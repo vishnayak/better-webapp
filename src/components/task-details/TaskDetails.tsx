@@ -1,13 +1,12 @@
 import Heading from '@components/heading/Heading';
 import { RequestWizard } from '@components/request-creation-wizard/RequestWizard';
-import { insertNewLines } from '@components/search-hit-card/SearchHitCard';
 import { TaskCreationWizard } from '@components/task-creation-wizard/TaskCreationWizard';
 import Add from '@mui/icons-material/Add';
 import Edit from '@mui/icons-material/Edit';
 import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown';
 import { Button, Card, CardContent, CardHeader, Link, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import { getSubmissionsByTaskNum, Submission } from '@services/submission-service';
-import { AnnotationJudgement, AnnotationJudgementNames, getAnnotationPhrases, getTaskById, PhraseAnnotation, Task } from '@services/task-service';
+import { AnnotationJudgment, AnnotationJudgmentNames, getAnnotationPhrases, getTaskById, PhraseAnnotation, Task } from '@services/task-service';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { RequestDetails } from './RequestDetails';
@@ -16,8 +15,17 @@ import './TaskDetails.css';
 interface PhraseAnnotationRow {
     phrase: string;
     sentence: string;
-    judgment: AnnotationJudgement;
+    judgment: AnnotationJudgment;
 }
+
+export const getHighlightedSpan = (docText: string, highlightText: string, highlightClassName: string) => {
+    const splitText = docText.split(highlightText);
+    if(splitText.length === 1) return <span>{splitText}</span>;
+    const resultText = splitText.slice(0, splitText.length - 1).map((text, i) => <React.Fragment key={i}>{text}<span className={highlightClassName}>{highlightText}</span></React.Fragment>);
+    return <Typography className={'doc-text'} variant='body2'>
+        {resultText}{splitText[splitText.length - 1]}
+    </Typography>
+};
 
 export const TaskDetails: React.FC<{}> = () => {
     const params = useParams();
@@ -31,7 +39,7 @@ export const TaskDetails: React.FC<{}> = () => {
     const [openCreateNewRequest, setOpenCreateNewRequest] = React.useState(false);
     const [editingRequestId, setEditingRequestId] = React.useState<string | undefined>(undefined);
     const annotations = React.useRef<PhraseAnnotationRow[]>([]);
-    const [selectedSentence, setSelectedSentence] = React.useState<string>('');
+    const [selectedRow, setSelectedRow] = React.useState<PhraseAnnotationRow | undefined>(undefined);
     const [seeAllAnnotations, setSeeAllAnnotations] = React.useState(false);
 
     React.useEffect(() => {
@@ -50,11 +58,11 @@ export const TaskDetails: React.FC<{}> = () => {
             sentence: phrasesAnnotation[p].sentences,
             judgment: phrasesAnnotation[p].judgment,
         }));
-        const goodJudgments = [AnnotationJudgement.P, AnnotationJudgement.E, AnnotationJudgement.G];
-        const badJudgments = [AnnotationJudgement.F, AnnotationJudgement.B];
+        const goodJudgments = [AnnotationJudgment.P, AnnotationJudgment.E, AnnotationJudgment.G];
+        const badJudgments = [AnnotationJudgment.F, AnnotationJudgment.B];
         const goodAnnotations = allAnnotations.filter(a => goodJudgments.indexOf(a.judgment) > -1);
         const badAnnotations = allAnnotations.filter(a => badJudgments.indexOf(a.judgment) > -1);
-        const emptyAnnotations = allAnnotations.filter(a => a.judgment === AnnotationJudgement.NONE);
+        const emptyAnnotations = allAnnotations.filter(a => a.judgment === AnnotationJudgment.NONE);
         const result = [];
         if(badAnnotations.length > 3) {
             result.push(...goodAnnotations.slice(0, 3));
@@ -116,7 +124,7 @@ export const TaskDetails: React.FC<{}> = () => {
         {!isLoading && task && <div className='task-details'>
             {isEditing && <TaskCreationWizard 
                 taskNum={taskNum} 
-                onCreate={() => handleEditTaskClick(true)} 
+                onCreate={() => handleEditTaskClick(false)} 
                 isOpen={isEditing} 
                 onClose={() => handleEditTaskClick(false)}
             />}
@@ -136,7 +144,7 @@ export const TaskDetails: React.FC<{}> = () => {
             {task.taskNarr.length > 0 && <span className='task-details-narr'><b>Narrative: </b>{task.taskNarr}</span>}
             
             <Heading headingText='Example Documents' />
-            <div className='task-details-example-docs'>
+            {task.taskExampleDocs.length > 0 ? <div className='task-details-example-docs'>
                 {task.taskExampleDocs.map((doc) => <React.Fragment key={`${doc.docNumber}${openDocs[doc.docNumber-1]}`}>
                     <Link classes={{ root: 'task-details-example-doc-label' }} onClick={() => toggleDoc(doc.docNumber - 1)}>
                         <KeyboardArrowDown
@@ -147,60 +155,64 @@ export const TaskDetails: React.FC<{}> = () => {
                                 transition: '0.2s',
                             }}
                         />
-                        <span>Doc {doc.docNumber}{doc.highlight.length > 0 && `- Highlight Text: ${doc.highlight}`}</span>
+                        <span>Doc {doc.docNumber}</span>
                     </Link>
+                    <li className='task-details-example-doc-highlight'>
+                        <b>Highlight Text:</b>
+                        &nbsp;
+                        {doc.highlight.length > 0 ? `${doc.highlight}` : 'No highlight text was selected for this document'}
+                    </li>
                     {openDocs[doc.docNumber - 1] && <Card classes={{ root: 'task-details-card' }}>
                         <CardContent classes={{ root: 'search-hit-card-content' }}>
-                            <Typography variant="body2">
-                                {insertNewLines(doc.docText)}
-                            </Typography>
+                            {getHighlightedSpan(doc.docText, doc.highlight, 'doc-highlight-selected-text')}
                         </CardContent>
                     </Card>}
                 </React.Fragment>)}
-            </div>
+            </div> : 'No example documents have been added. Edit task and select documents.'}
 
             {annotations.current.length > 0 && <>
-                <Heading headingText='Annotations' />
+                <Heading headingText='Phrase Judgments' />
                 <div className='task-details-annotations-table'>
                     <TableContainer sx={{margin: '16px', maxWidth: '50%'}} component={Paper}>
                         <Table>
                             <TableHead>
                                 <TableRow sx={{'& > *': { padding: '8px' }}}>
-                                    <TableCell>Phrase</TableCell>
-                                    <TableCell sx={{ width: '100px' }}>Judgment</TableCell>
-                                    {/* <TableCell>Sentence</TableCell> */}
+                                    <TableCell><b>Phrase</b></TableCell>
+                                    <TableCell sx={{ width: '100px' }}><b>Judgment</b></TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                             {(seeAllAnnotations ? annotations.current : annotationSummary).map( row =>
                                 <TableRow
-                                    onClick={() => setSelectedSentence(row.sentence)}
+                                    onClick={() => setSelectedRow(row)}
                                     key={row.phrase}
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 }, '& > *': { padding: '8px' } }}
-                                    className={`task-details-annotations-row ${selectedSentence === row.sentence ? 'task-details-annotations-row--highlighted' : ''}`}
+                                    className={`task-details-annotations-row ${selectedRow?.phrase === row.phrase ? 'task-details-annotations-row--highlighted' : ''}`}
                                 >
                                     <TableCell>{row.phrase}</TableCell>
-                                    <TableCell>{AnnotationJudgementNames[row.judgment]}</TableCell>
-                                    {/* <TableCell>{row.sentence}</TableCell> */}
+                                    <TableCell>{AnnotationJudgmentNames[row.judgment]}</TableCell>
                                 </TableRow>
                             )}
                             </TableBody>
                         </Table>
                     </TableContainer>
                     <Card className={'task-details-annotation-sentence'}>
-                        <CardHeader className={'task-details-annotation-sentence-header'} title='Sentence' />
+                        <CardHeader classes={{title: 'task-details-annotation-sentence-header'}} title='Phrase with Context' />
                         <CardContent>
-                            {selectedSentence.length > 0 ? selectedSentence : 'Click a row to see its sentence.'}
+                            {selectedRow === undefined ? 'Click a row from the table to see a phrase judgment with context.' : getHighlightedSpan(selectedRow.sentence, selectedRow.phrase, `doc-highlight-${selectedRow.judgment || 'selected-text'}`)}
                         </CardContent>
                     </Card>
                 </div>
-                <Button variant='text' onClick={toggleSeeMore} className='task-details-annotation-see-more'>{seeAllAnnotations ? 'See Summary' : 'See All'}</Button>
+                <Button variant='outlined' onClick={toggleSeeMore} className='task-details-annotation-see-more'>{seeAllAnnotations ? 'See Summary' : 'See All Judgments'}</Button>
             </>}
             <div className='task-details-heading-row'>
                 <Heading headingText='Requests' />
-                <Button variant={'contained'} onClick={() => handleCreateRequestClick(true)}><Add/> &nbsp; Add Request</Button>
+                {task.taskExampleDocs.length > 0 && <Button variant={'contained'} onClick={() => handleCreateRequestClick(true)}><Add/> &nbsp; Add Request</Button>}
             </div>
-            {task.requests.length === 0 ? <span>No requests have been created for this task.</span>:
+            {task.requests.length === 0 ? <span>
+                No requests have been created for this task.
+                {task.taskExampleDocs.length === 0 && <>&nbsp;Add example documents to create a request.</>}
+            </span>:
             task.requests.map(req => <RequestDetails key={req.reqNum} taskNum={taskNum} request={req} submissions={submissionMap[req.reqNum] || []} onReannotate={() => setEditingRequestId(req.reqNum)} />)}
         </div>}
     </div>;

@@ -1,7 +1,7 @@
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Box, Button, CircularProgress, Grid, Link, Modal, Paper, Step, StepLabel, Stepper, TextField, Tooltip, Typography } from '@mui/material';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import { addExampleDocsToRequest, AnnotationJudgement, CandidateDoc, candidateDocToExampleDoc, createRequest, ExampleDoc, getCandidateDocsForRequest, getRequestByReqNum, getSentencesForAnnotation, postSentencesForAnnotation, Sentences, SentencesAnnotation, Task, updateRequest } from '@services/task-service';
+import { addExampleDocsToRequest, AnnotationJudgment, CandidateDoc, candidateDocToExampleDoc, createRequest, ExampleDoc, getCandidateDocsForRequest, getRequestByReqNum, getSentencesForAnnotation, postSentencesForAnnotation, Sentences, SentencesAnnotation, Task, updateRequest } from '@services/task-service';
 import React from 'react';
 import { submitSubmission } from '@services/submission-service';
 import { CandidateDocCard } from '@components/candidate-doc-card/CandidateDocCard';
@@ -18,7 +18,7 @@ export interface RequestWizardProps {
     requestNum?: string;
 };
 
-const steps = ['Describe the Request', 'Select Example Docs', 'Annotate Sentences'];
+const steps = ['Describe the Request', 'Select Example Docs', 'Judge Sentences'];
 const MAX_EXAMPLE_DOCS = 4;
 
 /**
@@ -26,7 +26,7 @@ const MAX_EXAMPLE_DOCS = 4;
  */
 type SentenceAnnotationMap = Record<string, Record<string, {
     sentence: string;
-    judgment: AnnotationJudgement;
+    judgment: AnnotationJudgment;
 }>>;
 
 interface SelectedExampleDoc {
@@ -47,7 +47,7 @@ function getSentenceAnnotationMap(annotation: SentencesAnnotation): SentenceAnno
         docIdToSentences[docId].forEach((sent) => {
             result[docId][sent.sentenceId] = { 
                 sentence: sent.sentence,
-                judgment: sent.judgment as AnnotationJudgement 
+                judgment: sent.judgment as AnnotationJudgment 
             };
         });
     });
@@ -82,7 +82,7 @@ interface SentenceRowData {
     docId: string; 
     sentenceId: string; 
     sentence: string; 
-    judgment: AnnotationJudgement;
+    judgment: AnnotationJudgment;
 }
 
 function getAllSentences(annotationMap: SentenceAnnotationMap): SentenceRowData[] {
@@ -148,21 +148,22 @@ export const RequestWizard: React.FC<RequestWizardProps> = (props) => {
                 // set step to 2 if annotations are present
                 try {
                     const sentences = getSentenceAnnotationMap(await getSentencesForAnnotation(task.taskNum, requestNumProp));
+                    let tempStep = -1;
                     if(Object.keys(sentences).length > 0) {
                         setExampleDocMap(getExampleDocMap(request.exampleDocs));
                         setInitialAnnotatedSentences(sentences);
-                        setStep(2);
+                        tempStep = 2;
                         sentencesForAnnotation.current = sentences;
                     } else if(request.exampleDocs?.length > 0) {
                         const docsResult = await getCandidateDocsForRequest(task.taskNum, requestNumProp);
                         const reorderedDocs = reorderCandidateDocs(docsResult.hits, request.exampleDocs);
                         setCandidateDocs(reorderedDocs.slice(0, 20));
                         setExampleDocMap(getExampleDocMap(request.exampleDocs));
-                        setStep(1);
-                    } else {
-                        setReqText(request.reqText);
-                        setStep(0);
+                        tempStep = 1;
                     }
+                    setReqText(request.reqText);
+                    if(tempStep < 0) tempStep = 0;
+                    setStep(tempStep);
                 } catch(e) {
                     console.error('Annotations call failed: ', e);
                 }
@@ -308,7 +309,7 @@ export const RequestWizard: React.FC<RequestWizardProps> = (props) => {
         setExampleDocMap({ ...exampleDocMap, [docId]: { ...exampleDocMap[docId], highlight: text } });
     };
 
-    const handleAnnotate = (docId: string, sentenceId: string, judgment: AnnotationJudgement) => {
+    const handleAnnotate = (docId: string, sentenceId: string, judgment: AnnotationJudgment) => {
         sentencesForAnnotation.current[docId][sentenceId].judgment = judgment;
     };
 
@@ -399,7 +400,7 @@ export const RequestWizard: React.FC<RequestWizardProps> = (props) => {
                 ) : step === 2 ? (
                     <React.Fragment>
                         <div className={'wizard-body'}>
-                            <Typography sx={{ mt: 2, mb: 1 }}>Judge Sentences</Typography>
+                            <Typography sx={{ mt: 2, mb: 1 }}>Judge Sentences for request: {reqText}</Typography>
                             {getAllSentences(initialAnnotatedSentences).map((sent) => (
                                 <SentenceRow 
                                     key={`${sent.sentence}${sent.judgment}`} 
