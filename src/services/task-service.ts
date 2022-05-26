@@ -44,7 +44,7 @@ export interface Sentences{
 
 export interface Annotation{
     sentences: string;
-    judgment: AnnotationJudgement;
+    judgment: AnnotationJudgment;
 }
 
 export interface PhraseAnnotation {
@@ -104,17 +104,17 @@ export interface CandidateDocsResult {
     totalNumHits: number;
 }
 
-export enum AnnotationJudgement {
+export enum AnnotationJudgment {
     NONE='', P='P', E='E', G='G', F='F', B='B'
 };
 
-export const AnnotationJudgementNames: Record<AnnotationJudgement, string> = {
-    [AnnotationJudgement.NONE]: 'None',
-    [AnnotationJudgement.P]: 'Perfect',
-    [AnnotationJudgement.E]: 'Excellent',
-    [AnnotationJudgement.G]: 'Good',
-    [AnnotationJudgement.F]: 'Fair',
-    [AnnotationJudgement.B]: 'Bad',
+export const AnnotationJudgmentNames: Record<AnnotationJudgment, string> = {
+    [AnnotationJudgment.NONE]: 'None',
+    [AnnotationJudgment.P]: 'Perfect',
+    [AnnotationJudgment.E]: 'Excellent',
+    [AnnotationJudgment.G]: 'Good',
+    [AnnotationJudgment.F]: 'Fair',
+    [AnnotationJudgment.B]: 'Bad',
 }
 
 // utils

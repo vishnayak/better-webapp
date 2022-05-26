@@ -2,7 +2,7 @@ import Button from '@mui/material/Button';
 import React from 'react';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
-import { AnnotationJudgement, Task } from '@services/task-service';
+import { AnnotationJudgment, Task } from '@services/task-service';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import { Grid } from '@mui/material';
@@ -26,7 +26,7 @@ export const AnnotatePage: React.FC<AnnotatePageProps> = ({ task }) => {
     const handleAnnotate = () => {
         let annotation: Annotation = {
             sentences: "",
-            judgment: AnnotationJudgement.NONE
+            judgment: AnnotationJudgment.NONE
         }, map = new Map();
         keys.map((k, index) => {
             annotation.sentences = k.value;

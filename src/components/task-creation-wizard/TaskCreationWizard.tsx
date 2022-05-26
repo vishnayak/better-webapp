@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Button, CircularProgress, Grid, Modal, Paper, Step, StepLabel, Stepper, TextField, Tooltip, Typography } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton'
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import { addExampleDocsToTask, AnnotationJudgement, CandidateDoc, candidateDocToExampleDoc, createTask, ExampleDoc, getAnnotationPhrases, getCandidateDocsForTask, getPhrasesForAnnotation, getSentencesForAnnotation, getTaskById, PhraseAnnotation, postPhrasesForAnnotation, Sentences, SentencesAnnotation, updateTask } from '@services/task-service';
+import { addExampleDocsToTask, AnnotationJudgment, CandidateDoc, candidateDocToExampleDoc, createTask, ExampleDoc, getAnnotationPhrases, getCandidateDocsForTask, getPhrasesForAnnotation, getSentencesForAnnotation, getTaskById, PhraseAnnotation, postPhrasesForAnnotation, Sentences, SentencesAnnotation, updateTask } from '@services/task-service';
 import './TaskCreationWizard.css';
 import { CandidateDocCard } from '@components/candidate-doc-card/CandidateDocCard';
 import { PhraseRow } from '@components/formDialog/PhraseRow';
@@ -42,7 +42,7 @@ function reorderCandidateDocs(candidateDocs: CandidateDoc[], exampleDocs: Exampl
     return [...firstDocs, ...nextDocs];
 }
 
-const steps = ['Describe the Task', 'Select Example Docs', 'Annotate Phrases'];
+const steps = ['Describe the Task', 'Select Example Docs', 'Judge Phrases'];
 const MAX_EXAMPLE_DOCS = 4;
 
 export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => {
@@ -72,22 +72,23 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
                 // set step to 2 if annotations are present
                 try {
                     const phrases = await getAnnotationPhrases(taskNumProp);
+                    let tempStep = -1;
                     if(Object.keys(phrases).length > 0) {
                         setInitialAnnotatedPhrases(phrases);
-                        setStep(2);
+                        tempStep = 2;
                         phrasesForAnnotation.current = phrases;
                     } else if(task.taskExampleDocs?.length > 0) {
                         const docsResult = await getCandidateDocsForTask(task.taskNum);
                         const reorderedDocs = reorderCandidateDocs(docsResult.hits, task.taskExampleDocs);
                         setCandidateDocs(reorderedDocs.slice(0, 20));
                         setExampleDocMap(getExampleDocMap(task.taskExampleDocs));
-                        setStep(1);
-                    } else {
-                        setTaskTitle(task.taskTitle);
-                        setTaskStmt(task.taskStmt);
-                        setTaskNarr(task.taskNarr);
-                        setStep(0);
+                        tempStep = 1;
                     }
+                    setTaskTitle(task.taskTitle);
+                    setTaskStmt(task.taskStmt);
+                    setTaskNarr(task.taskNarr);
+                    if(tempStep < 0) tempStep = 0;
+                    setStep(tempStep);
                 } catch(e) {
                     console.error('Annotations call failed: ', e);
                 }
@@ -219,7 +220,7 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
         setExampleDocMap({ ...exampleDocMap, [docId]: { ...exampleDocMap[docId], highlight: text } });
     };
 
-    const handleAnnotate = (phrase: string, judgment: AnnotationJudgement) => {
+    const handleAnnotate = (phrase: string, judgment: AnnotationJudgment) => {
         phrasesForAnnotation.current = {
             ...phrasesForAnnotation.current,
             [phrase]: {
@@ -342,7 +343,7 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
                 ) : step === 2 ? (
                     <React.Fragment>
                         <div className={'wizard-body'}>
-                            <Typography sx={{ mt: 2, mb: 1 }}>Annotate Phrases</Typography>
+                            <Typography sx={{ mt: 2, mb: 1 }}>Judge Phrases for task: {taskTitle}</Typography>
                             {Object.keys(initialAnnotatedPhrases).map((k) => (
                                 <PhraseRow 
                                     key={`${k}${initialAnnotatedPhrases[k].judgment}`} 

@@ -1,13 +1,13 @@
 import { Box, Collapse, FormControlLabel, IconButton, InputLabel, Radio, RadioGroup, TableCell, TableRow, Typography } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import { Annotation, AnnotationJudgement } from '@services/task-service';
+import { Annotation, AnnotationJudgment } from '@services/task-service';
 import React from 'react';
 
 export interface PhraseRowProps {
     phraseName: string;
     annotation: Annotation;
-    onAnnotate: (judgment: AnnotationJudgement) => void;
+    onAnnotate: (judgment: AnnotationJudgment) => void;
 };
 
 const trimText = (text: string) => {
@@ -81,8 +81,8 @@ export const PhraseRow: React.FC<PhraseRowProps> = ({ phraseName, annotation, on
                         aria-labelledby="demo-row-radio-buttons-group-label"
                         name="row-radio-buttons-group"
                         sx={{ minWidth: 180 }}
-                        defaultValue={annotation.judgment === AnnotationJudgement.NONE ? undefined : annotation.judgment}
-                        onChange={(e, value) => { e.preventDefault(); onAnnotate(value as AnnotationJudgement); }}
+                        defaultValue={annotation.judgment === AnnotationJudgment.NONE ? undefined : annotation.judgment}
+                        onChange={(e, value) => { e.preventDefault(); onAnnotate(value as AnnotationJudgment); }}
                     >
                         <FormControlLabel value="P" control={<Radio />} label="Perfect" />
                         <FormControlLabel value="E" control={<Radio />} label="Excellent" />

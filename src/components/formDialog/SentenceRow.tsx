@@ -1,11 +1,11 @@
 import { FormControlLabel, InputLabel, Radio, RadioGroup, TableCell, TableRow } from '@mui/material';
-import { AnnotationJudgement } from '@services/task-service';
+import { AnnotationJudgment } from '@services/task-service';
 import React from 'react';
 
 export interface SentenceRowProps {
     sentence: string;
-    judgment: AnnotationJudgement;
-    onAnnotate: (judgment: AnnotationJudgement) => void;
+    judgment: AnnotationJudgment;
+    onAnnotate: (judgment: AnnotationJudgment) => void;
 };
 
 export const SentenceRow: React.FC<SentenceRowProps> = ({ sentence, judgment, onAnnotate }) => {
@@ -16,8 +16,8 @@ export const SentenceRow: React.FC<SentenceRowProps> = ({ sentence, judgment, on
             <RadioGroup
                 row
                 sx={{ minWidth: 180 }}
-                defaultValue={judgment === AnnotationJudgement.NONE ? undefined : judgment}
-                onChange={(e, value) => { e.preventDefault(); onAnnotate(value as AnnotationJudgement); }}
+                defaultValue={judgment === AnnotationJudgment.NONE ? undefined : judgment}
+                onChange={(e, value) => { e.preventDefault(); onAnnotate(value as AnnotationJudgment); }}
             >
                 <FormControlLabel value="P" control={<Radio />} label="Perfect" />
                 <FormControlLabel value="E" control={<Radio />} label="Excellent" />
