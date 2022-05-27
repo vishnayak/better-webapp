@@ -10,19 +10,19 @@ export interface SentenceRowProps {
 
 export const SentenceRow: React.FC<SentenceRowProps> = ({ sentence, judgment, onAnnotate }) => {
     return <TableRow sx={{ '& > *': { border: 'unset' } }}>
-        <TableCell >{sentence}</TableCell>
+        <TableCell>{sentence}</TableCell>
         <TableCell>
             <RadioGroup
                 row
-                sx={{ minWidth: 180 }}
+                sx={{ minWidth: 400, fontSize: '13px !important' }}
                 defaultValue={judgment}
                 onChange={(e, value) => { e.preventDefault(); onAnnotate(value as AnnotationJudgment); }}
             >
-                <FormControlLabel value="P" control={<Radio />} label="Perfect" />
-                <FormControlLabel value="E" control={<Radio />} label="Excellent" />
-                <FormControlLabel value="G" control={<Radio />} label="Good" />
-                <FormControlLabel value="F" control={<Radio />} label="Fair" />
-                <FormControlLabel value="B" control={<Radio />} label="Bad" />
+                <FormControlLabel value="P" control={<Radio />} label="P" />
+                <FormControlLabel value="E" control={<Radio />} label="E" />
+                <FormControlLabel value="G" control={<Radio />} label="G" />
+                <FormControlLabel value="F" control={<Radio />} label="F" />
+                <FormControlLabel value="B" control={<Radio />} label="B" />
                 <FormControlLabel value="" control={<Radio />} label="None" />
             </RadioGroup>
         </TableCell>

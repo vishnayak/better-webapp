@@ -34,3 +34,13 @@
     font-size: 13px !important;
     background-color: #141212c9 !important;
 }
+
+.task-wizard-annotation-section {
+    overflow-y: scroll;
+}
+
+.task-wizard-annotation-container {
+    display: flex;
+    flex-direction: column;
+    overflow-y: hidden;
+} 
