@@ -302,7 +302,6 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
                         <Grid item container>
                             <Grid item xs={10}>
                                 <TextField
-                                    required
                                     fullWidth
                                     label="Task Statement"
                                     value={taskStmt}
@@ -315,7 +314,6 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
                             <Grid item xs={10}>
                                 <TextField
                                     multiline
-                                    required
                                     fullWidth
                                     label="Task Narrative"
                                     value={taskNarr}
@@ -325,11 +323,11 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
                                 />
                             </Grid>
                         </Grid>
-                        {isNextLoading && <Grid item>Please wait, this may take upto 30 seconds...</Grid>}
+                        {isNextLoading && <Grid item>Please wait, this may take upto 15 seconds...</Grid>}
                     </Grid>
                 ): step === 1 ? (
                     <Grid classes={{root: 'wizard-body'}} container direction='column' spacing={4} mt={2}>
-                        <div className={'wizard-instruction-text'}>Select example documents and highlight most relevant text for each:</div>
+                        <div className={'wizard-instruction-text'}>Select example documents and highlight most relevant text in each, for task: {taskTitle}</div>
                         {candidateDocs.map((doc, i) => <CandidateDocCard 
                             key = {`${i}${doc.docid}`} 
                             onCheck={c => handleDocCheck(doc, c)} 
@@ -342,16 +340,21 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
                     </Grid>
                 ) : step === 2 ? (
                     <React.Fragment>
-                        <div className={'wizard-body'}>
+                        <div className={'task-wizard-annotation-container'}>
                             <Typography sx={{ mt: 2, mb: 1 }}>Judge Phrases for task: {taskTitle}</Typography>
-                            {Object.keys(initialAnnotatedPhrases).map((k) => (
-                                <PhraseRow 
-                                    key={`${k}${initialAnnotatedPhrases[k].judgment}`} 
-                                    annotation={initialAnnotatedPhrases[k]} 
-                                    phraseName={k} 
-                                    onAnnotate={(j) => handleAnnotate(k, j)}
-                                />
-                            ))}
+                            <Typography>
+                                <b>P</b>: Perfect, <b>E</b>: Excellent, <b>G</b>: Good, <b>F</b>: Fair, <b>B</b>: Bad
+                            </Typography>
+                            <div className={'task-wizard-annotation-section'}>
+                                {Object.keys(initialAnnotatedPhrases).map((k) => (
+                                    <PhraseRow 
+                                        key={`${k}${initialAnnotatedPhrases[k].judgment}`} 
+                                        annotation={initialAnnotatedPhrases[k]} 
+                                        phraseName={k} 
+                                        onAnnotate={(j) => handleAnnotate(k, j)}
+                                    />
+                                ))}
+                            </div>
                         </div>
                     </React.Fragment>
                 ) : ('Task Created!')}

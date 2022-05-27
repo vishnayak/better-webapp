@@ -386,7 +386,7 @@ export const RequestWizard: React.FC<RequestWizardProps> = (props) => {
                     </Grid>
                 ): step === 1 ? (
                     <Grid classes={{root: 'wizard-body'}} container direction='column' spacing={4} mt={2}>
-                        <div className={'wizard-instruction-text'}>Select example documents and highlight most relevant text for each:</div>
+                        <div className={'wizard-instruction-text'}>Select example documents and highlight most relevant text for each, for request: {reqText}</div>
                         {candidateDocs.map((doc, i) => <CandidateDocCard 
                             key = {`${i}${doc.docid}`} 
                             onCheck={c => handleDocCheck(doc, c)} 
@@ -399,16 +399,21 @@ export const RequestWizard: React.FC<RequestWizardProps> = (props) => {
                     </Grid>
                 ) : step === 2 ? (
                     <React.Fragment>
-                        <div className={'wizard-body'}>
+                        <div className={'request-wizard-annotation-container'}>
                             <Typography sx={{ mt: 2, mb: 1 }}>Judge Sentences for request: {reqText}</Typography>
-                            {getAllSentences(initialAnnotatedSentences).map((sent) => (
-                                <SentenceRow 
-                                    key={`${sent.sentence}${sent.judgment}`} 
-                                    judgment={sent.judgment} 
-                                    sentence={sent.sentence} 
-                                    onAnnotate={(j) => handleAnnotate(sent.docId, sent.sentenceId, j)}
-                                />
-                            ))}
+                            <Typography>
+                                <b>P</b>: Perfect, <b>E</b>: Excellent, <b>G</b>: Good, <b>F</b>: Fair, <b>B</b>: Bad
+                            </Typography>
+                            <div className='request-wizard-annotation-section'>
+                                {getAllSentences(initialAnnotatedSentences).map((sent) => (
+                                    <SentenceRow 
+                                        key={`${sent.sentence}${sent.judgment}`} 
+                                        judgment={sent.judgment} 
+                                        sentence={sent.sentence} 
+                                        onAnnotate={(j) => handleAnnotate(sent.docId, sent.sentenceId, j)}
+                                    />
+                                ))}
+                            </div>
                         </div>
                     </React.Fragment>
                 ) : <></>}

@@ -61,7 +61,7 @@ const BoldedText1 = (text: string, shouldBeBold: string) => {
 export const PhraseRow: React.FC<PhraseRowProps> = ({ phraseName, annotation, onAnnotate }) => {
     const [isOpen, setIsOpen] = React.useState(false);
     return <React.Fragment>
-        <React.Fragment>
+        <Typography variant='body2'>
             <TableRow sx={{ '& > *': { border: 'unset' } }}>
                 <TableCell>
                     <IconButton
@@ -74,26 +74,25 @@ export const PhraseRow: React.FC<PhraseRowProps> = ({ phraseName, annotation, on
                 </TableCell>
                 <TableCell >{BoldedText(annotation.sentences, phraseName)}</TableCell>
                 <TableCell>
-                    <InputLabel id="demo-simple-select-label">Rating</InputLabel>
-
                     <RadioGroup
                         row
                         aria-labelledby="demo-row-radio-buttons-group-label"
                         name="row-radio-buttons-group"
-                        sx={{ minWidth: 180 }}
-                        defaultValue={annotation.judgment === AnnotationJudgment.NONE ? undefined : annotation.judgment}
+                        sx={{ minWidth: 400, fontSize: '13px !important' }}
+                        defaultValue={annotation.judgment}
                         onChange={(e, value) => { e.preventDefault(); onAnnotate(value as AnnotationJudgment); }}
                     >
-                        <FormControlLabel value="P" control={<Radio />} label="Perfect" />
-                        <FormControlLabel value="E" control={<Radio />} label="Excellent" />
-                        <FormControlLabel value="G" control={<Radio />} label="Good" />
-                        <FormControlLabel value="F" control={<Radio />} label="Fair" />
-                        <FormControlLabel value="B" control={<Radio />} label="Bad" />
+                        <FormControlLabel value="P" control={<Radio />} label="P" />
+                        <FormControlLabel value="E" control={<Radio />} label="E" />
+                        <FormControlLabel value="G" control={<Radio />} label="G" />
+                        <FormControlLabel value="F" control={<Radio />} label="F" />
+                        <FormControlLabel value="B" control={<Radio />} label="B" />
+                        <FormControlLabel value="" control={<Radio />} label="None" />
                     </RadioGroup>
                 </TableCell>
             </TableRow>
 
-        </React.Fragment>
+        </Typography>
         <TableRow sx={{ '& > *': { border: 'unset' } }}>
             <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
                 <Collapse in={isOpen} timeout="auto" unmountOnExit>
