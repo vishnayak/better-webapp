@@ -228,7 +228,7 @@ export const TaskDetails: React.FC<{}> = () => {
                                     &nbsp;<span className='doc-highlight-B'>&nbsp;Bad&nbsp;</span>
                                 </Typography> : 
                                 <Typography variant='body2'>
-                                    <span className='doc-highlight-selected-text'>&nbsp;Highlight&nbsp;</span>
+                                    <span className='doc-highlight-selected-text'>&nbsp;Highlight Text&nbsp;</span>
                                 </Typography>}
                             </>
                         } />
