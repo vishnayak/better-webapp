@@ -4,7 +4,7 @@ import { TaskCreationWizard } from '@components/task-creation-wizard/TaskCreatio
 import Add from '@mui/icons-material/Add';
 import Edit from '@mui/icons-material/Edit';
 import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown';
-import { Button, Card, CardContent, CardHeader, CircularProgress, Link, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { Button, Card, CardContent, CardHeader, Checkbox, CircularProgress, FormControlLabel, Link, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import { getSubmissionsByTaskNum, Submission } from '@services/submission-service';
 import { AnnotationJudgment, AnnotationJudgmentNames, getAnnotationPhrases, getTaskById, PhraseAnnotation, Task } from '@services/task-service';
 import React from 'react';
@@ -27,6 +27,46 @@ export const getHighlightedSpan = (docText: string, highlightText: string, highl
     </Typography>
 };
 
+const getHighlightedAnnotations = (docText: string, annotationRows: PhraseAnnotationRow[]) => {
+    const phraseOrdering: any[] = annotationRows.filter(r => r.judgment !== AnnotationJudgment.NONE).flatMap(r => {
+        let lastIndex = 0;
+        const len = docText.length;
+        const res = [];
+        while(lastIndex < len) {
+            const phraseLen = r.phrase.length;
+            const idx = docText.substring(lastIndex).indexOf(r.phrase);
+            if(idx === -1) {
+                break;
+            }
+            lastIndex += idx + phraseLen;
+            res.push({
+                text: r.phrase,
+                offset: idx,
+                className: `doc-highlight-${r.judgment}`,
+                judgment: r.judgment
+            });
+        }
+        return res;
+    });
+
+    phraseOrdering.sort((a,b) => a.offset < b.offset ? -1 : 1);
+    
+    let lastIndex = 0;
+    const res = phraseOrdering.map((phrase, i) => {
+        const idx = docText.substring(lastIndex).indexOf(phrase.text);
+        const remaining = docText.substring(lastIndex, lastIndex+idx);
+        lastIndex += idx + phrase.text.length;
+        return <React.Fragment key={`${i}${phrase.judgment}`}>
+            {remaining}
+            <span className={`doc-highlight-${phrase.judgment}`}>{phrase.text}</span>
+        </React.Fragment>
+    });
+    return <Typography className={'doc-text'} variant='body2'>
+        {res}
+        {docText.substring(lastIndex)}
+    </Typography>
+};
+
 export const TaskDetails: React.FC<{}> = () => {
     const params = useParams();
     const [taskNum, setTaskNum] = React.useState<string>('');
@@ -41,6 +81,7 @@ export const TaskDetails: React.FC<{}> = () => {
     const annotations = React.useRef<PhraseAnnotationRow[]>([]);
     const [selectedRow, setSelectedRow] = React.useState<PhraseAnnotationRow | undefined>(undefined);
     const [seeAllAnnotations, setSeeAllAnnotations] = React.useState(false);
+    const [showHighlightedJudgments, setShowHighlightedJudgments] = React.useState<boolean[]>([]);
 
     React.useEffect(() => {
         setTaskNum(params.taskNum as string);
@@ -91,6 +132,7 @@ export const TaskDetails: React.FC<{}> = () => {
             const [allAnnotations, sampledAnnotations] = getAnnotationRows(annotationRes);
             setAnnotationSummary(sampledAnnotations);
             annotations.current = allAnnotations;
+            setShowHighlightedJudgments(res.taskExampleDocs.map(d => true));
             setIsLoading(false);
         } catch (e) {
             console.error(e);
@@ -118,6 +160,10 @@ export const TaskDetails: React.FC<{}> = () => {
     const toggleSeeMore = () => {
         setSeeAllAnnotations(prev => !prev);
     }
+
+    const handleHighlightCheck = (index: number) => {
+        setShowHighlightedJudgments(prev => ([...prev.slice(0, index), !prev[index], ...prev.slice(index+1)]));
+    };
 
     return <div className='task-details-page'>
         {isLoading ? 
@@ -166,8 +212,30 @@ export const TaskDetails: React.FC<{}> = () => {
                         {doc.highlight.length > 0 ? `${doc.highlight}` : 'No highlight text was selected for this document'}
                     </li>
                     {openDocs[doc.docNumber - 1] && <Card classes={{ root: 'task-details-card' }}>
+                        <CardHeader classes={{title: 'task-details-doc-card-header'}} title={
+                            <>
+                                <FormControlLabel 
+                                    label='Show Sentence Judgments' 
+                                    control={
+                                        <Checkbox defaultChecked={true} onChange={() => handleHighlightCheck(doc.docNumber - 1)} />
+                                    } 
+                                />
+                                {showHighlightedJudgments[doc.docNumber - 1] ? <Typography variant='body2'>
+                                    &nbsp;<span className='doc-highlight-P'>&nbsp;Perfect&nbsp;</span>
+                                    &nbsp;<span className='doc-highlight-E'>&nbsp;Excellent&nbsp;</span>
+                                    &nbsp;<span className='doc-highlight-G'>&nbsp;Good&nbsp;</span>
+                                    &nbsp;<span className='doc-highlight-F'>&nbsp;Fair&nbsp;</span>
+                                    &nbsp;<span className='doc-highlight-B'>&nbsp;Bad&nbsp;</span>
+                                </Typography> : 
+                                <Typography variant='body2'>
+                                    <span className='doc-highlight-selected-text'>&nbsp;Highlight&nbsp;</span>
+                                </Typography>}
+                            </>
+                        } />
                         <CardContent classes={{ root: 'search-hit-card-content' }}>
-                            {getHighlightedSpan(doc.docText, doc.highlight, 'doc-highlight-selected-text')}
+                            {showHighlightedJudgments[doc.docNumber - 1] ? 
+                            getHighlightedAnnotations(doc.docText, annotations.current) :
+                            getHighlightedSpan(doc.docText, doc.highlight, 'doc-highlight-selected-text')}
                         </CardContent>
                     </Card>}
                 </React.Fragment>)}

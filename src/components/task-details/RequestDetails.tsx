@@ -3,7 +3,7 @@ import { Button, Card, CardHeader, CardContent, Checkbox, FormControlLabel, Link
 import { AnnotationJudgment, AnnotationJudgmentNames, getSentencesForAnnotation, Request } from '@services/task-service';
 import React from 'react';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import { Submission, submitSubmission } from '@services/submission-service';
+import { Submission } from '@services/submission-service';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { getHighlightedSpan } from './TaskDetails';
 
@@ -61,7 +61,7 @@ export const RequestDetails: React.FC<RequestDetailsProps> = ({ request, taskNum
     const [annotationSummary, setAnnotationSummary] = React.useState<SentenceAnnotationRow[]>([]);
     const annotations = React.useRef<SentenceAnnotationRow[]>([]);
     const [seeAllAnnotations, setSeeAllAnnotations] = React.useState(false);
-    const [showHighlightedJudgments, setShowHighlightedJudgments] = React.useState<boolean[]>(request.exampleDocs.map(d => false));
+    const [showHighlightedJudgments, setShowHighlightedJudgments] = React.useState<boolean[]>(request.exampleDocs.map(d => true));
 
     React.useEffect(() => {
         fetchSentences();
@@ -139,17 +139,19 @@ export const RequestDetails: React.FC<RequestDetailsProps> = ({ request, taskNum
                             <FormControlLabel 
                                 label='Show Sentence Judgments' 
                                 control={
-                                    <Checkbox defaultChecked={false} onChange={() => handleHighlightCheck(doc.docNumber - 1)} />
+                                    <Checkbox defaultChecked={true} onChange={() => handleHighlightCheck(doc.docNumber - 1)} />
                                 } 
                             />
+                            {showHighlightedJudgments[doc.docNumber - 1] ? <Typography variant='body2'>
+                                &nbsp;<span className='doc-highlight-P'>&nbsp;Perfect&nbsp;</span>
+                                &nbsp;<span className='doc-highlight-E'>&nbsp;Excellent&nbsp;</span>
+                                &nbsp;<span className='doc-highlight-G'>&nbsp;Good&nbsp;</span>
+                                &nbsp;<span className='doc-highlight-F'>&nbsp;Fair&nbsp;</span>
+                                &nbsp;<span className='doc-highlight-B'>&nbsp;Bad&nbsp;</span>
+                            </Typography> : 
                             <Typography variant='body2'>
                                 <span className='doc-highlight-selected-text'>&nbsp;Highlight&nbsp;</span>
-                                <span className='doc-highlight-P'>&nbsp;Perfect&nbsp;</span>
-                                <span className='doc-highlight-E'>&nbsp;Excellent&nbsp;</span>
-                                <span className='doc-highlight-G'>&nbsp;Good&nbsp;</span>
-                                <span className='doc-highlight-F'>&nbsp;Fair&nbsp;</span>
-                                <span className='doc-highlight-B'>&nbsp;Bad&nbsp;</span>
-                            </Typography>
+                            </Typography>}
                         </>
                     } />
                     <CardContent>
