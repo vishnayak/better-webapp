@@ -342,7 +342,7 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
                     <React.Fragment>
                         <div className={'task-wizard-annotation-container'}>
                             <Typography sx={{ mt: 2, mb: 1 }}>Judge Phrases for task: {taskTitle}</Typography>
-                            <Typography>
+                            <Typography sx={{ mr: 10, alignSelf: 'flex-end' }}>
                                 <b>P</b>: Perfect, <b>E</b>: Excellent, <b>G</b>: Good, <b>F</b>: Fair, <b>B</b>: Bad
                             </Typography>
                             <div className={'task-wizard-annotation-section'}>

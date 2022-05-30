@@ -10,17 +10,27 @@ export interface PhraseRowProps {
     onAnnotate: (judgment: AnnotationJudgment) => void;
 };
 
-const trimText = (text: string) => {
-    let mySplitResult = text.split(" ");
-    let n = mySplitResult.length - 1, i = 0;
-    let finalString = "";
-    while (i < 5 && n !== 0) {
-        let lastWord = mySplitResult[n]
-        finalString = " " + lastWord + " " + finalString;
-        i++;
-        n--;
+const getLastWords = (text: string): string => {
+    const splitText = text.replace('....\n...', '\n').split(' ');
+    let n=Math.min(4, splitText.length), i=n+1;
+    let res = '..';
+    while(--i > 0) {
+        const curr = splitText[splitText.length - i];
+        res = (curr.indexOf('\n') >= 0 ? ('.. ' + curr.split('\n')[1] + ' ') :  (res + ' ')) + curr;
     }
-    return finalString + "..";
+    return res;
+};
+
+const getFirstWords = (text: string): string => {
+    const splitText = text.replace('....\n...', '\n').split(' ');
+    let n=Math.min(4, splitText.length), i=-1;
+    let res = '';
+    while(++i < n) {
+        const curr = splitText[i];
+        if(curr.indexOf('\n') >= 0) break;
+        res += ' ' + curr;
+    }
+    return res + '..';
 };
 
 const BoldedText = (text: string, shouldBeBold: string) => {
@@ -30,13 +40,14 @@ const BoldedText = (text: string, shouldBeBold: string) => {
     }
     return (
         <span>
-            {textArray.map((item, index) => (
-                <>
-                    {trimText(item)}
+            {textArray.slice(0, textArray.length - 1).map((item, index) => (
+                <React.Fragment key={index}>
+                    {getLastWords(item)}
                     {index !== textArray.length - 1 && (
                         <b>{shouldBeBold}</b>
                     )}
-                </>
+                    {getFirstWords(textArray[index + 1])}
+                </React.Fragment>
             ))}
         </span>
     );
@@ -47,12 +58,12 @@ const BoldedText1 = (text: string, shouldBeBold: string) => {
     return (
         <span>
             {textArray.map((item, index) => (
-                <>
+                <React.Fragment key={index}>
                     {item}
                     {index !== textArray.length - 1 && (
                         <b>{shouldBeBold}</b>
                     )}
-                </>
+                </React.Fragment>
             ))}
         </span>
     );
@@ -61,11 +72,10 @@ const BoldedText1 = (text: string, shouldBeBold: string) => {
 export const PhraseRow: React.FC<PhraseRowProps> = ({ phraseName, annotation, onAnnotate }) => {
     const [isOpen, setIsOpen] = React.useState(false);
     return <React.Fragment>
-        <Typography variant='body2'>
-            <TableRow sx={{ '& > *': { border: 'unset' } }}>
+        <TableRow sx={{ '& > * > *': { borderBottom: 'none !important' } }}>
+            <Typography variant='body2' sx={{display: 'contents'}}>
                 <TableCell>
                     <IconButton
-                        aria-label="expand row"
                         size="small"
                         onClick={() => setIsOpen(prev => !prev)}
                     >
@@ -76,8 +86,6 @@ export const PhraseRow: React.FC<PhraseRowProps> = ({ phraseName, annotation, on
                 <TableCell>
                     <RadioGroup
                         row
-                        aria-labelledby="demo-row-radio-buttons-group-label"
-                        name="row-radio-buttons-group"
                         sx={{ minWidth: 400, fontSize: '13px !important' }}
                         defaultValue={annotation.judgment}
                         onChange={(e, value) => { e.preventDefault(); onAnnotate(value as AnnotationJudgment); }}
@@ -90,14 +98,14 @@ export const PhraseRow: React.FC<PhraseRowProps> = ({ phraseName, annotation, on
                         <FormControlLabel value="" control={<Radio />} label="None" />
                     </RadioGroup>
                 </TableCell>
-            </TableRow>
+            </Typography>
+        </TableRow>
 
-        </Typography>
-        <TableRow sx={{ '& > *': { border: 'unset' } }}>
+        <TableRow>
             <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
                 <Collapse in={isOpen} timeout="auto" unmountOnExit>
                     <Box sx={{ margin: 1 }}>
-                        <Typography align="center">
+                        <Typography variant='body2' align="justify" whiteSpace={'break-spaces'}>
                             {BoldedText1(annotation.sentences, phraseName)}
                         </Typography>
                     </Box>

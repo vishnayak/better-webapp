@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { SearchHit, SearchHits } from '@components/hits/SearchHits';
 import './SearchPage.css';
 import { getPaginatedHits, getSubmissionById, Submission, BAD_SUBMISSION } from '@services/submission-service';
@@ -41,7 +41,7 @@ export const SearchPage: React.FC<{}> = () => {
         isIdValid ? 
             (submission ? <>
                 <div className={'submission-detail'}>
-                    <span><b>Task Title: </b> {submission.taskTitle}</span>
+                    <span><b>Task Title: </b> {submission.taskTitle} <Link to={`/tasks/${submission.taskNum}`}>(Go to Task)</Link></span>
                     <span><b>Created on: </b> {new Date(submission.when).toLocaleString()}</span>
                 </div>
                 <div  className={'submission-detail'}>
