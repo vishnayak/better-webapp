@@ -150,6 +150,7 @@ export const getTaskById = async (id: string): Promise<Task> => {
 };
 
 export const getPhrasesForAnnotation = async (id: string): Promise<any[]> => {
+    // DONT USE, use getAnnotationPhrases instead
     const request = new Request(`${BASE_URL}tasks/${id}/phrases-for-annotation`);
     const res = getResult(await fetch(request));
     return Object.entries(res).map(([key, value]) => {
@@ -160,6 +161,23 @@ export const getPhrasesForAnnotation = async (id: string): Promise<any[]> => {
 export const getAnnotationPhrases = async (id: string): Promise<PhraseAnnotation> => {
     const request = new Request(`${BASE_URL}tasks/${id}/phrases-for-annotation`);
     return getResult(await fetch(request));
+};
+
+export const resetTaskAnnotations = async (taskNum: string): Promise<void> => {
+    try {
+        const annotations = await getAnnotationPhrases(taskNum);
+        Object.keys(annotations).forEach(
+            phrase => {
+                annotations[phrase] = {
+                    ...annotations[phrase],
+                    judgment: AnnotationJudgment.NONE
+                };
+            }
+        );
+        postPhrasesForAnnotation(taskNum, annotations);
+    } catch (error) {
+        console.log(error)
+    }
 };
 
 export const createTask = async (payload: TaskCreationPayload): Promise<Task> => {
@@ -273,3 +291,16 @@ export const postSentencesForAnnotation = async (taskNum: string, reqNum : strin
         console.log(error)
     } 
 }
+
+export const resetRequestAnnotations = async (taskNum: string, reqNum: string): Promise<void> => {
+    try {
+        const annotations = await getSentencesForAnnotation(taskNum, reqNum);
+        annotations.request.exampleDocs = annotations.request.exampleDocs.map(d => {
+            d.sentences = d.sentences.map(s => ({ ...s, judgment: AnnotationJudgment.NONE }));
+            return d;
+        });
+        postSentencesForAnnotation(taskNum, reqNum, annotations);
+    } catch (error) {
+        console.log(error)
+    }
+};

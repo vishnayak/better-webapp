@@ -4,10 +4,12 @@ import { TaskCreationWizard } from '@components/task-creation-wizard/TaskCreatio
 import Add from '@mui/icons-material/Add';
 import Edit from '@mui/icons-material/Edit';
 import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown';
-import { Button, Card, CardContent, CardHeader, Checkbox, CircularProgress, FormControl, FormControlLabel, InputLabel, Link, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
-import { getSubmissionsByTaskNum, Submission } from '@services/submission-service';
-import { AnnotationJudgment, AnnotationJudgmentNames, getAnnotationPhrases, getTaskById, PhraseAnnotation, Task } from '@services/task-service';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import { Button, Card, CardContent, CardHeader, CircularProgress, FormControl, InputLabel, Link, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { getSubmissionsByTaskNum, deleteSubmission, Submission } from '@services/submission-service';
+import { AnnotationJudgment, AnnotationJudgmentNames, getAnnotationPhrases, getTaskById, PhraseAnnotation, resetRequestAnnotations, resetTaskAnnotations, Task } from '@services/task-service';
 import React from 'react';
+import { ConfirmationDialog } from '@components/confirmation-dialog/ConfirmationDialog';
 import { useParams } from 'react-router-dom';
 import { RequestDetails } from './RequestDetails';
 import './TaskDetails.css';
@@ -82,6 +84,7 @@ export const TaskDetails: React.FC<{}> = () => {
     const [selectedRow, setSelectedRow] = React.useState<PhraseAnnotationRow | undefined>(undefined);
     const [seeAllAnnotations, setSeeAllAnnotations] = React.useState(false);
     const [showHighlightedJudgments, setShowHighlightedJudgments] = React.useState<boolean[]>([]);
+    const [resetDialog, setResetDialog] = React.useState(false);
 
     React.useEffect(() => {
         setTaskNum(params.taskNum as string);
@@ -153,6 +156,15 @@ export const TaskDetails: React.FC<{}> = () => {
         setShowHighlightedJudgments(prev => ([...prev.slice(0, index), !!value, ...prev.slice(index+1)]));
     };
 
+    const handleReset = async () => {
+        setIsLoading(true);
+        setResetDialog(false);
+        Object.values(submissionMap).flat().forEach(async (s) => { await deleteSubmission(s.id); });
+        await resetTaskAnnotations(task!!.taskNum);
+        task?.requests?.map(async (r) => { await resetRequestAnnotations(task.taskNum, r.reqNum); });
+        refreshTask();
+    };
+
     return <div className='task-details-page'>
         {isLoading ? 
         <div style={{textAlign: 'center'}}>
@@ -172,9 +184,18 @@ export const TaskDetails: React.FC<{}> = () => {
                 isOpen={openCreateNewRequest || editingRequestId !== undefined} 
                 onClose={() => handleCreateRequestClick(false)}
             />}
+            {resetDialog && <ConfirmationDialog 
+                open={resetDialog}
+                onConfirm={handleReset} 
+                onClose={() => setResetDialog(false)} 
+                text={'This will delete all submissions and reset all judgements. Are you sure?' } 
+            />}
             <div className='task-details-heading-row'>
                 <Heading headingText='Task Overview' />
-                <Button variant='contained' onClick={() => handleEditTaskClick(true)}><Edit />&nbsp;Edit</Button>
+                <div>
+                    <Button variant='contained' onClick={() => handleEditTaskClick(true)}><Edit />&nbsp;Edit</Button>
+                    <Button variant='outlined' sx={{ml: 2}} onClick={() => setResetDialog(true)}><RestartAltIcon />&nbsp;Reset Submissions</Button>
+                </div>
             </div>
             <span className='task-details-title'>{task.taskTitle}</span>
             {task.taskStmt.length > 0 && <span className='task-details-stmt'>{task.taskStmt}</span>}
