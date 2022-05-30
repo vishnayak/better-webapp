@@ -1,7 +1,8 @@
 import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown';
-import { Button, Card, CardHeader, CardContent, Checkbox, FormControlLabel, Link, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { Button, Card, CardHeader, CardContent, Checkbox, FormControlLabel, Link, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { AnnotationJudgment, AnnotationJudgmentNames, getSentencesForAnnotation, Request } from '@services/task-service';
 import React from 'react';
+import Edit from '@mui/icons-material/Edit';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { Submission } from '@services/submission-service';
 import { NavLink, useNavigate } from 'react-router-dom';
@@ -22,20 +23,9 @@ interface SentenceAnnotationRow {
 }
 
 const getAnnotationRows = (allAnnotations: SentenceAnnotationRow[]) => {
-    const goodJudgments = [AnnotationJudgment.P, AnnotationJudgment.E, AnnotationJudgment.G];
-    const badJudgments = [AnnotationJudgment.F, AnnotationJudgment.B];
-    const goodAnnotations = allAnnotations.filter(a => goodJudgments.indexOf(a.judgment) > -1);
-    const badAnnotations = allAnnotations.filter(a => badJudgments.indexOf(a.judgment) > -1);
-    const emptyAnnotations = allAnnotations.filter(a => a.judgment === AnnotationJudgment.NONE);
-    const result = [];
-    if(badAnnotations.length > 3) {
-        result.push(...goodAnnotations.slice(0, 3));
-    } else {
-        result.push(...goodAnnotations.slice(0, 6 - badAnnotations.length));
-    }
-    result.push(...badAnnotations.slice(0, 6 - result.length));
-    result.push(...emptyAnnotations.slice(0, 6 - result.length));
-    return [allAnnotations, result];
+    const judgmentPriority = {[AnnotationJudgment.P]: 0, [AnnotationJudgment.E]: 1, [AnnotationJudgment.G]: 2, [AnnotationJudgment.F]: 3, [AnnotationJudgment.B]: 4, [AnnotationJudgment.NONE]: 5};
+    const result = allAnnotations.sort((a,b) => judgmentPriority[a.judgment] < judgmentPriority[b.judgment] ? -1 : 1);
+    return [result, result.slice(0, 6)];
 };
 
 const getHighlightedAnnotations = (docText: string, annotationRows: SentenceAnnotationRow[]) => {
@@ -87,8 +77,8 @@ export const RequestDetails: React.FC<RequestDetailsProps> = ({ request, taskNum
         });
     };
 
-    const handleHighlightCheck = (index: number) => {
-        setShowHighlightedJudgments(prev => ([...prev.slice(0, index), !prev[index], ...prev.slice(index+1)]));
+    const handleHighlightChange = (index: number, value: number) => {
+        setShowHighlightedJudgments(prev => ([...prev.slice(0, index), !!value, ...prev.slice(index+1)]));
     };
 
     const handleHitsOpen = (submissionId: string) => {
@@ -109,13 +99,13 @@ export const RequestDetails: React.FC<RequestDetailsProps> = ({ request, taskNum
             </div>
             <div>
                 {submissions.length > 0 && <Button classes={{root: 'request-details-button'}} variant='outlined' onClick={() => handleHitsOpen(submissions[0].id)}>Show Hits</Button>}
-                {<Button classes={{root: 'request-details-button'}} variant='outlined' onClick={onReannotate}>{submissions.length > 0 ? 'Change Judgment...' : 'Judge and Run Submission'}</Button>}
+                {<Button classes={{root: 'request-details-button'}} variant='outlined' onClick={onReannotate}>{submissions.length > 0 ? 'Change Sentence Judgments...' : (request.exampleDocs.length > 0 ? 'Judge Sentences and Run Submission': <><Edit />&nbsp;Edit</>)}</Button>}
             </div>
         </div>
         <span className='request-details-heading'>Example Documents</span>
         <div className='task-details-example-docs'>
             {request.exampleDocs.length === 0 ? 
-            'No example documents were added. Edit task to do so.' : 
+            'No example documents were added. Edit request to do so.' : 
             request.exampleDocs.map((doc) => <React.Fragment key={`${doc.docNumber}${openDocs[doc.docNumber-1]}`}>
                 <Link classes={{ root: 'task-details-example-doc-label' }} onClick={() => toggleDoc(doc.docNumber - 1)}>
                     <KeyboardArrowDown
@@ -136,12 +126,18 @@ export const RequestDetails: React.FC<RequestDetailsProps> = ({ request, taskNum
                 {openDocs[doc.docNumber - 1] && <Card classes={{ root: 'task-details-card' }}>
                     <CardHeader classes={{title: 'task-details-doc-card-header'}} title={
                         <>
-                            <FormControlLabel 
-                                label='Show Sentence Judgments' 
-                                control={
-                                    <Checkbox defaultChecked={true} onChange={() => handleHighlightCheck(doc.docNumber - 1)} />
-                                } 
-                            />
+                            <FormControl sx={{width: '225px'}}>
+                                <InputLabel id={`select-label-${doc.docid}`}>Highlighting type</InputLabel>
+                                <Select
+                                    labelId={`select-label-${doc.docid}`}
+                                    value={showHighlightedJudgments[doc.docNumber - 1] ? 1 : 0}
+                                    label="Highlighting type"
+                                    onChange={(e) => handleHighlightChange(doc.docNumber - 1, e.target.value as number)}
+                                >
+                                    <MenuItem value={0}>Highlighted Text</MenuItem>
+                                    <MenuItem value={1}>Sentence Judgements</MenuItem>
+                                </Select>
+                            </FormControl>
                             {showHighlightedJudgments[doc.docNumber - 1] ? <Typography variant='body2'>
                                 &nbsp;<span className='doc-highlight-P'>&nbsp;Perfect&nbsp;</span>
                                 &nbsp;<span className='doc-highlight-E'>&nbsp;Excellent&nbsp;</span>
@@ -180,7 +176,7 @@ export const RequestDetails: React.FC<RequestDetailsProps> = ({ request, taskNum
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 }, '& > *': { padding: '8px' } }}
                             >
                                 <TableCell>{row.sentence}</TableCell>
-                                <TableCell>{AnnotationJudgmentNames[row.judgment]}</TableCell>
+                                <TableCell><span className={`doc-highlight-${row.judgment}`}>&nbsp;{AnnotationJudgmentNames[row.judgment]}&nbsp;</span></TableCell>
                             </TableRow>
                         )}
                         </TableBody>

@@ -401,7 +401,7 @@ export const RequestWizard: React.FC<RequestWizardProps> = (props) => {
                     <React.Fragment>
                         <div className={'request-wizard-annotation-container'}>
                             <Typography sx={{ mt: 2, mb: 1 }}>Judge Sentences for request: {reqText}</Typography>
-                            <Typography>
+                            <Typography sx={{ mr: 10, alignSelf: 'flex-end' }}>
                                 <b>P</b>: Perfect, <b>E</b>: Excellent, <b>G</b>: Good, <b>F</b>: Fair, <b>B</b>: Bad
                             </Typography>
                             <div className='request-wizard-annotation-section'>

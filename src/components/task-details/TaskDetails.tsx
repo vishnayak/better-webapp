@@ -4,7 +4,7 @@ import { TaskCreationWizard } from '@components/task-creation-wizard/TaskCreatio
 import Add from '@mui/icons-material/Add';
 import Edit from '@mui/icons-material/Edit';
 import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown';
-import { Button, Card, CardContent, CardHeader, Checkbox, CircularProgress, FormControlLabel, Link, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { Button, Card, CardContent, CardHeader, Checkbox, CircularProgress, FormControl, FormControlLabel, InputLabel, Link, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import { getSubmissionsByTaskNum, Submission } from '@services/submission-service';
 import { AnnotationJudgment, AnnotationJudgmentNames, getAnnotationPhrases, getTaskById, PhraseAnnotation, Task } from '@services/task-service';
 import React from 'react';
@@ -94,25 +94,13 @@ export const TaskDetails: React.FC<{}> = () => {
     }, [taskNum]);
 
     const getAnnotationRows = (phrasesAnnotation: PhraseAnnotation) => {
+        const judgmentPriority = {[AnnotationJudgment.P]: 0, [AnnotationJudgment.E]: 1, [AnnotationJudgment.G]: 2, [AnnotationJudgment.F]: 3, [AnnotationJudgment.B]: 4, [AnnotationJudgment.NONE]: 5};
         const allAnnotations: PhraseAnnotationRow[] = Object.keys(phrasesAnnotation).map(p => ({
             phrase: p,
             sentence: phrasesAnnotation[p].sentences,
             judgment: phrasesAnnotation[p].judgment,
-        }));
-        const goodJudgments = [AnnotationJudgment.P, AnnotationJudgment.E, AnnotationJudgment.G];
-        const badJudgments = [AnnotationJudgment.F, AnnotationJudgment.B];
-        const goodAnnotations = allAnnotations.filter(a => goodJudgments.indexOf(a.judgment) > -1);
-        const badAnnotations = allAnnotations.filter(a => badJudgments.indexOf(a.judgment) > -1);
-        const emptyAnnotations = allAnnotations.filter(a => a.judgment === AnnotationJudgment.NONE);
-        const result = [];
-        if(badAnnotations.length > 3) {
-            result.push(...goodAnnotations.slice(0, 3));
-        } else {
-            result.push(...goodAnnotations.slice(0, 6 - badAnnotations.length));
-        }
-        result.push(...badAnnotations.slice(0, 6 - result.length));
-        result.push(...emptyAnnotations.slice(0, 6 - result.length));
-        return [allAnnotations, result];
+        })).sort((a,b) => judgmentPriority[a.judgment] < judgmentPriority[b.judgment] ? -1 : 1);
+        return [allAnnotations, allAnnotations.slice(0, 6)];
     };
 
     const refreshTask = async () => {
@@ -161,8 +149,8 @@ export const TaskDetails: React.FC<{}> = () => {
         setSeeAllAnnotations(prev => !prev);
     }
 
-    const handleHighlightCheck = (index: number) => {
-        setShowHighlightedJudgments(prev => ([...prev.slice(0, index), !prev[index], ...prev.slice(index+1)]));
+    const handleHighlightChange = (index: number, value: number) => {
+        setShowHighlightedJudgments(prev => ([...prev.slice(0, index), !!value, ...prev.slice(index+1)]));
     };
 
     return <div className='task-details-page'>
@@ -214,12 +202,18 @@ export const TaskDetails: React.FC<{}> = () => {
                     {openDocs[doc.docNumber - 1] && <Card classes={{ root: 'task-details-card' }}>
                         <CardHeader classes={{title: 'task-details-doc-card-header'}} title={
                             <>
-                                <FormControlLabel 
-                                    label='Show Sentence Judgments' 
-                                    control={
-                                        <Checkbox defaultChecked={true} onChange={() => handleHighlightCheck(doc.docNumber - 1)} />
-                                    } 
-                                />
+                                <FormControl sx={{width: '225px'}}>
+                                    <InputLabel id={`select-label-${doc.docid}`}>Highlighting type</InputLabel>
+                                    <Select
+                                        labelId={`select-label-${doc.docid}`}
+                                        value={showHighlightedJudgments[doc.docNumber - 1] ? 1 : 0}
+                                        label="Highlighting type"
+                                        onChange={(e) => handleHighlightChange(doc.docNumber - 1, e.target.value as number)}
+                                    >
+                                        <MenuItem value={0}>Highlighted Text</MenuItem>
+                                        <MenuItem value={1}>Phrase Judgements</MenuItem>
+                                    </Select>
+                                </FormControl>
                                 {showHighlightedJudgments[doc.docNumber - 1] ? <Typography variant='body2'>
                                     &nbsp;<span className='doc-highlight-P'>&nbsp;Perfect&nbsp;</span>
                                     &nbsp;<span className='doc-highlight-E'>&nbsp;Excellent&nbsp;</span>
@@ -261,7 +255,7 @@ export const TaskDetails: React.FC<{}> = () => {
                                     className={`task-details-annotations-row ${selectedRow?.phrase === row.phrase ? 'task-details-annotations-row--highlighted' : ''}`}
                                 >
                                     <TableCell>{row.phrase}</TableCell>
-                                    <TableCell>{AnnotationJudgmentNames[row.judgment]}</TableCell>
+                                    <TableCell><span className={`doc-highlight-${row.judgment}`}>&nbsp;{AnnotationJudgmentNames[row.judgment]}&nbsp;</span></TableCell>
                                 </TableRow>
                             )}
                             </TableBody>
