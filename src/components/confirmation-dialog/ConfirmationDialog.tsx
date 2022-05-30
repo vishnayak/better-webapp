@@ -6,12 +6,13 @@ export interface ConfirmationDialogProps {
     open: boolean;
     onClose: () => void;
     onConfirm: () => void;
+    text?: string;
 }
   
-export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({ onClose, onConfirm, open }) => {
+export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({ onClose, onConfirm, open, text }) => {
     return (
       <Dialog onClose={onClose} open={open}>
-        <DialogTitle classes={{root: 'confirmation-dialog-title-root'}}>Are you sure?</DialogTitle>
+        <DialogTitle classes={{root: 'confirmation-dialog-title-root'}}>{text || 'Are you sure?'}</DialogTitle>
         <DialogActions>
           <Button onClick={onConfirm}>Yes</Button>
           <Button onClick={onClose} autoFocus>No</Button>
