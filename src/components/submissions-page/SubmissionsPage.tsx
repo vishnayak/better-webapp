@@ -15,7 +15,7 @@ const columns: GridColDef[] = [
     {
         field: 'taskTitle',
         headerName: 'Task Title',
-        width: 200,
+        width: 400,
     },
     {
         field: 'reqText',
@@ -29,19 +29,19 @@ const columns: GridColDef[] = [
         valueGetter: ({ value }) => value && new Date(value),
         width: 200,
     },
-    {
-        field: 'status',
-        headerName: 'Execution Status',
-        description: 'SUBMITTED: Not yet executed; COMPLETED: Executed',
-        renderCell: (params) => {
-            const status = (params.row as Submission).status;
-            return <>{status} &nbsp;
-                {status === SubmissionStatus.SUBMITTED && <HourglassTopIcon color={'disabled'} />}
-                {status === SubmissionStatus.COMPLETED && <CheckIcon color={'success'} />}
-            </>;
-        },
-        width: 150,
-    }
+    // {
+    //     field: 'status',
+    //     headerName: 'Execution Status',
+    //     description: 'SUBMITTED: Not yet executed; COMPLETED: Executed',
+    //     renderCell: (params) => {
+    //         const status = (params.row as Submission).status;
+    //         return <>{status} &nbsp;
+    //             {status === SubmissionStatus.SUBMITTED && <HourglassTopIcon color={'disabled'} />}
+    //             {status === SubmissionStatus.COMPLETED && <CheckIcon color={'success'} />}
+    //         </>;
+    //     },
+    //     width: 150,
+    // }
 ];
 
 function CustomToolbar() {

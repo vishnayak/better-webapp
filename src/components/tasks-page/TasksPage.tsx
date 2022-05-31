@@ -11,12 +11,13 @@ const columns: GridColDef[] = [
     {
         field: 'taskTitle',
         headerName: 'Task Title',
-        width: 500,
+        minWidth: 400,
     },
     {
         field: 'taskStmt',
         headerName: 'Task Statement',
-        width: 700,
+        flex: 1,
+        minWidth: 350,
         cellClassName: 'task-statement-text'
     },
     {

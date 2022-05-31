@@ -2,7 +2,7 @@ import React from 'react';
 import Pagination from '@mui/material/Pagination';
 import './SearchHits.css';
 import { SearchHitCard } from '@components/search-hit-card/SearchHitCard';
-import { Button, Chip, FormControl, InputLabel, MenuItem, OutlinedInput, Select, SelectChangeEvent } from '@mui/material';
+import { Button, Checkbox, Chip, FormControl, InputLabel, ListItemText, MenuItem, OutlinedInput, Select, SelectChangeEvent } from '@mui/material';
 import { Box } from '@mui/system';
 
 interface SearchHitsProps {
@@ -68,6 +68,7 @@ export const SearchHits: React.FC<SearchHitsProps> = ({ hits }) => {
     const [translateAll, setTranslateAll] = React.useState<boolean>(false);
     const [showRelevant, setShowRelevant] = React.useState<boolean>(false);
     const [filterEvents, setFilterEvents] = React.useState<string[]>([]);
+    const [allEvents, setAllEvents] = React.useState<EventFilterOption[]>([]);
     const pageSize = 20;
     const handlePageChange = (e: any, pageNum: number) => { setPage(pageNum); };
     const handleTranslateAllClick = () => {
@@ -83,12 +84,14 @@ export const SearchHits: React.FC<SearchHitsProps> = ({ hits }) => {
         setFilterEvents(e.target.value as unknown as string[]);
     };
 
-    const allEvents: EventFilterOption[] = Object.entries(hits.reduce((res: Record<string, number>, h) => {
-        Object.entries(h.eventCounts).forEach(entry => {
-            res[entry[0]] = (entry[1] || 0) + 1;
-        });
-        return res;
-    }, {})).map(entry => ({name: entry[0], count: entry[1]}));
+    React.useEffect(() => {
+        setAllEvents(Object.entries(hits.reduce((res: Record<string, number>, h) => {
+            Object.keys(h.eventCounts).forEach(k => {
+                res[k] = (res[k] || 0) + 1;
+            });
+            return res;
+        }, {})).map(entry => ({name: entry[0], count: entry[1]})).sort((a, b) => b.count - a.count));
+    }, [hits]);
 
     let indicesToShow = showRelevant ? relevantIndices : allIndices;
     if(filterEvents.length > 0) {
@@ -110,8 +113,8 @@ export const SearchHits: React.FC<SearchHitsProps> = ({ hits }) => {
                     onChange={handleFilterChange}
                     label='Relevance'
                 >
-                    <MenuItem value={0}>All hits</MenuItem>
-                    <MenuItem value={1}>Relevant Hits</MenuItem>
+                    <MenuItem value={0}>All hits ({hits.length})</MenuItem>
+                    <MenuItem value={1}>Relevant Hits ({relevantIndices.length})</MenuItem>
                 </Select>
             </FormControl>
             <FormControl sx={{ m: 1, width: 350 }}>
@@ -137,7 +140,8 @@ export const SearchHits: React.FC<SearchHitsProps> = ({ hits }) => {
                                 key={event.name}
                                 value={event.name}
                             >
-                                {event.name}
+                                <Checkbox checked={filterEvents.includes(event.name)} />
+                                <ListItemText primary={`${event.name} (${event.count})`} />
                             </MenuItem>
                         ))
                     }
@@ -146,7 +150,7 @@ export const SearchHits: React.FC<SearchHitsProps> = ({ hits }) => {
             {/* <Button variant={'outlined'} onClick={handleFilterToggle}>{showRelevant ? SHOW_ALL : SHOW_RELEVANT}</Button> */}
             <Button variant={'outlined'} onClick={handleTranslateAllClick}>{translateAll ? SHOW_ORIGINAL : TRANSLATE_ALL}</Button>
         </div>
-        {indicesToShow.slice((page-1)*pageSize, (page-1)*pageSize + 10 ).map(index => <React.Fragment key = {hits[index].docid}>
+        {indicesToShow.slice((page-1)*pageSize, (page-1)*pageSize + pageSize).map(index => <React.Fragment key = {hits[index].docid}>
             <SearchHitCard searchHit = {hits[index]} hitIndex={index} showTranslated={translateAll}/>
         </React.Fragment>)}
         <Pagination classes={{ root: 'search-hits-pagination' }} count = {pgNo} page={page} onChange={handlePageChange}/>
