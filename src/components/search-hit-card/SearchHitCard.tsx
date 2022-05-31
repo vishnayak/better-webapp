@@ -1,5 +1,5 @@
 import { SearchHit } from '@components/hits/SearchHits';
-import { Avatar, Button, Card, CardActions, CardContent, Chip, IconButton, Typography } from '@mui/material';
+import { Avatar, Button, Card, CardActions, CardContent, Chip, getTooltipUtilityClass, IconButton, Typography } from '@mui/material';
 import React from 'react';
 import './SearchHitCard.css';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -16,6 +16,10 @@ export const insertNewLines = (text: string) => {
         else return <React.Fragment key={index}><br/>{t}</React.Fragment>;
     })}</>;
 }
+
+const getTooltip = (counts: {name: string; count: number;}[]): string => {
+    return counts.map(c => `${c.name} (${c.count})`).join(', ');
+};
 
 export const SearchHitCard: React.FC<SearchHitCardProps> = ({ searchHit, showTranslated, hitIndex }) => {
     const [text, setText] = React.useState(showTranslated ? searchHit.translatedDocText : searchHit.docText);
@@ -80,7 +84,7 @@ export const SearchHitCard: React.FC<SearchHitCardProps> = ({ searchHit, showTra
             <div>
                 {!showTranslated && <Button sx={{mr: 2}} size="small" onClick={translate}>{translateButtonLabel}</Button>}
                 {counts.slice(0, 5).map(k => <Chip sx={{mr: 1}} label={k.name} avatar={<Avatar>{k.count}</Avatar>} />)}
-                {counts.length - 5 > 0 ? `+ ${counts.length - 5} more` : ''}
+                {counts.length - 5 > 0 ? <span title={getTooltip(counts.slice(5))}>{`+ ${counts.length - 5} more`}</span> : ''}
             </div>
         </CardActions>
     </Card>;
