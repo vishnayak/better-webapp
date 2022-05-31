@@ -1,5 +1,5 @@
 import { SearchHit } from '@components/hits/SearchHits';
-import { Button, Card, CardActions, CardContent, Chip, IconButton, Typography } from '@mui/material';
+import { Avatar, Button, Card, CardActions, CardContent, Chip, IconButton, Typography } from '@mui/material';
 import React from 'react';
 import './SearchHitCard.css';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -58,6 +58,9 @@ export const SearchHitCard: React.FC<SearchHitCardProps> = ({ searchHit, showTra
         }
     }, [showTranslated, searchHit.translatedDocText, searchHit.docText]);
 
+    const counts = Object.keys(searchHit.eventCounts).map(k => ({ name: k, count: searchHit.eventCounts[k]})).sort((a, b) => b.count - a.count);
+    // const counts = [{name: 'a', count:8}, {name: 'bbb', count: 11}, {name: 'bbb', count: 11}, {name: 'a', count:8}, {name: 'bbb', count: 11}, {name: 'bbb', count: 11}, {name: 'bbb', count: 11}, {name: 'bbb', count: 11}];
+
     return <Card elevation={8} classes={{ root: 'search-hit-card' }}>
         <div className={'search-hit-card-header'}>
             <span>{hitIndex+1}.</span>
@@ -74,7 +77,11 @@ export const SearchHitCard: React.FC<SearchHitCardProps> = ({ searchHit, showTra
                 <KeyboardArrowDownIcon fontSize={'large'} classes={{root: 'up-arrow'}} /> : 
                 <KeyboardArrowDownIcon fontSize={'large'} />}
             </IconButton>
-            {!showTranslated && <Button size="small" onClick={translate}>{translateButtonLabel}</Button>}
+            <div>
+                {!showTranslated && <Button sx={{mr: 2}} size="small" onClick={translate}>{translateButtonLabel}</Button>}
+                {counts.slice(0, 5).map(k => <Chip sx={{mr: 1}} label={k.name} avatar={<Avatar>{k.count}</Avatar>} />)}
+                {counts.length - 5 > 0 ? `+ ${counts.length - 5} more` : ''}
+            </div>
         </CardActions>
     </Card>;
 }
