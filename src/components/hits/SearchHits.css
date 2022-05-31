@@ -12,5 +12,6 @@
 .pagination-text-section {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     padding: 4px 16px;
 }
