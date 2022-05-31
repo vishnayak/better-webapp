@@ -93,7 +93,18 @@ export const getPaginatedHits = async (id: string, start: number, size: number):
     if(response.status === 400) {
         throw new Error(BAD_SUBMISSION);
     }
-    return response.json();
+    return response.json().then((res: SubmissionHitsResponse) => {
+        res.hits = res.hits.map(h => {
+            const counts: Record<string, number> = {};
+            h.events.forEach(e => {
+                console.log(e);
+                counts[e.eventType] = (counts[e.eventType] || 0) + 1;
+            }); 
+            h.eventCounts = counts;
+            return h;
+        });
+        return res;
+    });
 }
 
 export const getAllSubmissions = async (): Promise<Submission[]> => {
