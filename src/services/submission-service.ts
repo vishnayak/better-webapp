@@ -97,7 +97,6 @@ export const getPaginatedHits = async (id: string, start: number, size: number):
         res.hits = res.hits.map(h => {
             const counts: Record<string, number> = {};
             h.events.forEach(e => {
-                console.log(e);
                 counts[e.eventType] = (counts[e.eventType] || 0) + 1;
             }); 
             h.eventCounts = counts;

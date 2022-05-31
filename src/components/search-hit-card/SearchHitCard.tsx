@@ -1,5 +1,5 @@
 import { SearchHit } from '@components/hits/SearchHits';
-import { Avatar, Button, Card, CardActions, CardContent, Chip, getTooltipUtilityClass, IconButton, Typography } from '@mui/material';
+import { Avatar, Button, Card, CardActions, CardContent, Chip, IconButton, Typography } from '@mui/material';
 import React from 'react';
 import './SearchHitCard.css';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -83,7 +83,7 @@ export const SearchHitCard: React.FC<SearchHitCardProps> = ({ searchHit, showTra
             </IconButton>
             <div>
                 {!showTranslated && <Button sx={{mr: 2}} size="small" onClick={translate}>{translateButtonLabel}</Button>}
-                {counts.slice(0, 5).map(k => <Chip sx={{mr: 1}} label={k.name} avatar={<Avatar>{k.count}</Avatar>} />)}
+                {counts.slice(0, 5).map(k => <Chip key={k.name} sx={{mr: 1}} label={k.name} avatar={<Avatar>{k.count}</Avatar>} />)}
                 {counts.length - 5 > 0 ? <span title={getTooltip(counts.slice(5))}>{`+ ${counts.length - 5} more`}</span> : ''}
             </div>
         </CardActions>
