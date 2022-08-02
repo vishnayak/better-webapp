@@ -1,7 +1,5 @@
 import React from 'react';
 import './SubmissionsPage.css';
-import HourglassTopIcon from '@mui/icons-material/HourglassTop';
-import CheckIcon from '@mui/icons-material/Check';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import { DataGrid, GridColDef, GridToolbarContainer, GridToolbarExport } from '@mui/x-data-grid';

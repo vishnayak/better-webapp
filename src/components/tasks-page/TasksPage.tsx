@@ -3,9 +3,6 @@ import { DataGrid, GridColDef, GridToolbarContainer, GridToolbarExport } from '@
 import { getAllTasks, Task } from '@services/task-service';
 import { useNavigate } from 'react-router-dom';
 import './TasksPage.css';
-import { Button } from '@mui/material';
-import { TaskCreationWizard } from '@components/task-creation-wizard/TaskCreationWizard';
-import AddIcon from '@mui/icons-material/Add';
 
 const columns: GridColDef[] = [
     {
@@ -45,12 +42,6 @@ export const TasksPage: React.FC<{}> = () => {
     const [isLoading, setIsLoading] = React.useState<boolean>(true);
     const [isError, setIsError] = React.useState<boolean>(false);
 
-    const [openCreateNewTask, setOpenCreateNewTask] = React.useState(false);
-    // const [openCreateNewRequest, setOpenCreateNewRequest] = React.useState(false);
-    const [editingTaskId, setEditingTaskId] = React.useState<string | undefined>(undefined);
-    // const [editingRequestId, setEditingRequestId] = React.useState<string | undefined>(undefined);
-    // const [requestModalParentTask, setRequestModalParentTask] = React.useState<Task | undefined>(undefined);
-
     const navigate = useNavigate();
     React.useEffect(() => {
         fetchTasks();
@@ -77,49 +68,12 @@ export const TasksPage: React.FC<{}> = () => {
         navigate(`/tasks/${taskNum}`)
     };
 
-    const handleTaskCreationClick = () => {
-        setOpenCreateNewTask(true);
-    };
-
-    // const handleEdit = (taskNum: string) => {
-    //     setEditingTaskId(taskNum);
-    // };
-
-    const handleTaskModalClose = () => {
-        setOpenCreateNewTask(false)
-        setEditingTaskId(undefined);
-    };
-
-    const handleTaskCreate = () => {
-        fetchTasks();
-        handleTaskModalClose();
-    };
-
-    // const handleRequestModalClose = () => {
-    //     setOpenCreateNewRequest(false)
-    //     setEditingTaskId(undefined);
-    //     setRequestModalParentTask(undefined);
-    // };
-
     return <div className='tasks-page'>
         {
             !isLoading ? (isError ? <div className='fallback-text'>Something went wrong, please try reloading the page.</div> :
                 <>
                     <div className='tasks-page-header'>
                         <span className='tasks-page-title'>Tasks</span>
-                        <Button 
-                            onClick={handleTaskCreationClick} 
-                            variant={'contained'} 
-                            classes={{root: 'tasks-page-creation-button'}}
-                        >
-                            {<><AddIcon /> Create a Task</>}
-                        </Button>
-                        {(openCreateNewTask || editingTaskId) && <TaskCreationWizard 
-                            taskNum={editingTaskId} 
-                            onCreate={handleTaskCreate} 
-                            isOpen={openCreateNewTask || (editingTaskId !== undefined)} 
-                            onClose={handleTaskModalClose}
-                        />}
                     </div>
                     <DataGrid
                         rows={allTasks}

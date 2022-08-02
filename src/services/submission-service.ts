@@ -1,6 +1,6 @@
 import { SearchHit } from '@components/hits/SearchHits';
 
-const BASE_URL = 'https://cessnock.cs.umass.edu:9300/'
+const BASE_URL = 'https://cessnock.cs.umass.edu:9306/'
 
 // const BASE_URL = 'http://localhost:5000/'
 

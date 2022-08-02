@@ -29,25 +29,37 @@ export interface SubmissionCreationProps {
 export const SubmissionCreation: React.FC<SubmissionCreationProps> = ({ onCreate }) => {
     const [taskMap, setTaskMap] = React.useState<Record<string, string>>({});
     const [taskRequestMap, setTaskRequestMap] = React.useState<Record<string, RequestOption[]>>({});
-    const [selectedTaskNum, setSelectedTaskNum] = React.useState<string | undefined>(undefined); 
-    const [selectedReqNum, setSelectedReqNum] = React.useState<string | undefined>(undefined); 
+    const [selectedTaskNum, setSelectedTaskNum] = React.useState<string | undefined>(''); 
+    const [selectedReqNum, setSelectedReqNum] = React.useState<string | undefined>(''); 
     const [isCreating, setIsCreating] = React.useState(false);
 
     React.useEffect(() => {
         const getData = async () => {
             try {
                 const allTasks = await getAllTasks();
-                const options = allTasks.reduce((prev, task) => ({ ...prev, [task.taskNum]: task.taskTitle }), {});
+                const options: Record<string, string> = allTasks.reduce((prev, task) => ({ 
+                    ...prev, 
+                    [task.taskNum]: task.taskTitle.length === 0 ? task.taskNum : task.taskTitle 
+                }), {});
+                options[''] = 'All Tasks';
                 setTaskMap(options);
-                const requestMap = allTasks.reduce((prev, task) => {
-                    const curr = task.requests.map(request => {
+                const requestMap: any = allTasks.reduce((prev, task) => {
+                    const curr: any[] = task.requests.map(request => {
                         return {
                             label: request.reqText,
                             id: request.reqNum
                         };
                     });
+                    curr.push({
+                        label: 'All Requests',
+                        id: ''
+                    });
                     return { ...prev, [task.taskNum]: curr };
                 }, {});
+                requestMap[''] = [{
+                    label: 'All Requests',
+                    id: ''
+                }];
                 setTaskRequestMap(requestMap);
             } catch(e) {
                 console.log('An error occurred.');
@@ -57,7 +69,7 @@ export const SubmissionCreation: React.FC<SubmissionCreationProps> = ({ onCreate
     }, []);
     
     const handleCreation = () => {
-        if(selectedTaskNum && selectedReqNum) {
+        if(selectedTaskNum != undefined && selectedReqNum != undefined) {
             setIsCreating(true);
             submitSubmission({
                 taskNum: selectedTaskNum,
@@ -69,21 +81,21 @@ export const SubmissionCreation: React.FC<SubmissionCreationProps> = ({ onCreate
         }
     }
     
-    return <div className='submission-creation-fields'>
+    return Object.keys(taskRequestMap).length > 0 ? <div className='submission-creation-fields'>
         <Autocomplete
-            value={selectedTaskNum || null}
+            value={selectedTaskNum}
             disablePortal
             options={Object.keys(taskMap).sort()}
             getOptionLabel={t => taskMap[t]}
             sx={{ width: 300 }}
             renderInput={(params) => <TextField label={'Task Name'} {...params} />}
-            onChange={(event, val) => setSelectedTaskNum(val || undefined)}
+            onChange={(event, val) => setSelectedTaskNum(val !== null ? val : undefined)}
         />
         <Autocomplete
-            value={selectedReqNum || null}
-            onChange={(event, val) => setSelectedReqNum(val || undefined)}
+            value={selectedReqNum}
+            onChange={(event, val) => setSelectedReqNum(val !== null ? val : undefined)}
             disablePortal
-            disabled={!selectedTaskNum}
+            disabled={selectedTaskNum === undefined}
             options={selectedTaskNum ? taskRequestMap[selectedTaskNum].map(request => request.id) : []}
             getOptionLabel={val => {
                 const matchedRequestOption = (taskRequestMap[selectedTaskNum!])!.find(option => option.id === val);
@@ -92,8 +104,8 @@ export const SubmissionCreation: React.FC<SubmissionCreationProps> = ({ onCreate
             sx={{ width: 300 }}
             renderInput={(params) => <TextField label={'Request Name'} {...params} />}
         />
-        <Button classes={{root: 'submission-creation-create-button'}} disabled={!(selectedTaskNum && selectedReqNum) || isCreating} onClick={handleCreation} variant={'contained'}>
+        <Button classes={{root: 'submission-creation-create-button'}} disabled={(selectedTaskNum === undefined || selectedReqNum === undefined) || isCreating} onClick={handleCreation} variant={'contained'}>
             {isCreating ? 'Creating...' : 'Create'}
         </Button>
-    </div>;
+    </div> : <div className='fallback-text'>Loading...</div>;
 };
