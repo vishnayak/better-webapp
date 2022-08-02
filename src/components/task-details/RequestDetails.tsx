@@ -13,7 +13,7 @@ export interface RequestDetailsProps {
     request: Request;
     taskNum: string;
     submissions: Submission[];
-    onReannotate: () => void;
+    onReannotate?: () => void;
 }
 
 interface SentenceAnnotationRow {

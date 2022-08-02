@@ -1,8 +1,4 @@
 import Heading from '@components/heading/Heading';
-import { RequestWizard } from '@components/request-creation-wizard/RequestWizard';
-import { TaskCreationWizard } from '@components/task-creation-wizard/TaskCreationWizard';
-import Add from '@mui/icons-material/Add';
-import Edit from '@mui/icons-material/Edit';
 import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import { Button, Card, CardContent, CardHeader, CircularProgress, FormControl, InputLabel, Link, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
@@ -77,9 +73,6 @@ export const TaskDetails: React.FC<{}> = () => {
     const [openDocs, setOpenDocs] = React.useState<boolean[]>([]);
     const [annotationSummary, setAnnotationSummary] = React.useState<PhraseAnnotationRow[]>([]);
     const [submissionMap, setSubmissionMap] = React.useState<Record<string, Submission[]>>({});
-    const [isEditing, setIsEditing] = React.useState(false);
-    const [openCreateNewRequest, setOpenCreateNewRequest] = React.useState(false);
-    const [editingRequestId, setEditingRequestId] = React.useState<string | undefined>(undefined);
     const annotations = React.useRef<PhraseAnnotationRow[]>([]);
     const [selectedRow, setSelectedRow] = React.useState<PhraseAnnotationRow | undefined>(undefined);
     const [seeAllAnnotations, setSeeAllAnnotations] = React.useState(false);
@@ -137,17 +130,6 @@ export const TaskDetails: React.FC<{}> = () => {
         });
     };
 
-    const handleEditTaskClick = (isOpening: boolean) => {
-        setIsEditing(isOpening);
-        if(!isOpening) refreshTask();
-    };
-
-    const handleCreateRequestClick = (isOpening: boolean) => {
-        setEditingRequestId(undefined);
-        setOpenCreateNewRequest(isOpening);
-        if(!isOpening) refreshTask();
-    };
-
     const toggleSeeMore = () => {
         setSeeAllAnnotations(prev => !prev);
     }
@@ -171,19 +153,6 @@ export const TaskDetails: React.FC<{}> = () => {
             <CircularProgress size={60} classes={{root: 'fallback-text'}} />
         </div>: 
         (task ? <div className='task-details'>
-            {isEditing && <TaskCreationWizard 
-                taskNum={taskNum} 
-                onCreate={() => handleEditTaskClick(false)} 
-                isOpen={isEditing} 
-                onClose={() => handleEditTaskClick(false)}
-            />}
-            {(openCreateNewRequest || editingRequestId) && <RequestWizard 
-                task={task} 
-                requestNum={editingRequestId}
-                onCreate={() => handleCreateRequestClick(false)} 
-                isOpen={openCreateNewRequest || editingRequestId !== undefined} 
-                onClose={() => handleCreateRequestClick(false)}
-            />}
             {resetDialog && <ConfirmationDialog 
                 open={resetDialog}
                 onConfirm={handleReset} 
@@ -193,7 +162,7 @@ export const TaskDetails: React.FC<{}> = () => {
             <div className='task-details-heading-row'>
                 <Heading headingText='Task Overview' />
                 <div>
-                    <Button variant='contained' onClick={() => handleEditTaskClick(true)}><Edit />&nbsp;Edit</Button>
+                    {/* <Button variant='contained' onClick={() => handleEditTaskClick(true)}><Edit />&nbsp;Edit</Button> */}
                     <Button variant='outlined' sx={{ml: 2}} onClick={() => setResetDialog(true)}><RestartAltIcon />&nbsp;Reset Submissions</Button>
                 </div>
             </div>
@@ -293,13 +262,19 @@ export const TaskDetails: React.FC<{}> = () => {
             </>}
             <div className='task-details-heading-row'>
                 <Heading headingText='Requests' />
-                {task.taskExampleDocs.length > 0 && <Button variant={'contained'} onClick={() => handleCreateRequestClick(true)}><Add/> &nbsp; Add Request</Button>}
+                {/* {task.taskExampleDocs.length > 0 && <Button variant={'contained'} onClick={() => handleCreateRequestClick(true)}><Add/> &nbsp; Add Request</Button>} */}
             </div>
             {task.requests.length === 0 ? <span>
                 No requests have been created for this task.
                 {task.taskExampleDocs.length === 0 && <>&nbsp;Add example documents to create a request.</>}
             </span>:
-            task.requests.map(req => <RequestDetails key={req.reqNum} taskNum={taskNum} request={req} submissions={submissionMap[req.reqNum] || []} onReannotate={() => setEditingRequestId(req.reqNum)} />)}
+            task.requests.map(req => <RequestDetails 
+                key={req.reqNum} 
+                taskNum={taskNum} 
+                request={req} 
+                submissions={submissionMap[req.reqNum] || []} 
+                // onReannotate={() => setEditingRequestId(req.reqNum)} 
+            />)}
         </div> : <div className='fallback-text'>This Task Id is invalid!</div>)}
     </div>;
 };
