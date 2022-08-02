@@ -1,9 +1,9 @@
 import Heading from '@components/heading/Heading';
 import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import { Button, Card, CardContent, CardHeader, CircularProgress, FormControl, InputLabel, Link, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { Button, Card, CardContent, CircularProgress, Link, Typography } from '@mui/material';
 import { getSubmissionsByTaskNum, deleteSubmission, Submission } from '@services/submission-service';
-import { AnnotationJudgment, AnnotationJudgmentNames, getAnnotationPhrases, getTaskById, PhraseAnnotation, resetRequestAnnotations, resetTaskAnnotations, Task } from '@services/task-service';
+import { AnnotationJudgment, getTaskById, Task } from '@services/task-service';
 import React from 'react';
 import { ConfirmationDialog } from '@components/confirmation-dialog/ConfirmationDialog';
 import { useParams } from 'react-router-dom';

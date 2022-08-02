@@ -69,7 +69,7 @@ export const SubmissionCreation: React.FC<SubmissionCreationProps> = ({ onCreate
     }, []);
     
     const handleCreation = () => {
-        if(selectedTaskNum != undefined && selectedReqNum != undefined) {
+        if(selectedTaskNum !== undefined && selectedReqNum !== undefined) {
             setIsCreating(true);
             submitSubmission({
                 taskNum: selectedTaskNum,
