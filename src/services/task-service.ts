@@ -1,6 +1,6 @@
 import { Sentence } from "@components/hits/SearchHits";
 
-const BASE_URL = 'https://cessnock.cs.umass.edu:9306/'
+const BASE_URL = 'https://cessnock.cs.umass.edu:9300/'
 
 export interface Request {
     reqNum: string;
