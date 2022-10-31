@@ -1,14 +1,17 @@
 import Heading from '@components/heading/Heading';
 import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import { Button, Card, CardContent, CircularProgress, Link, Typography } from '@mui/material';
-import { getSubmissionsByTaskNum, deleteSubmission, Submission } from '@services/submission-service';
-import { AnnotationJudgment, getTaskById, Task } from '@services/task-service';
+import { Button, Card, CardContent, CardHeader, CircularProgress, FormControl, InputLabel, Link, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+// import { getSubmissionsByTaskNum, deleteSubmission, Submission } from '@services/submission-service';
+import { AnnotationJudgment, AnnotationJudgmentNames, getAnnotationPhrases, getTaskById, PhraseAnnotation, Task } from '@services/task-service';
 import React from 'react';
 import { ConfirmationDialog } from '@components/confirmation-dialog/ConfirmationDialog';
 import { useParams } from 'react-router-dom';
 import { RequestDetails } from './RequestDetails';
 import './TaskDetails.css';
+import { RequestWizard } from '@components/request-creation-wizard/RequestWizard';
+import { TaskCreationWizard } from '@components/task-creation-wizard/TaskCreationWizard';
+import Edit from '@mui/icons-material/Edit';
 
 interface PhraseAnnotationRow {
     phrase: string;
@@ -72,7 +75,10 @@ export const TaskDetails: React.FC<{}> = () => {
     const [isLoading, setIsLoading] = React.useState(true);
     const [openDocs, setOpenDocs] = React.useState<boolean[]>([]);
     const [annotationSummary, setAnnotationSummary] = React.useState<PhraseAnnotationRow[]>([]);
-    const [submissionMap, setSubmissionMap] = React.useState<Record<string, Submission[]>>({});
+    // const [submissionMap, setSubmissionMap] = React.useState<Record<string, Submission[]>>({});
+    const [isEditing, setIsEditing] = React.useState(false);
+    const [openCreateNewRequest, setOpenCreateNewRequest] = React.useState(false);
+    const [editingRequestId, setEditingRequestId] = React.useState<string | undefined>(undefined);
     const annotations = React.useRef<PhraseAnnotationRow[]>([]);
     const [selectedRow, setSelectedRow] = React.useState<PhraseAnnotationRow | undefined>(undefined);
     const [seeAllAnnotations, setSeeAllAnnotations] = React.useState(false);
@@ -89,23 +95,33 @@ export const TaskDetails: React.FC<{}> = () => {
         }
     }, [taskNum]);
 
+    const getAnnotationRows = (phrasesAnnotation: PhraseAnnotation) => {
+        const judgmentPriority = {[AnnotationJudgment.P]: 0, [AnnotationJudgment.E]: 1, [AnnotationJudgment.G]: 2, [AnnotationJudgment.F]: 3, [AnnotationJudgment.B]: 4, [AnnotationJudgment.NONE]: 5};
+        const allAnnotations: PhraseAnnotationRow[] = Object.keys(phrasesAnnotation).map(p => ({
+            phrase: p,
+            sentence: phrasesAnnotation[p].sentences,
+            judgment: phrasesAnnotation[p].judgment,
+        })).sort((a,b) => judgmentPriority[a.judgment] < judgmentPriority[b.judgment] ? -1 : 1);
+        return [allAnnotations, allAnnotations.slice(0, 6)];
+    };
+
     const refreshTask = async () => {
         setIsLoading(true);
         try {
             const res = await getTaskById(taskNum);
-            // const annotationRes = await getAnnotationPhrases(taskNum);
-            const submissions = await getSubmissionsByTaskNum(taskNum);
-            const map: Record<string, Submission[]> = {};
-            submissions.forEach(submission => {
-                map[submission.reqNum] = [...(map[submission.reqNum] || []), submission];
-            });
-            setSubmissionMap(map);
+            const annotationRes = await getAnnotationPhrases(taskNum);
+            // const submissions = await getSubmissionsByTaskNum(taskNum);
+            // const map: Record<string, Submission[]> = {};
+            // submissions.forEach(submission => {
+            //     map[submission.reqNum] = [...(map[submission.reqNum] || []), submission];
+            // });
+            // setSubmissionMap(map);
             setTask(res);
             const docOpenFlags = res.taskExampleDocs.map(d => false);
             setOpenDocs(docOpenFlags);
-            // const [allAnnotations, sampledAnnotations] = getAnnotationRows(annotationRes);
-            // setAnnotationSummary(sampledAnnotations);
-            // annotations.current = allAnnotations;
+            const [allAnnotations, sampledAnnotations] = getAnnotationRows(annotationRes);
+            setAnnotationSummary(sampledAnnotations);
+            annotations.current = allAnnotations;
             setShowHighlightedJudgments(res.taskExampleDocs.map(d => true));
             setIsLoading(false);
         } catch (e) {
@@ -120,6 +136,17 @@ export const TaskDetails: React.FC<{}> = () => {
         });
     };
 
+    const handleEditTaskClick = (isOpening: boolean) => {
+        setIsEditing(isOpening);
+        if(!isOpening) refreshTask();
+    };
+
+    const handleCreateRequestClick = (isOpening: boolean) => {
+        setEditingRequestId(undefined);
+        setOpenCreateNewRequest(isOpening);
+        if(!isOpening) refreshTask();
+    };
+
     const toggleSeeMore = () => {
         setSeeAllAnnotations(prev => !prev);
     }
@@ -131,7 +158,7 @@ export const TaskDetails: React.FC<{}> = () => {
     const handleReset = async () => {
         setIsLoading(true);
         setResetDialog(false);
-        Object.values(submissionMap).flat().forEach(async (s) => { await deleteSubmission(s.id); });
+        // Object.values(submissionMap).flat().forEach(async (s) => { await deleteSubmission(s.id); });
         // await resetTaskAnnotations(task!!.taskNum);
         // task?.requests?.map(async (r) => { await resetRequestAnnotations(task.taskNum, r.reqNum); });
         refreshTask();
@@ -143,17 +170,31 @@ export const TaskDetails: React.FC<{}> = () => {
             <CircularProgress size={60} classes={{root: 'fallback-text'}} />
         </div>: 
         (task ? <div className='task-details'>
+            {isEditing && <TaskCreationWizard 
+                taskNum={taskNum} 
+                onCreate={() => handleEditTaskClick(false)} 
+                isOpen={isEditing} 
+                onClose={() => handleEditTaskClick(false)}
+            />}
+            {(openCreateNewRequest || editingRequestId) && <RequestWizard 
+                task={task} 
+                requestNum={editingRequestId}
+                onCreate={() => handleCreateRequestClick(false)} 
+                isOpen={openCreateNewRequest || editingRequestId !== undefined} 
+                onClose={() => handleCreateRequestClick(false)}
+            />}
             {resetDialog && <ConfirmationDialog 
                 open={resetDialog}
                 onConfirm={handleReset} 
                 onClose={() => setResetDialog(false)} 
-                text={'This will delete all submissions and reset all judgements. Are you sure?' } 
+                // text={'This will delete all submissions and reset all judgements. Are you sure?' } 
+                text={'This will reset all judgements. Are you sure?' } 
             />}
             <div className='task-details-heading-row'>
                 <Heading headingText='Task Overview' />
                 <div>
-                    {/* <Button variant='contained' onClick={() => handleEditTaskClick(true)}><Edit />&nbsp;Edit</Button> */}
-                    <Button variant='outlined' sx={{ml: 2}} onClick={() => setResetDialog(true)}><RestartAltIcon />&nbsp;Reset Submissions</Button>
+                    <Button variant='contained' onClick={() => handleEditTaskClick(true)}><Edit />&nbsp;Edit</Button>
+                    {/* <Button variant='outlined' sx={{ml: 2}} onClick={() => setResetDialog(true)}><RestartAltIcon />&nbsp;Reset Submissions</Button> */}
                 </div>
             </div>
             <span className='task-details-title'>{task.taskTitle}</span>
@@ -174,12 +215,12 @@ export const TaskDetails: React.FC<{}> = () => {
                         />
                         <span>Doc {doc.docNumber}</span>
                     </Link>
-                    {/* <li className='task-details-example-doc-highlight'>
+                    <li className='task-details-example-doc-highlight'>
                         <b>Highlight Text:</b>
                         &nbsp;
                         {doc.highlight.length > 0 ? `${doc.highlight}` : 'No highlight text was selected for this document'}
-                        </li> */}
-                    {/* openDocs[doc.docNumber - 1] && <Card classes={{ root: 'task-details-card' }}>
+                        </li>
+                    {openDocs[doc.docNumber - 1] && <Card classes={{ root: 'task-details-card' }}>
                         <CardHeader classes={{title: 'task-details-doc-card-header'}} title={
                             <>
                                 <FormControl sx={{width: '225px'}}>
@@ -211,18 +252,11 @@ export const TaskDetails: React.FC<{}> = () => {
                             getHighlightedAnnotations(doc.docText, annotations.current) :
                             getHighlightedSpan(doc.docText, doc.highlight, 'doc-highlight-selected-text')}
                         </CardContent>
-                    </Card> */}
-                    {openDocs[doc.docNumber - 1] && <Card classes={{ root: 'task-details-card' }}>
-                        <CardContent>
-                            <Typography className={'doc-text'} variant='body2'>
-                                {doc.docText}
-                            </Typography>
-                        </CardContent>
                     </Card>}
                 </React.Fragment>)}
             </div> : 'No example documents are present.'}
 
-            {/* annotations.current.length > 0 && <>
+            {annotations.current.length > 0 && <>
                 <Heading headingText='Phrase Judgments' />
                 <div className='task-details-annotations-table'>
                     <TableContainer sx={{margin: '16px', maxWidth: '50%'}} component={Paper}>
@@ -256,7 +290,7 @@ export const TaskDetails: React.FC<{}> = () => {
                     </Card>
                 </div>
                 <Button variant='outlined' onClick={toggleSeeMore} className='task-details-annotation-see-more'>{seeAllAnnotations ? 'See Summary' : 'See All Judgments'}</Button>
-            </> */}
+            </>}
             <div className='task-details-heading-row'>
                 <Heading headingText='Requests' />
                 {/* {task.taskExampleDocs.length > 0 && <Button variant={'contained'} onClick={() => handleCreateRequestClick(true)}><Add/> &nbsp; Add Request</Button>} */}
@@ -269,8 +303,9 @@ export const TaskDetails: React.FC<{}> = () => {
                 key={req.reqNum} 
                 taskNum={taskNum} 
                 request={req} 
-                submissions={submissionMap[req.reqNum] || []} 
-                // onReannotate={() => setEditingRequestId(req.reqNum)} 
+                // submissions={submissionMap[req.reqNum] || []} 
+                // submissions = {[]}
+                onReannotate={() => setEditingRequestId(req.reqNum)} 
             />)}
         </div> : <div className='fallback-text'>This Task Id is invalid!</div>)}
     </div>;

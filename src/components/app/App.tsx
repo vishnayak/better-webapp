@@ -22,18 +22,18 @@ export const App: React.FC<{}> = () => {
     <>
       <header className="App-header">
           <Link to={'/'} className={'header-title'}>UMass BETTER</Link>
-          <div className='header-tabs-section'>
+          {/* <div className='header-tabs-section'>
             {tabs.map((tab, i) => <React.Fragment key={i}>
               <NavLink to={tab.path} className={({ isActive }) => (isActive ? 'header-tab-active ' : '') + 'header-tab'}>{tab.name}</NavLink>
             </React.Fragment>)}
-          </div>
+          </div> */}
       </header>
       <div className='body'>
         <Routes>
-          <Route path="/submissions/:submissionId" element={<SearchPage />} />
+          {/* <Route path="/submissions/:submissionId" element={<SearchPage />} /> */}
           <Route path="/" element={<TasksPage />} />
           <Route path="/tasks/:taskNum" element={<TaskDetails />} />
-          <Route path="/submissions" element={<SubmissionsPage />} />
+          {/* <Route path="/submissions" element={<SubmissionsPage />} /> */}
           <Route
             path="*"
             element={<Navigate to="/" replace />}

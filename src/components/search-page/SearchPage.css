@@ -4,11 +4,6 @@
     padding-top: 1rem;
 }
 
-.fallback-text {
-    text-align: center;
-    margin: 64px auto;
-}
-
 .submission-detail {
     display: flex;
     justify-content: space-between;

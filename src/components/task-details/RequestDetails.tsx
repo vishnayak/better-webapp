@@ -4,7 +4,7 @@ import { AnnotationJudgment, AnnotationJudgmentNames, getSentencesForAnnotation,
 import React from 'react';
 import Edit from '@mui/icons-material/Edit';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import { Submission } from '@services/submission-service';
+// import { Submission } from '@services/submission-service';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { getHighlightedSpan } from './TaskDetails';
 
@@ -12,7 +12,7 @@ import { getHighlightedSpan } from './TaskDetails';
 export interface RequestDetailsProps {
     request: Request;
     taskNum: string;
-    submissions: Submission[];
+    // submissions: Submission[];
     onReannotate?: () => void;
 }
 
@@ -45,7 +45,7 @@ const getHighlightedAnnotations = (docText: string, annotationRows: SentenceAnno
     </Typography>
 };
 
-export const RequestDetails: React.FC<RequestDetailsProps> = ({ request, taskNum, submissions: submissionsProp, onReannotate }) => {
+export const RequestDetails: React.FC<RequestDetailsProps> = ({ request, taskNum, onReannotate }) => {
     const navigate = useNavigate();
     const [openDocs, setOpenDocs] = React.useState<boolean[]>(request.exampleDocs.map(d => false));
     const [annotationSummary, setAnnotationSummary] = React.useState<SentenceAnnotationRow[]>([]);
@@ -53,22 +53,22 @@ export const RequestDetails: React.FC<RequestDetailsProps> = ({ request, taskNum
     const [seeAllAnnotations, setSeeAllAnnotations] = React.useState(false);
     const [showHighlightedJudgments, setShowHighlightedJudgments] = React.useState<boolean[]>(request.exampleDocs.map(d => true));
 
-    // React.useEffect(() => {
-    //     fetchSentences();
-    // }, []);
+    React.useEffect(() => {
+        fetchSentences();
+    }, []);
 
     const fetchSentences = async () => {
-        // const res = await getSentencesForAnnotation(taskNum, request.reqNum);
-        // const allAnnotations: SentenceAnnotationRow[] = res.request.exampleDocs.flatMap(doc => doc.sentences.map(sent => ({
-        //     docNumber: doc.docNumber,
-        //     sentence: sent.sentence,
-        //     judgment: sent.judgment as AnnotationJudgment,
-        // })));
+        const res = await getSentencesForAnnotation(taskNum, request.reqNum);
+        const allAnnotations: SentenceAnnotationRow[] = res.request.exampleDocs.flatMap(doc => doc.sentences.map(sent => ({
+            docNumber: doc.docNumber,
+            sentence: sent.sentence,
+            judgment: sent.judgment as AnnotationJudgment,
+        })));
 
-        // const [all, summary] = getAnnotationRows(allAnnotations);
-        // annotations.current = all;
-        // setAnnotationSummary(summary);
-        // return res;
+        const [all, summary] = getAnnotationRows(allAnnotations);
+        annotations.current = all;
+        setAnnotationSummary(summary);
+        return res;
     };
     
     const toggleDoc = (index: number) => {
@@ -89,7 +89,7 @@ export const RequestDetails: React.FC<RequestDetailsProps> = ({ request, taskNum
         setSeeAllAnnotations(prev => !prev);
     }
 
-    const submissions = submissionsProp.sort((a,b) => a.when > b.when ? -1 : 1);
+    // const submissions = submissionsProp.sort((a,b) => a.when > b.when ? -1 : 1);
 
     return <div className={'request-details'}>
         <div className='request-details-row'>
@@ -98,8 +98,8 @@ export const RequestDetails: React.FC<RequestDetailsProps> = ({ request, taskNum
                 <span>{request.reqText}</span>
             </div>
             <div>
-                {submissions.length > 0 && <Button classes={{root: 'request-details-button'}} variant='outlined' onClick={() => handleHitsOpen(submissions[0].id)}>Show Hits</Button>}
-                {/* {<Button classes={{root: 'request-details-button'}} variant='outlined' onClick={onReannotate}>{submissions.length > 0 ? 'Change Sentence Judgments...' : (request.exampleDocs.length > 0 ? 'Judge Sentences and Run Submission': <><Edit />&nbsp;Edit</>)}</Button>} */}
+                {/* {submissions.length > 0 && <Button classes={{root: 'request-details-button'}} variant='outlined' onClick={() => handleHitsOpen(submissions[0].id)}>Show Hits</Button>} */}
+                {<Button classes={{root: 'request-details-button'}} variant='outlined' onClick={onReannotate}><Edit />&nbsp;Edit</Button>}
             </div>
         </div>
         <span className='request-details-heading'>Example Documents</span>
@@ -118,12 +118,12 @@ export const RequestDetails: React.FC<RequestDetailsProps> = ({ request, taskNum
                     />
                     <span>Doc {doc.docNumber}</span>
                 </Link>
-                {/* <li className='task-details-example-doc-highlight'>
+                <li className='task-details-example-doc-highlight'>
                     <b>Highlight Text:</b>
                     &nbsp;
                     {doc.highlight.length > 0 ? `${doc.highlight}` : 'No highlight text was selected for this document'}
-                </li> */}
-                {/* openDocs[doc.docNumber - 1] && <Card classes={{ root: 'task-details-card' }}>
+                </li>
+                {openDocs[doc.docNumber - 1] && <Card classes={{ root: 'task-details-card' }}>
                     <CardHeader classes={{title: 'task-details-doc-card-header'}} title={
                         <>
                             <FormControl sx={{width: '225px'}}>
@@ -155,17 +155,10 @@ export const RequestDetails: React.FC<RequestDetailsProps> = ({ request, taskNum
                         getHighlightedAnnotations(doc.docText, annotations.current.filter(row => row.docNumber === doc.docNumber)) :
                         getHighlightedSpan(doc.docText, doc.highlight, 'doc-highlight-text')}
                     </CardContent>
-                </Card> */}
-                {openDocs[doc.docNumber - 1] && <Card classes={{ root: 'task-details-card' }}>
-                    <CardContent>
-                        <Typography className={'doc-text'} variant='body2'>
-                            {doc.docText}
-                        </Typography>
-                    </CardContent>
                 </Card>}
             </React.Fragment>)}
         </div>
-        {/* annotations.current.length > 0 && <>
+        {annotations.current.length > 0 && <>
             <span className='request-details-heading'>Sentence Judgments</span>
             <div className='task-details-annotations-table'>
                 <TableContainer sx={{margin: '16px'}} component={Paper}>
@@ -191,11 +184,11 @@ export const RequestDetails: React.FC<RequestDetailsProps> = ({ request, taskNum
                 </TableContainer>
             </div>
             <Button variant='outlined' onClick={toggleSeeMore} className='task-details-annotation-see-more'>{seeAllAnnotations ? 'See Summary' : 'See All Judgments'}</Button>
-        </> */}
-        <span className='request-details-heading'>Submissions</span>
+        </>}
+        {/* <span className='request-details-heading'>Submissions</span>
         {submissions.length > 0 ? submissions.map(submission => <li key={submission.id}>
             <NavLink className={'request-details-submission-link'} to={`/submissions/${submission.id}`}>{(new Date(submission.when)).toLocaleString()} - Click to show hits</NavLink>
-        </li>) : 'No submissions were created for this request.'}
+        </li>) : 'No submissions were created for this request.'} */}
         <hr className='request-details-hr'/>
     </div>;
 };

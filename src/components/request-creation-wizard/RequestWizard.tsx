@@ -349,7 +349,7 @@ export const RequestWizard: React.FC<RequestWizardProps> = (props) => {
         }>
             <span onMouseOver={getHelper} hidden={false}>
                 {step < steps.length ? <LoadingButton loading={isNextLoading} endIcon={!isLastStep && <NavigateNextIcon/>} loadingPosition="end" variant={'contained'} color={'primary'} onClick={handleNext} disabled={!validateNextStep()}>
-                    {isLastStep ? (requestNumProp ? 'Save Changes and run Submission' : 'Create Request and run Submission') : 'Next'}
+                    {isLastStep ? (requestNumProp ? 'Save Judgements' : 'Create Request and run Submission') : 'Next'}
                 </LoadingButton> : ''}
             </span>
         </Tooltip>
@@ -362,11 +362,11 @@ export const RequestWizard: React.FC<RequestWizardProps> = (props) => {
         >
         <Paper classes={{root: 'wizard-paper'}}>
             {step >= 0 ? <>
-                <Stepper activeStep={step}>
+                {/* <Stepper activeStep={step}>
                     {
                         steps.map((label) => <Step key={label}><StepLabel>{label}</StepLabel></Step>)
                     }
-                </Stepper>
+                </Stepper> */}
 
                 {step === 0 ? (
                     <Grid container direction='column' spacing={4} mt={2}>

@@ -266,7 +266,7 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
         }>
             <span onMouseOver={getHelper} hidden={false}>
                 <LoadingButton loading={isNextLoading} endIcon={!isLastStep && <NavigateNextIcon/>} loadingPosition="end" variant={'contained'} color={'primary'} onClick={handleNext} disabled={!validateNextStep()}>
-                    {isLastStep ? 'Save and Finish' : 'Next'}
+                    {isLastStep ? 'Save Judgements' : 'Next'}
                 </LoadingButton>
             </span>
         </Tooltip>
@@ -279,11 +279,11 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
     >
         <Paper classes={{root: 'wizard-paper'}}>
             {step >= 0 ? <>
-                <Stepper activeStep={step}>
+                {/* <Stepper activeStep={step}>
                     {
                         steps.map((label) => <Step key={label}><StepLabel>{label}</StepLabel></Step>)
                     }
-                </Stepper>
+                </Stepper> */}
 
                 {step === 0 ? (
                     <Grid container direction='column' spacing={4} mt={2}>
