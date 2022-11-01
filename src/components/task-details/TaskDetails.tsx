@@ -20,8 +20,15 @@ interface PhraseAnnotationRow {
 }
 
 export const getHighlightedSpan = (docText: string, highlightText: string, highlightClassName: string) => {
-    const splitText = docText.split(highlightText);
-    if(splitText.length === 1) return <span>{splitText}</span>;
+    if(!highlightText.trim()) {
+        return <Typography className={'doc-text'} variant='body2'>
+            {docText}
+        </Typography>;
+    }
+    const splitText = docText.split(highlightText.trim());
+    if(splitText.length === 1) return <Typography className={'doc-text'} variant='body2'>
+        {splitText}
+    </Typography>;
     const resultText = splitText.slice(0, splitText.length - 1).map((text, i) => <React.Fragment key={i}>{text}<span className={highlightClassName}>{highlightText}</span></React.Fragment>);
     return <Typography className={'doc-text'} variant='body2'>
         {resultText}{splitText[splitText.length - 1]}
