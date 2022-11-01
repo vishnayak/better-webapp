@@ -237,17 +237,17 @@ export const RequestWizard: React.FC<RequestWizardProps> = (props) => {
     };
 
     const handleFinish = async () => {
-        const id = (await submitSubmission({
-            taskNum: task.taskNum,
-            reqNum
-        })).id;
-        if(!requestNumProp) {
-            // creating new request
-            navigate(`/submissions/${id}`);
-        } else { 
-            // editing a request (probably by reannotating)
-            window.open(`/submissions/${id}`, '_blank');
-        }
+        // const id = (await submitSubmission({
+        //     taskNum: task.taskNum,
+        //     reqNum
+        // })).id;
+        // if(!requestNumProp) {
+        //     // creating new request
+        //     navigate(`/submissions/${id}`);
+        // } else { 
+        //     // editing a request (probably by reannotating)
+        //     window.open(`/submissions/${id}`, '_blank');
+        // }
         onCreate();
     };
 
