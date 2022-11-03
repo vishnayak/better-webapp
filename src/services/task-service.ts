@@ -13,6 +13,7 @@ export interface Task {
     taskTitle: string;
     taskStmt: string;
     taskNarr: string;
+    taskLink: string;
     taskExampleDocs: ExampleDoc[];
     requests: Request[];
 }

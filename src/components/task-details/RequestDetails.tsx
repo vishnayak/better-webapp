@@ -1,5 +1,5 @@
 import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown';
-import { Button, Card, CardHeader, CardContent, Checkbox, FormControlLabel, Link, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { Button, Card, CardHeader, CardContent, Link, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { AnnotationJudgment, AnnotationJudgmentNames, getSentencesForAnnotation, Request } from '@services/task-service';
 import React from 'react';
 import Edit from '@mui/icons-material/Edit';

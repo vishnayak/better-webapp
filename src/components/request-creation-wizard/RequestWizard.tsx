@@ -342,6 +342,14 @@ export const RequestWizard: React.FC<RequestWizardProps> = (props) => {
             >
                 Back
             </Button>)}
+            <Button
+                color={'warning'}
+                variant={'outlined'}
+                onClick={onClose}
+                sx={{ mr: 1 }}
+            >
+                Discard Changes
+            </Button>
         </Box>
         <Box sx={{ flex: '1 1 auto' }} />
         <Tooltip placement={'top'} classes={{tooltip: 'wizard-tooltip'}} title={
@@ -357,7 +365,7 @@ export const RequestWizard: React.FC<RequestWizardProps> = (props) => {
 
     return <Modal
         open={isOpen}
-        onClose={onClose}
+        // onClose={onClose}
         classes={{root: 'wizard-modal'}}
         >
         <Paper classes={{root: 'wizard-paper'}}>
@@ -405,9 +413,9 @@ export const RequestWizard: React.FC<RequestWizardProps> = (props) => {
                                 <b>P</b>: Perfect, <b>E</b>: Excellent, <b>G</b>: Good, <b>F</b>: Fair, <b>B</b>: Bad
                             </Typography>
                             <div className='request-wizard-annotation-section'>
-                                {getAllSentences(initialAnnotatedSentences).map((sent) => (
+                                {getAllSentences(initialAnnotatedSentences).map((sent, idx) => (
                                     <SentenceRow 
-                                        key={`${sent.sentence}${sent.judgment}`} 
+                                        key={`${sent.sentence}${sent.judgment}${idx}`} 
                                         judgment={sent.judgment} 
                                         sentence={sent.sentence} 
                                         onAnnotate={(j) => handleAnnotate(sent.docId, sent.sentenceId, j)}

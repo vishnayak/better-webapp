@@ -259,6 +259,14 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
             >
                 Back
             </Button>)}
+            <Button
+                color={'warning'}
+                variant={'outlined'}
+                onClick={onClose}
+                sx={{ mr: 1 }}
+            >
+                Discard Changes
+            </Button>
         </Box>
         <Box sx={{ flex: '1 1 auto' }} />
         <Tooltip placement={'top'} classes={{tooltip: 'wizard-tooltip'}} title={
@@ -274,7 +282,7 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
 
     return <Modal
         open={isOpen}
-        onClose={onClose}
+        // onClose={onClose}
         classes={{root: 'wizard-modal'}}
     >
         <Paper classes={{root: 'wizard-paper'}}>
@@ -346,9 +354,9 @@ export const TaskCreationWizard: React.FC<TaskCreationWizardProps> = (props) => 
                                 <b>P</b>: Perfect, <b>E</b>: Excellent, <b>G</b>: Good, <b>F</b>: Fair, <b>B</b>: Bad
                             </Typography>
                             <div className={'task-wizard-annotation-section'}>
-                                {Object.keys(initialAnnotatedPhrases).map((k) => (
+                                {Object.keys(initialAnnotatedPhrases).map((k, idx) => (
                                     <PhraseRow 
-                                        key={`${k}${initialAnnotatedPhrases[k].judgment}`} 
+                                        key={`${k}${initialAnnotatedPhrases[k].judgment}${idx}`} 
                                         annotation={initialAnnotatedPhrases[k]} 
                                         phraseName={k} 
                                         onAnnotate={(j) => handleAnnotate(k, j)}

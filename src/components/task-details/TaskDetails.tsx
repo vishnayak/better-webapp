@@ -204,7 +204,12 @@ export const TaskDetails: React.FC<{}> = () => {
                     {/* <Button variant='outlined' sx={{ml: 2}} onClick={() => setResetDialog(true)}><RestartAltIcon />&nbsp;Reset Submissions</Button> */}
                 </div>
             </div>
-            <span className='task-details-title'>{task.taskTitle}</span>
+            <div className='task-details-title'>
+                {task.taskTitle}
+                {task.taskLink && task.taskLink.length > 0 && <>
+                    &nbsp;<Link href={task.taskLink} underline='always' rel='noreferrer' target='_blank'>Click to see context</Link>
+                </>}
+            </div>
             {task.taskStmt.length > 0 && <span className='task-details-stmt'>{task.taskStmt}</span>}
             {task.taskNarr.length > 0 && <span className='task-details-narr'><b>Narrative: </b>{task.taskNarr}</span>}
             
@@ -235,7 +240,7 @@ export const TaskDetails: React.FC<{}> = () => {
                                     <Select
                                         labelId={`select-label-${doc.docid}`}
                                         value={showHighlightedJudgments[doc.docNumber - 1] ? 1 : 0}
-                                        label="Highlighting type"
+                                        label='Highlighting type'
                                         onChange={(e) => handleHighlightChange(doc.docNumber - 1, e.target.value as number)}
                                     >
                                         <MenuItem value={0}>Highlighted Text</MenuItem>

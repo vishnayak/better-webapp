@@ -30,10 +30,10 @@ export const App: React.FC<{}> = () => {
       </header>
       <div className='body'>
         <Routes>
-          {/* <Route path="/submissions/:submissionId" element={<SearchPage />} /> */}
           <Route path="/" element={<TasksPage />} />
           <Route path="/tasks/:taskNum" element={<TaskDetails />} />
           {/* <Route path="/submissions" element={<SubmissionsPage />} /> */}
+          {/* <Route path="/submissions/:submissionId" element={<SearchPage />} /> */}
           <Route
             path="*"
             element={<Navigate to="/" replace />}
