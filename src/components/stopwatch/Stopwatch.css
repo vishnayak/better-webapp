@@ -1,0 +1,12 @@
+.stopwatch {
+    display: flex;
+    background-color: white;
+    border-radius: 4px;
+    padding: 0 0 0 8px;
+    margin-right: 8px;
+    overflow: hidden;
+}
+
+.stopwatch-numbers {
+    align-self: center;
+}

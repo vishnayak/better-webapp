@@ -5,6 +5,8 @@ import './App.css';
 import { SubmissionsPage } from '@components/submissions-page/SubmissionsPage';
 import { TasksPage } from '@components/tasks-page/TasksPage';
 import { TaskDetails } from '@components/task-details/TaskDetails';
+import { Stopwatch } from '@components/stopwatch/Stopwatch';
+import TimerIcon from '@mui/icons-material/Timer';
 
 const tabs = [
   {
@@ -18,15 +20,18 @@ const tabs = [
 ];
 
 export const App: React.FC<{}> = () => {
+  const [showStopwatch, setShowStopWatch] = React.useState(true);
   return (
     <>
       <header className="App-header">
           <Link to={'/'} className={'header-title'}>UMass BETTER</Link>
-          {/* <div className='header-tabs-section'>
-            {tabs.map((tab, i) => <React.Fragment key={i}>
+          <div className='header-tabs-section'>
+            {/*tabs.map((tab, i) => <React.Fragment key={i}>
               <NavLink to={tab.path} className={({ isActive }) => (isActive ? 'header-tab-active ' : '') + 'header-tab'}>{tab.name}</NavLink>
-            </React.Fragment>)}
-          </div> */}
+            </React.Fragment>)*/}
+            <TimerIcon style={{color: 'white', cursor: 'pointer'}} onClick={() => setShowStopWatch(!showStopwatch)} /> &nbsp;
+            {<div style={{width: (showStopwatch ? '120px' : '0'), transition: 'width 0.1s'}}><Stopwatch /></div>}
+          </div>
       </header>
       <div className='body'>
         <Routes>
